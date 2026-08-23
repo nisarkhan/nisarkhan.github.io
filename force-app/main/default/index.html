@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salesforce Field Notes</title>
+<meta name="description" content="Notes, builds, and tips across Agentforce and Data Cloud.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --ground:#f3f6fb;
+    --surface:#ffffff;
+    --surface-2:#edf1f9;
+    --ink:#10162a;
+    --ink-muted:#545f7a;
+    --ink-faint:#8892ab;
+    --line:#dde3ee;
+    --accent:#3f4fdb;
+    --accent-strong:#2e3cc4;
+    --accent-ink:#ffffff;
+    --accent-soft:#e7e9fc;
+    --accent-2:#c8720f;
+    --accent-2-soft:#fbead2;
+    --good:#1c8a5a;
+    --good-soft:#e3f5ec;
+    --shadow: 0 1px 2px rgba(16,22,42,0.04), 0 8px 24px -12px rgba(16,22,42,0.18);
+    --radius-lg:16px;
+    --radius-md:11px;
+    --radius-sm:7px;
+  }
+
+  *{box-sizing:border-box;}
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    margin:0;
+    background:var(--ground);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", system-ui, sans-serif;
+    font-size:15.5px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){ *{animation-duration:.001ms !important; transition-duration:.001ms !important;} }
+
+  h1,h2,h3{ font-family:"Sora", system-ui, sans-serif; color:var(--ink); line-height:1.2; text-wrap:balance; margin:0; }
+  a{ color:var(--accent); }
+  code, .mono{ font-family:"IBM Plex Mono", ui-monospace, monospace; }
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+
+  /* ---------- shell ---------- */
+  .shell{ max-width:1180px; margin:0 auto; display:grid; grid-template-columns:252px minmax(0,1fr); min-height:100vh; }
+  @media (max-width:840px){ .shell{ grid-template-columns:1fr; } }
+
+  /* ---------- sidebar ---------- */
+  aside{
+    border-right:1px solid var(--line);
+    padding:28px 22px;
+    position:sticky; top:0; align-self:start; height:100vh;
+    overflow-y:auto;
+    display:flex; flex-direction:column; gap:28px;
+  }
+  @media (max-width:840px){ aside{ position:static; height:auto; border-right:none; border-bottom:1px solid var(--line); } }
+
+  .brand{ display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .brand-mark{
+    width:34px; height:34px; border-radius:9px; background:var(--ink); color:var(--surface);
+    display:flex; align-items:center; justify-content:center;
+    font-family:"Sora", system-ui, sans-serif; font-weight:800; font-size:15px; flex:none;
+  }
+  .brand-name{ font-family:"Sora", system-ui, sans-serif; font-weight:700; font-size:15px; color:var(--ink); letter-spacing:-0.01em; }
+  .brand-sub{ font-size:11px; color:var(--ink-faint); margin-top:1px; }
+
+  nav.topics{ display:flex; flex-direction:column; gap:22px; }
+  .topic-group{ display:flex; flex-direction:column; gap:6px; }
+  .topic-label{
+    font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:10.5px; font-weight:600;
+    letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint);
+    padding:0 10px; margin-bottom:2px;
+  }
+  .topic-link{
+    display:flex; align-items:center; gap:9px;
+    padding:8px 10px; border-radius:var(--radius-sm);
+    color:var(--ink); text-decoration:none; font-size:13.5px; font-weight:500;
+    border:1px solid transparent;
+  }
+  .topic-link:hover{ background:var(--surface); border-color:var(--line); }
+  .topic-link .dot{ width:6px; height:6px; border-radius:50%; background:var(--accent); flex:none; }
+  .topic-link .ext-icon{ margin-left:auto; color:var(--ink-faint); flex:none; }
+  .topic-link:hover .ext-icon{ color:var(--accent); }
+  .topic-empty{
+    padding:8px 10px; font-size:12.5px; color:var(--ink-faint); font-style:italic;
+  }
+
+  .sidebar-foot{ margin-top:auto; padding:0 10px; font-size:11px; color:var(--ink-faint); line-height:1.6; }
+
+  /* ---------- main ---------- */
+  main{ padding:52px 44px 64px; min-width:0; }
+  @media (max-width:840px){ main{ padding:36px 22px 48px; } }
+  .content-col{ max-width:760px; }
+
+  header.page-head{ margin-bottom:44px; }
+  .eyebrow{
+    display:inline-block; font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:11px; font-weight:600;
+    letter-spacing:0.08em; text-transform:uppercase; color:var(--accent); margin-bottom:14px;
+  }
+  h1{ font-size:32px; font-weight:800; letter-spacing:-0.01em; margin-bottom:14px; }
+  .dek{ color:var(--ink-muted); font-size:15.5px; max-width:60ch; }
+
+  h2.section-title{ font-size:12px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-faint); font-family:"IBM Plex Mono", ui-monospace, monospace; margin-bottom:16px; }
+
+  .card-grid{ display:flex; flex-direction:column; gap:12px; }
+  .topic-card{
+    display:flex; align-items:flex-start; gap:16px;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg);
+    padding:20px 22px; text-decoration:none; color:inherit;
+    box-shadow:var(--shadow);
+  }
+  .topic-card:hover{ border-color:var(--accent); }
+  .tc-icon{
+    width:40px; height:40px; border-radius:var(--radius-md); background:var(--accent-soft); color:var(--accent-strong);
+    display:flex; align-items:center; justify-content:center; flex:none;
+    font-family:"Sora", system-ui, sans-serif; font-weight:700; font-size:15px;
+  }
+  .tc-body{ min-width:0; }
+  .tc-tag{ font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:10.5px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--accent-2); margin-bottom:5px; }
+  .tc-title{ font-family:"Sora", system-ui, sans-serif; font-weight:700; font-size:16px; color:var(--ink); margin-bottom:5px; }
+  .tc-desc{ font-size:13.5px; color:var(--ink-muted); line-height:1.55; }
+  .tc-arrow{ margin-left:auto; color:var(--ink-faint); flex:none; padding-top:4px; }
+  .topic-card:hover .tc-arrow{ color:var(--accent); }
+
+  .placeholder-card{
+    border:1px dashed var(--line); border-radius:var(--radius-lg); padding:20px 22px;
+    color:var(--ink-faint); font-size:13.5px;
+  }
+
+  footer.page-foot{ margin-top:56px; padding-top:20px; border-top:1px solid var(--line); font-size:11.5px; color:var(--ink-faint); }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <aside>
+      <a class="brand" href="index.html">
+        <span class="brand-mark">SF</span>
+        <span>
+          <span class="brand-name">Field Notes</span>
+          <div class="brand-sub">Salesforce &amp; Agentforce</div>
+        </span>
+      </a>
+
+      <nav class="topics" aria-label="Topics">
+        <div class="topic-group">
+          <div class="topic-label">Agentforce</div>
+          <a class="topic-link" href="clt.html"><span class="dot"></span>Custom Lightning Type</a>
+        </div>
+        <div class="topic-group">
+          <div class="topic-label">Data Cloud</div>
+          <div class="topic-empty">Nothing posted yet</div>
+        </div>
+        <div class="topic-group">
+          <div class="topic-label">Tips &amp; Tricks</div>
+          <div class="topic-empty">Nothing posted yet</div>
+        </div>
+        <div class="topic-group">
+          <div class="topic-label">Skills</div>
+          <a class="topic-link" href="https://claude.ai/code/artifact/4294d055-bbea-459d-997d-842f56e4616c" target="_blank" rel="noopener"><span class="dot"></span>Skills<svg class="ext-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></a>
+        </div>
+      </nav>
+
+      <div class="sidebar-foot">Updated as new topics get added.</div>
+    </aside>
+
+    <main>
+      <div class="content-col">
+        <header class="page-head">
+          <span class="eyebrow">Field Notes</span>
+          <h1>Agentforce &amp; Data Cloud, written down</h1>
+          <p class="dek">This page collects notes on different topics related to Agentforce and Data Cloud — build guides, configuration references, and tips and tricks — added here as they come together.</p>
+        </header>
+
+        <section>
+          <h2 class="section-title">Available now</h2>
+          <div class="card-grid">
+            <a class="topic-card" href="clt.html">
+              <span class="tc-icon">CLT</span>
+              <span class="tc-body">
+                <span class="tc-tag">Agentforce</span>
+                <span class="tc-title">Custom Lightning Type</span>
+                <span class="tc-desc">Requirements and gotchas for getting a Custom Lightning Type + LWC to actually render inside an Agentforce conversation.</span>
+              </span>
+              <span class="tc-arrow" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </span>
+            </a>
+          </div>
+        </section>
+
+        <footer class="page-foot">More topics get added here over time — check back.</footer>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
