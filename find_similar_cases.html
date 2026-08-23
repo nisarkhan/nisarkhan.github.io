@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Find Similar Cases: Complete Guide</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#f5f6f7; --surface:#ffffff; --surface-2:#eceef0;
+    --text:#15181d; --text-dim:#4d5560; --text-faint:#828b96;
+    --border:#dde1e5; --border-strong:#c3c9d0;
+    --a1:#b3730c; --a1-ink:#8f5c09; --a1-soft:#f6e9d3;   /* A · OOTB */
+    --a2:#0a7a6e; --a2-ink:#075f56; --a2-soft:#dcf0ec;   /* B · Custom RAG */
+    --a3:#a13a52; --a3-ink:#7f2c40; --a3-soft:#f7dde3;   /* C · SOSL */
+    --warn:#a3401b; --warn-soft:#fbe9de;
+    --ok:#1c6e4f; --ok-soft:#e3f3ec;
+    --code-bg:#14171e; --code-text:#dbe1ea; --code-faint:#7c8496;
+    --shadow: 0 1px 2px rgba(15,20,25,.05), 0 8px 24px -12px rgba(15,20,25,.14);
+  }
+  /* Light mode is the default. Dark mode only applies when explicitly
+     toggled via the switch below — it never follows OS/browser preference. */
+  :root[data-theme="dark"]{
+    --bg:#12151a; --surface:#191d24; --surface-2:#20252d;
+    --text:#e9edf1; --text-dim:#a3acb8; --text-faint:#6b7480;
+    --border:#2a303a; --border-strong:#3a424e;
+    --a1:#e0a637; --a1-ink:#f0c26a; --a1-soft:#332608;
+    --a2:#3dcabb; --a2-ink:#7fe0d4; --a2-soft:#0e2b27;
+    --a3:#e2718a; --a3-ink:#f0a0b2; --a3-soft:#331520;
+    --warn:#f0a878; --warn-soft:#3a2712;
+    --ok:#7fd6ae; --ok-soft:#0f2b21;
+    --code-bg:#0c0e12; --code-text:#dbe1ea; --code-faint:#71809a;
+    --shadow: 0 1px 2px rgba(0,0,0,.35), 0 12px 28px -14px rgba(0,0,0,.55);
+  }
+
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--bg); color:var(--text); font-family:'Manrope', -apple-system, 'Segoe UI', sans-serif; line-height:1.62; font-size:16px; }
+  @media (prefers-reduced-motion: reduce){ *{animation-duration:.001ms !important; transition-duration:.001ms !important;} }
+  a{ color:var(--a2-ink); }
+  code, .mono{ font-family:'DM Mono', ui-monospace, monospace; }
+  h1,h2,h3,h4{ font-family:'Spectral', Georgia, serif; text-wrap:balance; font-weight:600; margin:0; color:var(--text); }
+
+  .shell{ max-width:1200px; margin:0 auto; padding:0 clamp(16px,4vw,48px); }
+
+  /* Header */
+  header.hero{ border-bottom:1px solid var(--border); padding:clamp(28px,5vw,52px) 0 clamp(24px,4vw,36px); }
+  .eyebrow{ font-family:'DM Mono', monospace; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint); display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+  h1.title{ font-size:clamp(28px,3.8vw,44px); line-height:1.12; letter-spacing:-.01em; max-width:26ch; }
+  .dek{ margin-top:16px; max-width:72ch; font-size:17px; color:var(--text-dim); }
+  .legend3{ display:flex; flex-wrap:wrap; gap:10px; margin-top:22px; }
+  .lg{ font-family:'DM Mono', monospace; font-size:12.5px; padding:7px 12px; border-radius:8px; border:1px solid var(--border); background:var(--surface); box-shadow:var(--shadow); display:flex; align-items:center; gap:8px; }
+  .dot{ width:9px; height:9px; border-radius:50%; display:inline-block; }
+  .source-links{ margin-top:16px; font-size:13.5px; color:var(--text-faint); }
+  .source-links a{ color:var(--text-dim); }
+
+  /* Layout */
+  .layout{ display:grid; grid-template-columns:240px minmax(0,1fr); gap:56px; padding:44px 0 90px; align-items:start; }
+  @media (max-width:940px){ .layout{ grid-template-columns:1fr; } nav.toc{ display:none; } }
+  nav.toc{ position:sticky; top:20px; display:flex; flex-direction:column; gap:2px; font-size:12.3px; max-height:94vh; overflow-y:auto; }
+  nav.toc .toc-label{ font-family:'DM Mono', monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-faint); margin-bottom:8px; }
+  nav.toc a{ color:var(--text-dim); text-decoration:none; padding:5px 0 5px 12px; border-left:2px solid var(--border); }
+  nav.toc a:hover{ color:var(--text); border-left-color:var(--border-strong); }
+  nav.toc .toc-part{ margin-top:14px; font-size:11px; font-weight:700; letter-spacing:.04em; padding:5px 8px; border-radius:6px; }
+  nav.toc .toc-part.p0{ color:var(--text-dim); }
+  nav.toc .toc-part.pa{ color:var(--a1-ink); background:var(--a1-soft); }
+  nav.toc .toc-part.pb{ color:var(--a2-ink); background:var(--a2-soft); }
+  nav.toc .toc-part.pc{ color:var(--a3-ink); background:var(--a3-soft); }
+
+  main{ max-width:820px; }
+  section{ margin-bottom:52px; scroll-margin-top:22px; }
+  .sec-num{ font-family:'DM Mono', monospace; font-size:12px; color:var(--text-faint); letter-spacing:.06em; }
+  h2{ font-size:clamp(21px,2.3vw,27px); margin-top:6px; margin-bottom:14px; }
+  h3{ font-size:17.5px; margin:24px 0 8px; }
+  h4{ font-size:15px; margin:16px 0 6px; color:var(--text); }
+  p{ margin:0 0 14px; max-width:74ch; }
+  p.lead{ color:var(--text-dim); font-size:16.5px; }
+  ul,ol{ margin:0 0 14px; padding-left:22px; }
+  li{ margin-bottom:6px; max-width:68ch; }
+  li::marker{ color:var(--text-faint); }
+  strong{ color:var(--text); }
+
+  /* Part dividers — the big visual anchor of this merged doc */
+  .part-divider{ margin:64px 0 28px; padding-top:36px; border-top:1px solid var(--border); }
+  .part-eyebrow{ font-family:'DM Mono', monospace; font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; padding:6px 13px; border-radius:999px; display:inline-flex; align-items:center; gap:8px; margin-bottom:14px; }
+  .part-eyebrow .dot{ width:8px; height:8px; }
+  .part-eyebrow.pa{ background:var(--a1-soft); color:var(--a1-ink); }
+  .part-eyebrow.pb{ background:var(--a2-soft); color:var(--a2-ink); }
+  .part-eyebrow.pc{ background:var(--a3-soft); color:var(--a3-ink); }
+  .part-title{ font-size:clamp(24px,3vw,32px); max-width:28ch; }
+  .part-dek{ margin-top:10px; color:var(--text-dim); font-size:16px; max-width:70ch; }
+
+  /* Callouts */
+  .callout{ border-radius:10px; padding:13px 16px; margin:14px 0; font-size:14.3px; border-left:3px solid; }
+  .callout.tip{ background:var(--a2-soft); border-color:var(--a2); }
+  .callout.warn{ background:var(--warn-soft); border-color:var(--warn); }
+  .callout.money{ background:var(--a1-soft); border-color:var(--a1); }
+  .callout.answer{ background:var(--a2-soft); border-color:var(--a2); }
+  .callout b{ font-family:'DM Mono', monospace; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; display:block; margin-bottom:5px; }
+  .callout.tip b{ color:var(--a2-ink); }
+  .callout.warn b{ color:var(--warn); }
+  .callout.money b{ color:var(--a1-ink); }
+  .callout.answer b{ color:var(--a2-ink); }
+
+  /* Tables */
+  .table-wrap{ overflow-x:auto; margin:18px 0; border:1px solid var(--border); border-radius:12px; }
+  table{ border-collapse:collapse; width:100%; min-width:600px; background:var(--surface); }
+  th,td{ text-align:left; padding:11px 15px; font-size:13.7px; border-bottom:1px solid var(--border); vertical-align:top; }
+  thead th{ font-family:'DM Mono', monospace; font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--text-faint); background:var(--surface-2); border-bottom:1px solid var(--border-strong); }
+  tbody tr:last-child td{ border-bottom:none; }
+  td.k{ font-weight:700; white-space:nowrap; color:var(--text); }
+  th.c1{ color:var(--a1-ink); } th.c2{ color:var(--a2-ink); } th.c3{ color:var(--a3-ink); }
+  td code{ background:var(--surface-2); padding:1px 6px; border-radius:5px; font-size:12.4px; }
+  .yes{ color:var(--a2-ink); font-weight:700; }
+  .no{ color:var(--warn); font-weight:700; }
+  .partial{ color:var(--a1-ink); font-weight:700; }
+
+  /* Code */
+  .code{ background:var(--code-bg); color:var(--code-text); border-radius:12px; padding:16px 18px; font-family:'DM Mono', ui-monospace, monospace; font-size:12.6px; line-height:1.65; overflow-x:auto; margin:14px 0; box-shadow:var(--shadow); white-space:pre; }
+  .code-label{ font-family:'DM Mono', monospace; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint); margin:18px 0 -6px; }
+
+  /* Pipeline diagram */
+  .pipeline{ display:flex; flex-direction:column; gap:6px; margin:22px 0 8px; }
+  .prow{ display:flex; flex-wrap:wrap; align-items:stretch; gap:8px; }
+  .pnode{ flex:1 1 150px; min-width:130px; border:1px solid var(--border); background:var(--surface); border-radius:11px; padding:11px 13px; box-shadow:var(--shadow); }
+  .pnode .n{ font-family:'DM Mono', monospace; font-size:10.5px; color:var(--text-faint); }
+  .pnode .t{ font-size:13.5px; font-weight:600; margin-top:2px; }
+  .pnode .s{ font-size:11.5px; color:var(--text-dim); margin-top:2px; }
+  .pnode.pa{ border-top:3px solid var(--a1); }
+  .pnode.pb{ border-top:3px solid var(--a2); }
+  .pnode.pc{ border-top:3px solid var(--a3); }
+  .pdown{ text-align:center; color:var(--text-faint); font-size:16px; padding:2px 0; }
+  .stage-tag{ font-family:'DM Mono', monospace; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint); margin:20px 0 8px; }
+  .legend{ display:flex; gap:18px; margin-top:10px; font-size:12.5px; color:var(--text-dim); flex-wrap:wrap; }
+  .legend span{ display:flex; align-items:center; gap:6px; }
+  .swatch{ width:10px; height:10px; border-radius:3px; display:inline-block; }
+
+  /* Phase + step cards */
+  .phase-divider{ display:flex; align-items:center; gap:14px; margin:40px 0 18px; }
+  .phase-divider .ptag{ font-family:'DM Mono', monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; padding:6px 12px; border-radius:999px; white-space:nowrap; }
+  .phase-divider .pline{ height:1px; background:var(--border); flex:1; }
+  .phase-note{ margin:-10px 0 20px; color:var(--text-dim); font-size:14.5px; }
+
+  .step{ border:1px solid var(--border); background:var(--surface); border-radius:14px; padding:20px 22px; margin-bottom:16px; box-shadow:var(--shadow); scroll-margin-top:22px; }
+  .step-head{ display:flex; align-items:baseline; gap:12px; margin-bottom:8px; }
+  .step-num{ font-family:'Spectral', serif; font-weight:600; font-size:21px; flex:none; min-width:30px; }
+  .step h3{ margin:0; flex:1; }
+  .step-path{ font-family:'DM Mono', monospace; font-size:11.5px; color:var(--text-faint); background:var(--surface-2); border-radius:7px; padding:6px 10px; margin:0 0 10px; display:inline-block; }
+
+  /* Chat mock */
+  .chat{ border:1px solid var(--border); border-radius:14px; overflow:hidden; margin:20px 0; box-shadow:var(--shadow); }
+  .chat-head{ background:var(--surface-2); padding:9px 15px; font-family:'DM Mono', monospace; font-size:11px; color:var(--text-faint); border-bottom:1px solid var(--border); }
+  .chat-body{ background:var(--surface); padding:16px 18px; display:flex; flex-direction:column; gap:12px; }
+  .bubble{ max-width:82%; padding:10px 14px; border-radius:12px; font-size:14px; }
+  .bubble.user{ align-self:flex-end; background:var(--surface-2); color:var(--text); border-bottom-right-radius:3px; }
+  .bubble.agent{ align-self:flex-start; background:var(--surface-2); color:var(--text); border-bottom-left-radius:3px; }
+  .bubble ul{ margin:6px 0 0; padding-left:18px; }
+  .bubble li{ margin-bottom:4px; font-size:13.5px; }
+  .bubble .card{ margin-top:8px; border:1px solid var(--border); border-radius:9px; padding:8px 10px; background:var(--surface); }
+  .bubble .card + .card{ margin-top:6px; }
+  .bubble .card b{ font-size:13px; display:block; }
+  .bubble .card span{ font-size:12px; color:var(--text-dim); }
+
+  /* Decision cards / approach cards */
+  .decision-grid, .approach-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin:20px 0; }
+  @media (max-width:800px){ .decision-grid, .approach-grid{ grid-template-columns:1fr; } }
+  .dcard, .acard{ border:1px solid var(--border); background:var(--surface); border-radius:14px; padding:18px 19px; box-shadow:var(--shadow); }
+  .acard.c1{ border-top:3px solid var(--a1); } .acard.c2{ border-top:3px solid var(--a2); } .acard.c3{ border-top:3px solid var(--a3); }
+  .acard .tag{ font-family:'DM Mono', monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase; padding:2px 8px; border-radius:6px; display:inline-block; margin-bottom:8px; }
+  .acard.c1 .tag{ background:var(--a1-soft); color:var(--a1-ink); }
+  .acard.c2 .tag{ background:var(--a2-soft); color:var(--a2-ink); }
+  .acard.c3 .tag{ background:var(--a3-soft); color:var(--a3-ink); }
+  .acard h4{ font-family:'Spectral', serif; font-size:16.5px; margin:0 0 10px; }
+  .acard .plabel{ font-family:'DM Mono', monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase; color:var(--text-faint); margin:10px 0 4px; }
+  .acard ul{ margin:0; padding-left:16px; }
+  .acard li{ font-size:13px; margin-bottom:4px; }
+
+  .vgrid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:20px 0; }
+  @media (max-width:640px){ .vgrid{ grid-template-columns:1fr; } }
+  .vcard{ border:1px solid var(--border); background:var(--surface); border-radius:12px; padding:16px 17px; box-shadow:var(--shadow); }
+  .vcard .lbl{ font-family:'DM Mono', monospace; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint); margin-bottom:6px; }
+  .vcard h4{ margin:0 0 8px; }
+  .vcard ul{ margin:0; padding-left:18px; }
+  .vcard li{ font-size:13.5px; margin-bottom:5px; }
+
+  .rec{ border:1px solid var(--border-strong); background:var(--surface); border-radius:16px; padding:26px 28px; box-shadow:var(--shadow); margin-top:10px; }
+  .rec h3{ margin-top:0; }
+  .rec .path{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-family:'DM Mono', monospace; font-size:13px; color:var(--text-dim); margin:6px 0 14px; }
+  .rec .path .p{ padding:5px 10px; border-radius:7px; background:var(--surface-2); border:1px solid var(--border); }
+  .rec .path .arr{ color:var(--text-faint); }
+
+  footer{ border-top:1px solid var(--border); padding:28px 0 60px; font-size:13px; color:var(--text-faint); }
+  footer a{ color:var(--text-dim); }
+
+  /* Theme toggle */
+  .theme-toggle{
+    position:fixed; top:16px; right:16px; z-index:50;
+    display:flex; align-items:center; gap:8px;
+    background:var(--surface); border:1px solid var(--border-strong); border-radius:999px;
+    padding:6px 14px 6px 6px; box-shadow:var(--shadow);
+    font-family:'DM Mono', monospace; font-size:12px; color:var(--text-dim);
+    cursor:pointer; user-select:none;
+  }
+  .theme-toggle .knob{
+    width:34px; height:20px; border-radius:999px; background:var(--surface-2);
+    border:1px solid var(--border-strong); position:relative; flex:none; transition:background .15s;
+  }
+  .theme-toggle .knob::after{
+    content:""; position:absolute; top:1px; left:1px; width:16px; height:16px; border-radius:50%;
+    background:var(--a2); transition:transform .15s;
+  }
+  :root[data-theme="dark"] .theme-toggle .knob::after{ transform:translateX(14px); background:var(--a3); }
+  @media (max-width:640px){ .theme-toggle{ position:static; margin:0 auto 18px; width:max-content; } }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">
+  <span class="knob"></span>
+  <span id="themeToggleLabel">Light mode</span>
+</button>
+
+<header class="hero">
+  <div class="shell">
+    <div class="eyebrow">Complete Implementation Guide</div>
+    <h1 class="title">Find Similar Cases in Salesforce</h1>
+    <p class="dek">Everything in one place: how to decide between the three ways to build "find similar cases," and a full end-to-end build guide for each — the native Customer Experience Intelligence action, a custom Data Cloud RAG pipeline, and native SOSL search.</p>
+    <div class="legend3">
+      <span class="lg"><span class="dot" style="background:var(--a1);"></span>A · Out-of-the-box (Customer Experience Intelligence)</span>
+      <span class="lg"><span class="dot" style="background:var(--a2);"></span>B · Custom RAG (Data Cloud retriever + prompt template)</span>
+      <span class="lg"><span class="dot" style="background:var(--a3);"></span>C · SOSL (native full-text search)</span>
+    </div>
+    <div class="source-links">
+      Draws on two InfallibleTechie videos/blogs (<a href="https://www.infallibletechie.com/2025/10/find-similar-salesforce-cases-fast-with-data-cloud.html" target="_blank" rel="noopener">Oct 2025</a>, <a href="https://www.infallibletechie.com/2025/07/salesforce-agentforce-find-similar-cases.html" target="_blank" rel="noopener">Jul 2025</a>), Salesforce's official documentation on Data Cloud and the Find Similar Cases action, and standard SOSL/Apex patterns.
+    </div>
+  </div>
+</header>
+
+<div class="shell layout">
+  <nav class="toc">
+    <span class="toc-label">On this page</span>
+    <div class="toc-part p0">Decide</div>
+    <a href="#quick-answer">Quick answer: custom objects</a>
+    <a href="#compare">Full comparison table</a>
+    <a href="#pros-cons">Pros &amp; cons, all three</a>
+    <a href="#recommendation">Which one to use</a>
+
+    <div class="toc-part pa">Part A · Out-of-the-box</div>
+    <a href="#a-usecase">UX &amp; prerequisites</a>
+    <a href="#a-step-1">1–2. Foundation</a>
+    <a href="#a-step-3">3. Activate CXI</a>
+    <a href="#a-step-4">4–5. Build the index</a>
+    <a href="#a-step-6">6. Agent topic</a>
+    <a href="#a-troubleshooting">Troubleshooting</a>
+
+    <div class="toc-part pb">Part B · Custom RAG</div>
+    <a href="#b-usecase">UX &amp; prerequisites</a>
+    <a href="#b-architecture">Architecture</a>
+    <a href="#b-step-1">1–2. Ingest</a>
+    <a href="#b-content-prep">Content prep</a>
+    <a href="#b-step-3">3. Search index</a>
+    <a href="#b-step-4">4. Retriever</a>
+    <a href="#b-step-5">5. Prompt template</a>
+    <a href="#b-step-6">6–7. Expose it</a>
+    <a href="#b-troubleshooting">Troubleshooting</a>
+
+    <div class="toc-part pc">Part C · SOSL</div>
+    <a href="#c-usecase">How it works</a>
+    <a href="#c-step-1">1. Write the query</a>
+    <a href="#c-step-2">2. Wrap it in Apex</a>
+    <a href="#c-step-3">3. Expose to Flow/LWC</a>
+    <a href="#c-tuning">Ranking &amp; tuning</a>
+  </nav>
+
+  <main>
+
+    <!-- ============ DECIDE ============ -->
+    <section id="quick-answer">
+      <span class="sec-num">Decide</span>
+      <h2>Quick answer: does a related custom object work?</h2>
+      <div class="callout answer">
+        <b>Short version</b>
+        Yes for B and C. Not natively for A. If your resolution detail lives in a custom child object (an "RMA," a "Resolution Steps" record, an "Escalation Log"), the out-of-the-box action only ever looks at Case fields — it won't reach into a related object unless you first copy that content onto the Case. The custom RAG pipeline and SOSL both support it directly, just in very different ways: RAG treats the custom object as another source to index and ground on, SOSL just adds it to the same query's <code>RETURNING</code> clause.
+      </div>
+    </section>
+
+    <section id="compare">
+      <span class="sec-num">Decide</span>
+      <h2>Full comparison</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Dimension</th><th class="c1">A · Out-of-the-box</th><th class="c2">B · Custom RAG</th><th class="c3">C · SOSL</th></tr></thead>
+          <tbody>
+            <tr><td class="k">How it matches</td><td>Managed AI scoring (semantic, opaque)</td><td>Vector embeddings — semantic, configurable</td><td>Keyword / lexical index — exact &amp; partial term matches</td></tr>
+            <tr><td class="k">Understands paraphrasing</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">No — "cancelled" won't find "rejected" unless both words appear</td></tr>
+            <tr><td class="k">Data Cloud required</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">No</td></tr>
+            <tr><td class="k">Extra license/add-on</td><td class="no">Yes — Customer Signals Intelligence (via AE)</td><td class="partial">Data Cloud only (often free-tier eligible)</td><td class="yes">None — included in core Salesforce</td></tr>
+            <tr><td class="k">Custom object support</td><td class="no">No — Case-only, fixed channels</td><td class="yes">Yes — any DMO, combine or keep separate</td><td class="yes">Yes — native multi-object <code>RETURNING</code></td></tr>
+            <tr><td class="k">Setup effort</td><td>Low — mostly a wizard</td><td>Medium–high — you build every stage</td><td>Low — mostly a query</td></tr>
+            <tr><td class="k">Where it can run</td><td>Agentforce only</td><td>Agentforce, Flow, Apex, LWC, REST</td><td>Apex, Flow (via Apex), LWC, triggers, batch</td></tr>
+            <tr><td class="k">Ranking control</td><td class="no">None exposed</td><td class="yes">Configurable — filters, top-K, output fields</td><td class="partial">Manual — you sort/score in Apex yourself</td></tr>
+            <tr><td class="k">Freshness</td><td>Depends on data transform schedule</td><td>Depends on search index refresh schedule</td><td>Real-time — Salesforce's search index updates automatically</td></tr>
+            <tr><td class="k">Ongoing maintenance</td><td>Low</td><td>Medium — pipeline to babysit</td><td>Very low — nothing to re-index or re-embed</td></tr>
+            <tr><td class="k">Output format control</td><td class="no">Fixed, native layout</td><td class="yes">Fully custom — your prompt, your wording</td><td class="yes">Fully custom — it's just data you format yourself</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="pros-cons">
+      <span class="sec-num">Decide</span>
+      <h2>Pros and cons, side by side</h2>
+      <div class="approach-grid">
+        <div class="acard c1">
+          <span class="tag">A · Out-of-the-box</span>
+          <h4>Customer Experience Intelligence</h4>
+          <div class="plabel">Pros</div>
+          <ul><li>Fastest to stand up — mostly a wizard</li><li>No prompt-writing, no pipeline to design</li><li>Semantic matching without building it yourself</li></ul>
+          <div class="plabel">Cons</div>
+          <ul><li>Extra add-on, gated behind your AE</li><li>Case-only — no custom object support</li><li>Agentforce-only — no Flow/Apex/LWC</li><li>No control over ranking or output</li></ul>
+        </div>
+        <div class="acard c2">
+          <span class="tag">B · Custom RAG</span>
+          <h4>Data Cloud retriever + prompt</h4>
+          <div class="plabel">Pros</div>
+          <ul><li>Semantic matching, fully configurable</li><li>Works across any object, including custom ones</li><li>Usable from Agentforce, Flow, Apex, LWC, REST</li><li>Full control over prompt, filters, format</li></ul>
+          <div class="plabel">Cons</div>
+          <ul><li>The most setup work of the three</li><li>A real pipeline to maintain — schedules, reindexing</li><li>Still needs Data Cloud provisioned</li></ul>
+        </div>
+        <div class="acard c3">
+          <span class="tag">C · SOSL</span>
+          <h4>Native full-text search</h4>
+          <div class="plabel">Pros</div>
+          <ul><li>No new license, no Data Cloud dependency</li><li>Real-time — nothing to re-index</li><li>Native multi-object search in one query</li><li>Already working in your org</li></ul>
+          <div class="plabel">Cons</div>
+          <ul><li>No semantic understanding — keyword-bound</li><li>Misses paraphrased or conceptually similar cases</li><li>Ranking/relevance logic is on you</li><li>Gets noisier as vocabulary diversity grows</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="recommendation">
+      <span class="sec-num">Decide</span>
+      <h2>So which one should you use?</h2>
+      <p class="lead">There isn't a single right answer independent of what you already have — here's a concrete way to decide.</p>
+      <div class="rec">
+        <h3>If you're starting from where you are today</h3>
+        <p>Keep SOSL (Part C) running. It's free, real-time, and it already works — don't rip it out to chase semantics you may not need yet. The honest trigger to move past it is a <strong>measured</strong> one: track how often reps report an obviously-similar case that didn't show up because it used different words for the same problem. If that's rare, SOSL is doing its job.</p>
+        <h3>When the gap is real, build Part B over Part A</h3>
+        <p>If your content spans Case <em>and</em> a related custom object, that fact alone rules out Part A — it can't reach a custom object without a workaround. Part B costs more to build but matches your data shape and keeps programmatic access (Flow/Apex/LWC) that Part A doesn't offer.</p>
+        <h3>A pragmatic middle path</h3>
+        <p>Keep SOSL as an instant, zero-latency first pass, and add the Part B retriever as a second, "smarter" option surfaced only when SOSL comes back thin (fewer than 2–3 results). That gets semantic coverage without fully committing to rebuilding what already works.</p>
+        <div class="path">
+          <span class="p">Today: SOSL</span><span class="arr">→</span>
+          <span class="p">Measure recall gaps</span><span class="arr">→</span>
+          <span class="p">Gap real?</span><span class="arr">→</span>
+          <span class="p">Add Part B retriever</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PART A ============ -->
+    <div class="part-divider">
+      <span class="part-eyebrow pa"><span class="dot" style="background:var(--a1);border-radius:50%;"></span>Part A</span>
+      <h2 class="part-title">Out-of-the-box: Customer Experience Intelligence</h2>
+      <p class="part-dek">The native, point-and-click path — Salesforce's built-in Find Similar Interactions action, powered by Data Cloud and the Customer Signals Intelligence add-on. No prompt template or code required.</p>
+    </div>
+
+    <section id="a-usecase">
+      <h3 style="margin-top:0;">Use case, UX &amp; prerequisites</h3>
+      <p>A rep working an open case asks Agentforce for related history and gets back closed cases that resemble it. What's different about this path is how little you build — it's a managed feature you switch on, not a pipeline you assemble field by field. In exchange for less engineering, you get less control: no prompt to write, no choice of which fields feed the model, and — as covered below — no access outside of Agentforce.</p>
+
+      <div class="chat">
+        <div class="chat-head">Agentforce · Service Console</div>
+        <div class="chat-body">
+          <div class="bubble user">Find similar cases for reject order</div>
+          <div class="bubble agent">
+            Here are similar past interactions:
+            <div class="card"><b>Case 00012345</b><span>Order rejected — inventory mismatch · Closed</span></div>
+            <div class="card"><b>Case 00012098</b><span>Customer disputes rejected order #48213 · Closed</span></div>
+            <div class="card"><b>Case 00011870</b><span>Rejected order — payment authorization failure · Closed</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap"><table>
+        <thead><tr><th>Requirement</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="k">Edition</td><td>Enterprise, Performance, or Unlimited Edition</td></tr>
+          <tr><td class="k">Interface</td><td>Lightning Experience</td></tr>
+          <tr><td class="k">Core license</td><td>Data Cloud (Data 360)</td></tr>
+          <tr><td class="k">Add-on license</td><td><strong>Customer Signals Intelligence</strong> — unlocks Customer Experience Intelligence and the Find Similar Cases action</td></tr>
+          <tr><td class="k">Permission set</td><td><strong>Scoring Framework Admin</strong></td></tr>
+          <tr><td class="k">Feature activation</td><td>Customer Experience Intelligence, toggled on in Setup</td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout money"><b>Read this before you start</b>The Customer Signals Intelligence add-on is <strong>not self-service</strong>. In practice you'll need your Salesforce Account Executive to provision the SKU before the Scoring Framework Admin permission set is even assignable — confirm you have (or can get) this license before investing setup time.</div>
+    </section>
+
+    <div class="phase-divider"><span class="ptag" style="background:var(--a1-soft);color:var(--a1-ink);">Phase 1</span><span class="pline"></span></div>
+    <h3 style="margin-bottom:4px;">Lay the foundation</h3>
+    <p class="phase-note">Two prerequisites, one of which you likely can't self-serve.</p>
+
+    <div class="step" id="a-step-1">
+      <div class="step-head"><span class="step-num" style="color:var(--a1-ink);">1</span><h3>Enable Data Cloud</h3></div>
+      <div class="step-path">Setup → Quick Find "Data Cloud" → Data Cloud homepage</div>
+      <p>Walk through the enablement flow and <strong>wait for it to finish completely</strong> before moving on — the rest of this setup depends on Data Cloud being fully provisioned.</p>
+    </div>
+
+    <div class="step" id="a-step-2">
+      <div class="step-head"><span class="step-num" style="color:var(--a1-ink);">2</span><h3>Get the Scoring Framework Admin permission set</h3></div>
+      <p>This permission set ships with the <strong>Customer Signals Intelligence</strong> add-on. Once available: <strong>Setup → Users → [your user] → Permission Set Assignments → Edit Assignments</strong>, add <code>Scoring Framework Admin</code>, and save.</p>
+      <div class="callout warn"><b>If you don't see it</b>A missing Scoring Framework Admin permission set almost always means the add-on hasn't been provisioned yet — go back to your AE before troubleshooting further.</div>
+    </div>
+
+    <div class="phase-divider"><span class="ptag" style="background:var(--a1-soft);color:var(--a1-ink);">Phase 2</span><span class="pline"></span></div>
+    <h3 style="margin-bottom:4px;">Activate Customer Experience Intelligence</h3>
+    <p class="phase-note">This is the wizard that generates the rest of the pipeline for you.</p>
+
+    <div class="step" id="a-step-3">
+      <div class="step-head"><span class="step-num" style="color:var(--a1-ink);">3</span><h3>Turn on Customer Experience Intelligence</h3></div>
+      <div class="step-path">Setup → Quick Find "Customer Experience Intelligence"</div>
+      <ol>
+        <li>Toggle the feature <strong>On</strong>.</li>
+        <li>Work through the setup wizard — Topics and Agent Actions get added automatically.</li>
+        <li>Make sure <strong>Case</strong> is enabled under <strong>Standard Channels</strong>.</li>
+        <li>Click <strong>Activate</strong>, then wait for the confirmation email before proceeding.</li>
+      </ol>
+      <p>Content prep note: you don't get to hand-pick fields here — your only lever is data <em>quality</em>. Make sure Subject and Description are actually filled in, and write real resolution detail into cases before they close. Knowledge articles aren't part of this native pipeline — that requires Part B.</p>
+    </div>
+
+    <div class="phase-divider"><span class="ptag" style="background:var(--a1-soft);color:var(--a1-ink);">Phase 3</span><span class="pline"></span></div>
+    <h3 style="margin-bottom:4px;">Build the index</h3>
+    <p class="phase-note">Same chunk-and-embed mechanics as any Data Cloud search index — just pointed at what the CXI wizard generated.</p>
+
+    <div class="step" id="a-step-4">
+      <div class="step-head"><span class="step-num" style="color:var(--a1-ink);">4</span><h3>Schedule the Case data transform</h3></div>
+      <div class="step-path">App Launcher → Data Transforms</div>
+      <ol>
+        <li>Find the data transform auto-created for your Case channel.</li>
+        <li>Open it, check the <strong>Schedule</strong> in the Details tab.</li>
+        <li>Click <strong>Schedule</strong> (top right) and set the <strong>Run Mode</strong> — <code>Scheduled</code> or <code>Manual</code>.</li>
+      </ol>
+      <div class="callout warn"><b>Common gap</b>If left on Manual and never run, the search index will build successfully but return nothing.</div>
+    </div>
+
+    <div class="step" id="a-step-5">
+      <div class="step-head"><span class="step-num" style="color:var(--a1-ink);">5</span><h3>Build the search index</h3></div>
+      <div class="step-path">Data Cloud → Search Index → New</div>
+      <div class="table-wrap"><table>
+        <tbody>
+          <tr><td class="k">Source</td><td>Engagement Analysis — Analysis Text (generated by the Case transform)</td></tr>
+          <tr><td class="k">Fields</td><td>Manage Fields → select <strong>Engagement Analysis Payload</strong></td></tr>
+        </tbody>
+      </table></div>
+      <p>Freshness here is governed by the <strong>data transform's schedule</strong> (Step 4), not a setting on the index itself.</p>
+    </div>
+
+    <div class="phase-divider"><span class="ptag" style="background:var(--a1-soft);color:var(--a1-ink);">Phase 4</span><span class="pline"></span></div>
+    <h3 style="margin-bottom:4px;">Expose it in Agentforce</h3>
+
+    <div class="step" id="a-step-6">
+      <div class="step-head"><span class="step-num" style="color:var(--a1-ink);">6</span><h3>Confirm the action, add the topic</h3></div>
+      <div class="table-wrap"><table>
+        <tbody>
+          <tr><td class="k">Action</td><td><code>Find Similar Cases</code> — API name <code>FindSimilarCases</code></td></tr>
+          <tr><td class="k">Agent setup</td><td>Agent → Topics → add the standard <strong>Customer Experience Intelligence</strong> topic</td></tr>
+        </tbody>
+      </table></div>
+      <p>Search criteria, ranking, and result layout are handled internally by the Scoring Framework — there's no exposed UI for tuning weights or restyling the response. Test with: <code>find similar cases for reject order</code>.</p>
+    </div>
+
+    <section id="a-troubleshooting">
+      <h3>Troubleshooting</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Symptom</th><th>Likely cause</th></tr></thead>
+        <tbody>
+          <tr><td>Scoring Framework Admin isn't assignable</td><td>Add-on not provisioned — contact your AE</td></tr>
+          <tr><td>Search index builds but returns nothing</td><td>Case data transform's Run Mode is Manual and was never triggered</td></tr>
+          <tr><td>"Find Similar Interactions" missing from the agent</td><td>CXI topic never added, or activation didn't fully complete</td></tr>
+          <tr><td>Need this in Flow, Apex, or an LWC</td><td>Not supported here — build Part B instead</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- ============ PART B ============ -->
+    <div class="part-divider">
+      <span class="part-eyebrow pb"><span class="dot" style="background:var(--a2);border-radius:50%;"></span>Part B</span>
+      <h2 class="part-title">Custom RAG: Data Cloud retriever + prompt template</h2>
+      <p class="part-dek">The flexible path — build the pipeline yourself, from data stream to grounded prompt, and expose it wherever it's needed: Agentforce, Flow, Apex, or an LWC.</p>
+    </div>
+
+    <section id="b-usecase">
+      <h3 style="margin-top:0;">Use case, UX &amp; prerequisites</h3>
+      <p>Same rep-facing outcome as Part A, delivered with full control over the pipeline: which fields feed the model, how results are filtered and ranked, and exactly how the response is worded and formatted.</p>
+      <div class="chat">
+        <div class="chat-head">Agentforce · Service Console</div>
+        <div class="chat-body">
+          <div class="bubble user">Find similar cases for reject order</div>
+          <div class="bubble agent">
+            I found 5 closed cases that look similar to this one:
+            <ul>
+              <li><a href="#">Case 00012345</a> — Order rejected due to inventory mismatch</li>
+              <li><a href="#">Case 00012098</a> — Customer disputes rejected order #48213</li>
+              <li><a href="#">Case 00011870</a> — Rejected order, payment authorization failure</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap"><table>
+        <thead><tr><th>Requirement</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="k">Edition</td><td>Any edition with Data Cloud provisioned</td></tr>
+          <tr><td class="k">Core license</td><td>Data Cloud (Data 360) — most Enterprise+ orgs qualify for a free allocation: 250,000 credits/yr, 1 TB storage, via Setup → Your Account</td></tr>
+          <tr><td class="k">Feature activation</td><td>Prompt Builder / Einstein Generative AI</td></tr>
+          <tr><td class="k">Permissions</td><td>Data Cloud admin access; Prompt Template Manager</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="b-architecture">
+      <h3>Architecture &amp; data flow</h3>
+      <div class="pipeline">
+        <div class="stage-tag">Ingest &amp; harmonize</div>
+        <div class="prow">
+          <div class="pnode pb"><div class="n">SOURCE</div><div class="t">Salesforce CRM</div><div class="s">Case object (+ related custom objects)</div></div>
+          <div class="pnode pb"><div class="n">01</div><div class="t">Data Stream</div><div class="s">CRM connector, view objects</div></div>
+          <div class="pnode pb"><div class="n">02</div><div class="t">Data Lake Object (DLO)</div><div class="s">raw ingested rows</div></div>
+          <div class="pnode pb"><div class="n">03</div><div class="t">Data Model Object (DMO)</div><div class="s">mapped to standard Case DMO</div></div>
+        </div>
+        <div class="pdown">↓</div>
+        <div class="stage-tag">Index</div>
+        <div class="prow">
+          <div class="pnode pb"><div class="n">04</div><div class="t">Chunking</div><div class="s">Subject + Description → passages</div></div>
+          <div class="pnode pb"><div class="n">05</div><div class="t">Embedding model</div><div class="s">chunks → vectors</div></div>
+          <div class="pnode pb"><div class="n">06</div><div class="t">Search Index</div><div class="s">vector / hybrid, refreshed on schedule</div></div>
+        </div>
+        <div class="pdown">↓</div>
+        <div class="stage-tag">Retrieve &amp; ground</div>
+        <div class="prow">
+          <div class="pnode pb"><div class="n">07</div><div class="t">Retriever</div><div class="s">Einstein Studio, DMO + index + filters</div></div>
+          <div class="pnode pb"><div class="n">08</div><div class="t">Prompt Template (Flex)</div><div class="s">$EinsteinSearch merge field</div></div>
+        </div>
+        <div class="pdown">↓</div>
+        <div class="prow">
+          <div class="pnode pb"><div class="n">A</div><div class="t">Agentforce action</div><div class="s">Prompt Template action + topic</div></div>
+          <div class="pnode pb"><div class="n">B</div><div class="t">Flow</div><div class="s">Prompt Template invocable action</div></div>
+          <div class="pnode pb"><div class="n">C</div><div class="t">Apex</div><div class="s"><code>ConnectApi.EinsteinLLM</code></div></div>
+          <div class="pnode pb"><div class="n">D</div><div class="t">LWC / REST</div><div class="s">Apex wrapper or REST endpoint</div></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="phase-divider"><span class="ptag" style="background:var(--a2-soft);color:var(--a2-ink);">Phase 1</span><span class="pline"></span></div>
+    <h3 style="margin-bottom:4px;">Ingest Case (and related) data into Data Cloud</h3>
+
+    <div class="step" id="b-step-1">
+      <div class="step-head"><span class="step-num" style="color:var(--a2-ink);">1</span><h3>Create the Data Stream</h3></div>
+      <div class="step-path">Data Cloud → Data Streams → New</div>
+      <div class="table-wrap"><table>
+        <tbody>
+          <tr><td class="k">Source</td><td>Salesforce CRM · View objects (not bundles)</td></tr>
+          <tr><td class="k">Object</td><td><code>Case</code> (standard) — plus a second stream for any related custom object</td></tr>
+          <tr><td class="k">Fields</td><td><code>Id</code>, <code>CaseNumber</code>, <code>Subject</code>, <code>Description</code>, <code>IsClosed</code></td></tr>
+          <tr><td class="k">Filter</td><td><code>IsClosed = true</code> — index only cases with a known outcome</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="step" id="b-step-2">
+      <div class="step-head"><span class="step-num" style="color:var(--a2-ink);">2</span><h3>Map the DLO to the standard Case DMO</h3></div>
+      <p>Map each DLO field to the standard <code>Case</code> DMO — this mapping is the "harmonization" that makes Case rows queryable and indexable.</p>
+      <h4>Bringing in a related custom object</h4>
+      <p>Two ways to include it:</p>
+      <ul>
+        <li><strong>Combine at harmonization</strong> — concatenate its text onto the Case DMO's searchable field, or join it in via Data Cloud's relationship capability, so one retriever covers both. Best for a short, near-1:1 related record.</li>
+        <li><strong>Index separately, ground on both</strong> — build a second DMO, index, and retriever for the custom object, and reference both retrievers from one Flex prompt template. Best for a one-to-many relationship or structurally different content.</li>
+      </ul>
+    </div>
+
+    <section id="b-content-prep">
+      <h3>Preparing content for semantic search</h3>
+      <ul>
+        <li><strong>Combine Subject and Description conceptually</strong> — Subject alone is usually too short to embed meaningfully.</li>
+        <li><strong>Prefer one comprehensive text field</strong> over several partial ones — chunking works better against one coherent passage.</li>
+        <li><strong>Strip boilerplate and PII</strong> before indexing where possible.</li>
+        <li><strong>For Knowledge articles</strong>, index the body (not just the title), use headings/paragraph structure for cleaner chunking, and convert tables to JSON/HTML before chunking.</li>
+      </ul>
+      <div class="callout warn"><b>Common mistake</b>Indexing every text field "just in case" produces noisy chunks and slower, less relevant retrieval.</div>
+    </section>
+
+    <div class="phase-divider"><span class="ptag" style="background:var(--a2-soft);color:var(--a2-ink);">Phase 2</span><span class="pline"></span></div>
+    <h3 style="margin-bottom:4px;">Build the semantic search index</h3>
+
+    <div class="step" id="b-step-3">
+      <div class="step-head"><span class="step-num" style="color:var(--a2-ink);">3</span><h3>Create the Search Index</h3></div>
+      <div class="step-path">Data Cloud → Search Index → New → Advanced</div>
+      <div class="table-wrap"><table>
+        <tbody>
+          <tr><td class="k">Source DMO</td><td><code>Case</code></td></tr>
+          <tr><td class="k">Index type</td><td><strong>Vector</strong> for pure semantic matching, or <strong>Hybrid</strong> if reps also search exact terms (order numbers, SKUs)</td></tr>
+          <tr><td class="k">Fields</td><td><code>Id</code>, <code>CaseNumber</code>, <code>Subject</code>, <code>Description</code></td></tr>
+        </tbody>
+      </table></div>
+      <p>Save and monitor until status reads <strong>Completed</strong>. Freshness: the data stream refresh controls how often new rows land; the search index refresh re-embeds incrementally — only what changed, not the whole corpus each time.</p>
+    </div>
+
+    <div class="step" id="b-step-4">
+      <div class="step-head"><span class="step-num" style="color:var(--a2-ink);">4</span><h3>Create an Individual Retriever</h3></div>
+      <div class="step-path">Einstein Studio → Retrievers → New Retriever → Individual Retriever</div>
+      <div class="table-wrap"><table>
+        <tbody>
+          <tr><td class="k">Source</td><td>Data Cloud → your Data Space → <code>Case</code> DMO → the index from Step 3</td></tr>
+          <tr><td class="k">Output fields</td><td><code>CaseNumber</code>, <code>Subject</code>, <code>Description</code>, <code>Id</code></td></tr>
+          <tr><td class="k">Top-K</td><td><code>5</code> results</td></tr>
+        </tbody>
+      </table></div>
+      <p>Ranking is driven by vector similarity score — you don't hand-tune a formula, but you do control eligibility via filters (e.g. <code>IsClosed = true</code>) and field selection. Don't just raise top-K to fix missing results — the fix is almost always better field selection or chunking.</p>
+    </div>
+
+    <div class="phase-divider"><span class="ptag" style="background:var(--a2-soft);color:var(--a2-ink);">Phase 3</span><span class="pline"></span></div>
+    <h3 style="margin-bottom:4px;">Ground a prompt template</h3>
+
+    <div class="step" id="b-step-5">
+      <div class="step-head"><span class="step-num" style="color:var(--a2-ink);">5</span><h3>Build the Flex Prompt Template</h3></div>
+      <div class="step-path">Setup → Prompt Builder → New Prompt Template → Flex</div>
+      <div class="code-label">prompt text</div>
+      <div class="code">Search {!$Input:Search_String} in {!$EinsteinSearch:Similar_Case_Retriever.results}
+
+List up to 5 similar closed cases as a bulleted list. For each, show the case
+number as a hyperlink, followed by a short phrase describing what it was
+about. If no relevant cases are found, say so plainly.</div>
+      <div class="callout tip"><b>Rich text matters</b>Wherever this renders, use rich text — not plain text — or case links show up as raw URLs the rep has to copy.</div>
+      <p>Click <strong>Activate</strong> once it works — this exposes it as an invocable action to Flow, Apex, the REST API, and Agentforce.</p>
+    </div>
+
+    <div class="phase-divider"><span class="ptag" style="background:var(--a2-soft);color:var(--a2-ink);">Phase 4</span><span class="pline"></span></div>
+    <h3 style="margin-bottom:4px;">Expose it: Agentforce, Flow, Apex, or LWC</h3>
+
+    <div class="step" id="b-step-6">
+      <div class="step-head"><span class="step-num" style="color:var(--a2-ink);">6</span><h3>Wire it into Agentforce</h3></div>
+      <div class="table-wrap"><table>
+        <tbody>
+          <tr><td class="k">Action</td><td>New Action → Reference type: Prompt Template → your template → output rendering: <strong>Rich text</strong></td></tr>
+        </tbody>
+      </table></div>
+      <div class="code">Use the Find Similar Cases action whenever the user asks to find similar,
+related, or comparable cases. Display the result in rich text format only.</div>
+    </div>
+
+    <div class="step" id="b-step-7">
+      <div class="step-head"><span class="step-num" style="color:var(--a2-ink);">7</span><h3>Or invoke it from Flow, Apex, or an LWC</h3></div>
+      <p><strong>Flow:</strong> Action element → category <strong>Prompt Template</strong> → your template → map Subject/Description into <code>Search_String</code>, display in a rich-text screen component.</p>
+      <div class="code-label">apex</div>
+      <div class="code">ConnectApi.EinsteinPromptTemplateGenerationsInput req =
+    new ConnectApi.EinsteinPromptTemplateGenerationsInput();
+req.isPreview = false;
+
+Map&lt;String, ConnectApi.WrappedValue&gt; inputParams =
+    new Map&lt;String, ConnectApi.WrappedValue&gt;();
+ConnectApi.WrappedValue searchInput = new ConnectApi.WrappedValue();
+searchInput.value = caseRecord.Subject;
+inputParams.put('Input:Search_String', searchInput);
+req.inputParams = inputParams;
+
+ConnectApi.EinsteinPromptTemplateGenerationsRepresentation resp =
+    ConnectApi.EinsteinLLM.generateMessagesForPromptTemplate(
+        'Find_Similar_Cases_Prompt', req
+    );
+
+String similarCasesText = resp.generations[0].text;</div>
+      <p><strong>LWC:</strong> wrap the Apex above in an <code>@AuraEnabled</code> method and call it from the component. <strong>REST:</strong> the same template is reachable at <code>/einstein/prompt-templates/Find_Similar_Cases_Prompt/generations</code>.</p>
+    </div>
+
+    <section id="b-troubleshooting">
+      <h3>Troubleshooting</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Symptom</th><th>Likely cause</th></tr></thead>
+        <tbody>
+          <tr><td>No results at all</td><td>Search index isn't <code>Completed</code>, or retriever's Data Space/DMO doesn't match</td></tr>
+          <tr><td>Results look irrelevant</td><td>Description field too thin, or too many unrelated fields indexed together</td></tr>
+          <tr><td>Links show as raw URLs</td><td>Output rendering not set to rich text</td></tr>
+          <tr><td>Prompt template can't be selected in Flow/Apex</td><td>Template was never <strong>Activated</strong></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- ============ PART C ============ -->
+    <div class="part-divider">
+      <span class="part-eyebrow pc"><span class="dot" style="background:var(--a3);border-radius:50%;"></span>Part C</span>
+      <h2 class="part-title">SOSL: native full-text search</h2>
+      <p class="part-dek">No Data Cloud, no add-on, no index to build — Salesforce's built-in search index, queried directly. The fastest path to "good enough," with a real ceiling on how "smart" it can get.</p>
+    </div>
+
+    <section id="c-usecase">
+      <h3 style="margin-top:0;">How it works</h3>
+      <p>SOSL (<strong>S</strong>alesforce <strong>O</strong>bject <strong>S</strong>earch <strong>L</strong>anguage) queries Salesforce's own full-text search index — the same index behind Global Search. It's a lexical, keyword-based match, not a semantic one: it finds records containing the words you searched for (with some stemming and fuzziness), not records that mean the same thing using different words. Its standout strength for this use case is <strong>native multi-object search</strong> — one query can return matches from Case and a related custom object at the same time.</p>
+    </section>
+
+    <div class="step" id="c-step-1">
+      <div class="step-head"><span class="step-num" style="color:var(--a3-ink);">1</span><h3>Write the SOSL query</h3></div>
+      <div class="code">FIND {reject order} IN ALL FIELDS
+RETURNING
+    Case(Id, CaseNumber, Subject, Description
+         WHERE IsClosed = true
+         ORDER BY LastModifiedDate DESC LIMIT 10),
+    Resolution__c(Id, Name, Summary__c, Case__c
+         WHERE Case__c != null LIMIT 10)</div>
+      <p>Fields you search on need to be marked <strong>Searchable</strong>, and results respect field-level security and sharing — SOSL never returns data the running user couldn't otherwise see.</p>
+    </div>
+
+    <div class="step" id="c-step-2">
+      <div class="step-head"><span class="step-num" style="color:var(--a3-ink);">2</span><h3>Wrap it in Apex, correlate the results</h3></div>
+      <div class="code">String searchTerm = String.escapeSingleQuotes(caseRecord.Subject);
+
+List&lt;List&lt;SObject&gt;&gt; results = [
+    FIND :searchTerm IN ALL FIELDS
+    RETURNING
+        Case(Id, CaseNumber, Subject, Description
+             WHERE IsClosed = true
+             ORDER BY LastModifiedDate DESC LIMIT 10),
+        Resolution__c(Id, Name, Summary__c, Case__c LIMIT 10)
+];
+
+List&lt;Case&gt; similarCases = (List&lt;Case&gt;) results[0];
+List&lt;Resolution__c&gt; relatedResolutions = (List&lt;Resolution__c&gt;) results[1];
+
+// Correlate: match Resolution__c.Case__c back to a Case.Id
+// to build one combined, ranked result set.</div>
+      <p>Expose this as an <code>@InvocableMethod</code> to make it callable from Flow, or as an <code>@AuraEnabled</code> method for an LWC — either way, it's the same pattern as the Apex path in Part B, just backed by SOSL instead of a prompt template.</p>
+    </div>
+
+    <div class="step" id="c-step-3">
+      <div class="step-head"><span class="step-num" style="color:var(--a3-ink);">3</span><h3>Surface it: Flow, LWC, or a Quick Action</h3></div>
+      <ul>
+        <li><strong>Flow:</strong> call the <code>@InvocableMethod</code> from an Autolaunched or Screen Flow, e.g. triggered on case creation, and display results in a related list or screen component.</li>
+        <li><strong>LWC:</strong> call the <code>@AuraEnabled</code> method from a custom sidebar or record-page component for a bespoke results panel.</li>
+        <li><strong>Agentforce:</strong> also possible — wrap the Apex in an invocable action and register it as a custom Agent Action, giving you a conversational front end without Data Cloud at all.</li>
+      </ul>
+    </div>
+
+    <section id="c-tuning">
+      <h3>Ranking &amp; tuning, since it's manual here</h3>
+      <ul>
+        <li><strong>Relevance</strong> — SOSL returns matches in the order Salesforce's search engine scores them (term frequency, field weighting), but for genuine control you'll typically re-sort in Apex — e.g. boost exact phrase matches, or weight matches in Subject higher than matches in Description.</li>
+        <li><strong>Recall vs. precision</strong> — broaden with <code>FIND {reject* order*}</code> wildcarding if too few results come back; narrow with more specific phrases or additional <code>WHERE</code> filters if too many do.</li>
+        <li><strong>Synonyms are your responsibility</strong> — if "cancelled" and "rejected" should both match, you either maintain a synonym group in Salesforce Setup, or expand the search term programmatically before querying.</li>
+        <li><strong>This is the ceiling</strong> — no amount of query tuning gives SOSL true conceptual matching. If you hit that wall consistently, that's the signal to add Part B rather than keep tuning Part C.</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="shell">
+    Combines three companion guides from this conversation into one document: the out-of-the-box Customer Experience Intelligence path, the custom Data Cloud retriever + prompt template path, and native SOSL search. Object, field, and SKU names reflect what was documented or observed at the time of writing and may shift between Salesforce releases — verify against your org before building.
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var root = document.documentElement;
+    var btn = document.getElementById('themeToggle');
+    var label = document.getElementById('themeToggleLabel');
+    var isDark = false; // in-memory only — page always opens in light mode
+
+    function applyTheme(){
+      root.setAttribute('data-theme', isDark ? 'dark' : 'light');
+      btn.setAttribute('aria-pressed', String(isDark));
+      label.textContent = isDark ? 'Dark mode' : 'Light mode';
+    }
+
+    btn.addEventListener('click', function(){
+      isDark = !isDark;
+      applyTheme();
+    });
+
+    applyTheme();
+  })();
+</script>
+
+</body>
+</html>
