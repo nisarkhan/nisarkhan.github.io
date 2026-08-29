@@ -9,20 +9,22 @@
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
   :root{
-    --ground:#f3f6fb;
-    --surface:#ffffff;
-    --surface-2:#edf1f9;
-    --ink:#10162a;
-    --ink-muted:#545f7a;
-    --ink-faint:#8892ab;
-    --line:#dde3ee;
-    --accent:#3f4fdb;
-    --accent-strong:#2e3cc4;
-    --accent-soft:#e7e9fc;
-    --accent-2:#c8720f;
-    --bad:#c23b3b;
-    --bad-soft:#fbe4e4;
-    --shadow: 0 1px 2px rgba(16,22,42,0.04), 0 8px 24px -12px rgba(16,22,42,0.18);
+    --sidebar-bg:#1a3a52;
+    --page-bg:#f0f5f9;
+    --text:#1e3448;
+    --text-soft:#54637a;
+    --primary:#2e86c1;
+    --primary-strong:#1f5f8f;
+    --light-blue:#aed6f1;
+    --card-border:#d6e8f5;
+    --card-bg:#ffffff;
+    --green:#27ae60;
+    --amber:#d4ac0d;
+    --purple:#7d3c98;
+    --red:#c0392b;
+    --teal:#0e6655;
+    --navy:#1a3a52;
+    --shadow: 0 1px 2px rgba(26,58,82,0.05), 0 8px 24px -12px rgba(26,58,82,0.18);
     --radius-lg:14px;
     --radius-md:10px;
     --radius-sm:7px;
@@ -31,8 +33,8 @@
   *{box-sizing:border-box;}
   body{
     margin:0;
-    background:var(--ground);
-    color:var(--ink);
+    background:var(--page-bg);
+    color:var(--text);
     font-family:"IBM Plex Sans", system-ui, sans-serif;
     font-size:15.5px;
     line-height:1.6;
@@ -40,45 +42,133 @@
   }
   @media (prefers-reduced-motion: reduce){ *{animation-duration:.001ms !important; transition-duration:.001ms !important;} }
 
-  h1,h2{ font-family:"Sora", system-ui, sans-serif; color:var(--ink); line-height:1.2; text-wrap:balance; margin:0; }
-  code{ font-family:"IBM Plex Mono", ui-monospace, monospace; background:var(--surface-2); padding:1px 6px; border-radius:5px; font-size:0.9em; }
-  :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+  h1,h2{ font-family:"Sora", system-ui, sans-serif; color:var(--text); line-height:1.2; text-wrap:balance; margin:0; }
+  a{ color:var(--primary); }
+  code{ font-family:"IBM Plex Mono", ui-monospace, monospace; background:#e7f0fb; padding:1px 6px; border-radius:5px; font-size:0.9em; }
+  :focus-visible{ outline:2px solid var(--primary); outline-offset:2px; border-radius:4px; }
 
-  .page{ max-width:680px; margin:0 auto; padding:52px 24px 64px; }
-  @media (max-width:600px){ .page{ padding:32px 18px 48px; } }
+  /* ---------- sidebar ---------- */
+  .sidebar{
+    position:fixed; top:0; left:0; width:220px; height:100vh; overflow-y:auto;
+    background:var(--sidebar-bg); z-index:100;
+    padding:28px 20px;
+    display:flex; flex-direction:column; gap:28px;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .brand-mark{
+    width:34px; height:34px; border-radius:9px; background:var(--primary); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-family:"Sora", system-ui, sans-serif; font-weight:800; font-size:15px; flex:none;
+  }
+  .brand-name{ font-family:"Sora", system-ui, sans-serif; font-weight:700; font-size:15px; color:#fff; letter-spacing:-0.01em; }
+  .brand-sub{ font-size:11px; color:var(--light-blue); margin-top:1px; }
+  nav.topics{ display:flex; flex-direction:column; gap:22px; }
+  .topic-group{ display:flex; flex-direction:column; gap:4px; }
+  .topic-label{
+    font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:10.5px; font-weight:600;
+    letter-spacing:0.08em; text-transform:uppercase; color:var(--light-blue);
+    padding:0 10px; margin-bottom:2px;
+  }
+  .topic-link{
+    display:flex; align-items:center; gap:9px;
+    padding:8px 10px; border-radius:var(--radius-sm);
+    color:#d7e6f2; text-decoration:none; font-size:13.5px; font-weight:500;
+    border:1px solid transparent;
+  }
+  .topic-link:hover{ background:rgba(255,255,255,0.08); color:#fff; }
+  .topic-link.active{ background:var(--primary); color:#fff; font-weight:600; }
+  .topic-link .dot{ width:6px; height:6px; border-radius:50%; background:var(--light-blue); flex:none; }
+  .topic-link.active .dot{ background:#fff; }
+  .topic-empty{ padding:8px 10px; font-size:12.5px; color:rgba(174,214,241,0.65); font-style:italic; }
+  .sidebar-foot{ margin-top:auto; padding:0 10px; font-size:11px; color:rgba(174,214,241,0.75); line-height:1.6; }
 
-  .back{ display:inline-flex; align-items:center; gap:6px; font-size:12.5px; color:var(--ink-faint); text-decoration:none; margin-bottom:18px; }
-  .back:hover{ color:var(--accent); }
+  /* ---------- main ---------- */
+  main{ margin-left:220px; padding:40px 52px 72px; min-height:100vh; background:var(--page-bg); }
+  .content-col{ max-width:680px; }
 
-  .eyebrow{ display:inline-block; font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent); margin-bottom:12px; }
+  .eyebrow{ display:inline-block; font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--primary); margin-bottom:12px; }
   h1{ font-size:27px; font-weight:800; letter-spacing:-0.01em; margin-bottom:8px; }
-  .dek{ color:var(--ink-muted); font-size:14.5px; max-width:56ch; margin-bottom:36px; }
+  .dek{ color:var(--text-soft); font-size:14.5px; max-width:56ch; margin-bottom:36px; }
 
   .step{ margin-bottom:32px; }
   .step h2{ font-size:16px; font-weight:700; display:flex; align-items:center; gap:9px; margin-bottom:10px; }
-  .step-num{ width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent-strong); font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; flex:none; }
-  .step p{ color:var(--ink-muted); font-size:13.5px; margin:0 0 10px; }
+  .step-num{ width:22px; height:22px; border-radius:6px; background:#e7f0fb; color:var(--primary-strong); font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; flex:none; }
+  .step p{ color:var(--text-soft); font-size:13.5px; margin:0 0 10px; }
 
-  .code-block{ background:#10162a; color:#e8ecf8; border-radius:var(--radius-md); padding:14px 16px; overflow-x:auto; font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:12.8px; line-height:1.65; box-shadow:var(--shadow); }
-  .code-block .c-com{ color:#8892ab; }
-  .code-block .c-key{ color:#8891ff; }
-  .code-block .c-str{ color:#f0a94e; }
-  .file-label{ font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:11px; color:var(--ink-faint); margin-bottom:6px; }
+  .code-block{ background:var(--navy); color:#e8ecf8; border-radius:var(--radius-md); padding:14px 16px; overflow-x:auto; font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:12.8px; line-height:1.65; box-shadow:var(--shadow); }
+  .code-block .c-com{ color:#8fb3cf; }
+  .code-block .c-key{ color:#9fd0f5; }
+  .code-block .c-str{ color:#f0c069; }
+  .file-label{ font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:11px; color:var(--text-soft); margin-bottom:6px; }
 
-  .callout{ display:flex; gap:11px; background:var(--bad-soft); border:1px solid rgba(194,59,59,0.25); border-radius:var(--radius-md); padding:13px 15px; margin-top:6px; }
-  .callout p{ margin:0; font-size:13px; color:var(--ink); }
-  .callout .c-icon{ flex:none; }
+  .callout{ display:flex; gap:11px; background:#fdeaea; border:1px solid rgba(192,57,43,0.28); border-radius:var(--radius-md); padding:13px 15px; margin-top:6px; }
+  .callout p{ margin:0; font-size:13px; color:var(--text); }
+  .callout .c-icon{ flex:none; color:var(--red); }
 
-  footer{ margin-top:44px; padding-top:16px; border-top:1px solid var(--line); font-size:11.5px; color:var(--ink-faint); }
+  footer{ margin-top:44px; padding-top:16px; border-top:1px solid var(--card-border); font-size:11.5px; color:var(--text-soft); }
+
+  /* ---------- page bar ---------- */
+  .pagebar{
+    position:sticky; top:0; z-index:45;
+    display:flex; align-items:center; gap:9px; flex-wrap:wrap;
+    margin:-40px -52px 34px; padding:12px 52px 13px;
+    background:var(--page-bg); border-bottom:1px solid var(--card-border);
+    font-size:13px;
+  }
+  .pagebar-home{ display:inline-flex; align-items:center; gap:7px; text-decoration:none; color:var(--primary); font-weight:600; white-space:nowrap; }
+  .pagebar-home:hover{ text-decoration:underline; }
+  .pagebar-mark{ width:20px; height:20px; border-radius:5px; background:var(--primary); color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; }
+  .pagebar-chevron{ color:var(--light-blue); }
+  .pagebar-here{ color:var(--text-soft); font-weight:500; }
+
+  @media (max-width:840px){
+    .sidebar{ position:static; width:auto; height:auto; }
+    main{ margin-left:0; padding:32px 20px 56px; }
+    .pagebar{ margin:-32px -20px 26px; padding:12px 20px 13px; }
+  }
 </style>
 </head>
 <body>
-  <div class="page">
-    <a class="back" href="index.html">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-      All topics
+  <aside class="sidebar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">SF</span>
+      <span>
+        <span class="brand-name">Field Notes</span>
+        <div class="brand-sub">Salesforce &amp; Agentforce</div>
+      </span>
     </a>
+    <nav class="topics" aria-label="Topics">
+      <div class="topic-group">
+        <div class="topic-label">Agentforce</div>
+        <a class="topic-link" href="clt.html"><span class="dot"></span>Custom Lightning Type</a>
+        <a class="topic-link" href="clt-guide.html"><span class="dot"></span>Custom Lightning Types Guide</a>
+        <a class="topic-link" href="find_similar_cases.html"><span class="dot"></span>Find Similar Cases in Salesforce</a>
+        <a class="topic-link" href="agentforce-sessions.html"><span class="dot"></span>Agentforce Session Tracing</a>
+        <a class="topic-link" href="af-guide.html"><span class="dot"></span>Agentforce Service Agent Guide</a>
+      </div>
+      <div class="topic-group">
+        <div class="topic-label">Data Cloud</div>
+        <div class="topic-empty">Nothing posted yet</div>
+      </div>
+      <div class="topic-group">
+        <div class="topic-label">Tips &amp; Tricks</div>
+        <div class="topic-empty">Nothing posted yet</div>
+      </div>
+      <div class="topic-group">
+        <div class="topic-label">Skills</div>
+        <a class="topic-link active" href="skills.html"><span class="dot"></span>Adding Skills</a>
+      </div>
+    </nav>
+    <div class="sidebar-foot">Updated as new topics get added.</div>
+  </aside>
 
+  <main>
+    <div class="content-col">
+    <div class="pagebar">
+      <a class="pagebar-home" href="index.html"><span class="pagebar-mark">SF</span><span>Field Notes</span></a>
+      <span class="pagebar-chevron" aria-hidden="true">›</span>
+      <span class="pagebar-here">Adding Skills</span>
+    </div>
     <span class="eyebrow">Skills</span>
     <h1>Adding a Skill to Claude Code</h1>
     <p class="dek">Two ways to add a skill to a project. No restart needed either way — Claude Code picks up file changes live.</p>
@@ -151,6 +241,7 @@ claude --plugin-dir ./agentforce-adlc
     </div>
 
     <footer>Sources: <a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener" style="color:inherit;">code.claude.com/docs/en/skills</a> · <a href="https://github.com/forcedotcom/sf-skills" target="_blank" rel="noopener" style="color:inherit;">forcedotcom/sf-skills</a> · <a href="https://github.com/SalesforceAIResearch/agentforce-adlc" target="_blank" rel="noopener" style="color:inherit;">SalesforceAIResearch/agentforce-adlc</a></footer>
-  </div>
+    </div>
+  </main>
 </body>
 </html>

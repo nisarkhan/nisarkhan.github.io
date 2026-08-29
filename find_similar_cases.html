@@ -10,30 +10,17 @@
 
 <style>
   :root{
-    --bg:#f5f6f7; --surface:#ffffff; --surface-2:#eceef0;
-    --text:#15181d; --text-dim:#4d5560; --text-faint:#828b96;
-    --border:#dde1e5; --border-strong:#c3c9d0;
-    --a1:#b3730c; --a1-ink:#8f5c09; --a1-soft:#f6e9d3;   /* A · OOTB */
-    --a2:#0a7a6e; --a2-ink:#075f56; --a2-soft:#dcf0ec;   /* B · Custom RAG */
-    --a3:#a13a52; --a3-ink:#7f2c40; --a3-soft:#f7dde3;   /* C · SOSL */
-    --warn:#a3401b; --warn-soft:#fbe9de;
-    --ok:#1c6e4f; --ok-soft:#e3f3ec;
-    --code-bg:#14171e; --code-text:#dbe1ea; --code-faint:#7c8496;
-    --shadow: 0 1px 2px rgba(15,20,25,.05), 0 8px 24px -12px rgba(15,20,25,.14);
-  }
-  /* Light mode is the default. Dark mode only applies when explicitly
-     toggled via the switch below — it never follows OS/browser preference. */
-  :root[data-theme="dark"]{
-    --bg:#12151a; --surface:#191d24; --surface-2:#20252d;
-    --text:#e9edf1; --text-dim:#a3acb8; --text-faint:#6b7480;
-    --border:#2a303a; --border-strong:#3a424e;
-    --a1:#e0a637; --a1-ink:#f0c26a; --a1-soft:#332608;
-    --a2:#3dcabb; --a2-ink:#7fe0d4; --a2-soft:#0e2b27;
-    --a3:#e2718a; --a3-ink:#f0a0b2; --a3-soft:#331520;
-    --warn:#f0a878; --warn-soft:#3a2712;
-    --ok:#7fd6ae; --ok-soft:#0f2b21;
-    --code-bg:#0c0e12; --code-text:#dbe1ea; --code-faint:#71809a;
-    --shadow: 0 1px 2px rgba(0,0,0,.35), 0 12px 28px -14px rgba(0,0,0,.55);
+    --bg:#f0f5f9; --surface:#ffffff; --surface-2:#e7f0fb;
+    --text:#1e3448; --text-dim:#54637a; --text-faint:#7c8ba0;
+    --border:#d6e8f5; --border-strong:#aed6f1;
+    --sidebar-bg:#1a3a52;
+    --a1:#d4ac0d; --a1-ink:#9a7d0a; --a1-soft:#fbf3d6;   /* A · OOTB — amber */
+    --a2:#0e6655; --a2-ink:#0b5145; --a2-soft:#d9efe9;   /* B · Custom RAG — teal */
+    --a3:#7d3c98; --a3-ink:#63307a; --a3-soft:#efe2f5;   /* C · SOSL — purple */
+    --warn:#c0392b; --warn-soft:#fdeaea;
+    --ok:#27ae60; --ok-soft:#e3f5ec;
+    --code-bg:#1a3a52; --code-text:#dbe6f0; --code-faint:#8fb0c6;
+    --shadow: 0 1px 2px rgba(26,58,82,.05), 0 8px 24px -12px rgba(26,58,82,.16);
   }
 
   *{box-sizing:border-box;}
@@ -43,7 +30,35 @@
   code, .mono{ font-family:'DM Mono', ui-monospace, monospace; }
   h1,h2,h3,h4{ font-family:'Spectral', Georgia, serif; text-wrap:balance; font-weight:600; margin:0; color:var(--text); }
 
-  .shell{ max-width:1200px; margin:0 auto; padding:0 clamp(16px,4vw,48px); }
+  .shell{ max-width:1120px; margin:0 auto; padding:0 clamp(16px,4vw,48px); }
+
+  /* Fixed left-nav sidebar */
+  .sidebar{
+    position:fixed; top:0; left:0; width:220px; height:100vh; overflow-y:auto; z-index:100;
+    background:var(--sidebar-bg); padding:26px 18px;
+    display:flex; flex-direction:column; gap:20px;
+  }
+  .sidebar .brand{ display:flex; align-items:center; gap:9px; text-decoration:none; }
+  .sidebar .brand-mark{
+    width:32px; height:32px; border-radius:8px; background:var(--a2); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Spectral', serif; font-weight:700; font-size:14px; flex:none;
+  }
+  .sidebar .brand-text{ display:flex; flex-direction:column; line-height:1.25; }
+  .sidebar .brand-text strong{ font-family:'Spectral', serif; font-size:13.5px; font-weight:700; color:#fff; }
+  .sidebar .brand-text span{ font-size:11px; color:#aed6f1; }
+  .content{ margin-left:220px; min-height:100vh; background:var(--bg); }
+  .pagebar{ position:sticky; top:0; z-index:45; background:var(--bg); border-bottom:1px solid var(--border); padding:12px 0 13px; }
+  .pagebar .pb-inner{ display:flex; align-items:center; gap:9px; flex-wrap:wrap; font-size:13px; }
+  .pagebar-home{ display:inline-flex; align-items:center; gap:7px; text-decoration:none; color:#2e86c1; font-weight:700; white-space:nowrap; font-family:'Manrope', sans-serif; }
+  .pagebar-home:hover{ text-decoration:underline; }
+  .pagebar-mark{ width:20px; height:20px; border-radius:5px; background:#2e86c1; color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; font-family:'Spectral', serif; }
+  .pagebar-chevron{ color:var(--text-faint); }
+  .pagebar-here{ color:var(--text-dim); font-weight:600; font-family:'Manrope', sans-serif; }
+  @media (max-width:940px){
+    .sidebar{ position:static; width:auto; height:auto; }
+    .content{ margin-left:0; }
+  }
 
   /* Header */
   header.hero{ border-bottom:1px solid var(--border); padding:clamp(28px,5vw,52px) 0 clamp(24px,4vw,36px); }
@@ -57,17 +72,16 @@
   .source-links a{ color:var(--text-dim); }
 
   /* Layout */
-  .layout{ display:grid; grid-template-columns:240px minmax(0,1fr); gap:56px; padding:44px 0 90px; align-items:start; }
-  @media (max-width:940px){ .layout{ grid-template-columns:1fr; } nav.toc{ display:none; } }
-  nav.toc{ position:sticky; top:20px; display:flex; flex-direction:column; gap:2px; font-size:12.3px; max-height:94vh; overflow-y:auto; }
-  nav.toc .toc-label{ font-family:'DM Mono', monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-faint); margin-bottom:8px; }
-  nav.toc a{ color:var(--text-dim); text-decoration:none; padding:5px 0 5px 12px; border-left:2px solid var(--border); }
-  nav.toc a:hover{ color:var(--text); border-left-color:var(--border-strong); }
+  .layout{ display:block; padding:40px 0 90px; }
+  nav.toc{ display:flex; flex-direction:column; gap:2px; font-size:12.3px; }
+  nav.toc .toc-label{ font-family:'DM Mono', monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#aed6f1; margin-bottom:8px; }
+  nav.toc a{ color:#d7e6f2; text-decoration:none; padding:5px 0 5px 12px; border-left:2px solid rgba(174,214,241,.25); }
+  nav.toc a:hover{ color:#fff; border-left-color:#fff; }
   nav.toc .toc-part{ margin-top:14px; font-size:11px; font-weight:700; letter-spacing:.04em; padding:5px 8px; border-radius:6px; }
-  nav.toc .toc-part.p0{ color:var(--text-dim); }
-  nav.toc .toc-part.pa{ color:var(--a1-ink); background:var(--a1-soft); }
-  nav.toc .toc-part.pb{ color:var(--a2-ink); background:var(--a2-soft); }
-  nav.toc .toc-part.pc{ color:var(--a3-ink); background:var(--a3-soft); }
+  nav.toc .toc-part.p0{ color:#d7e6f2; }
+  nav.toc .toc-part.pa{ color:#f0cf7a; background:rgba(212,172,13,.20); }
+  nav.toc .toc-part.pb{ color:#7ed3c3; background:rgba(14,102,85,.32); }
+  nav.toc .toc-part.pc{ color:#d6a9e6; background:rgba(125,60,152,.32); }
 
   main{ max-width:820px; }
   section{ margin-bottom:52px; scroll-margin-top:22px; }
@@ -193,52 +207,15 @@
 
   footer{ border-top:1px solid var(--border); padding:28px 0 60px; font-size:13px; color:var(--text-faint); }
   footer a{ color:var(--text-dim); }
-
-  /* Theme toggle */
-  .theme-toggle{
-    position:fixed; top:16px; right:16px; z-index:50;
-    display:flex; align-items:center; gap:8px;
-    background:var(--surface); border:1px solid var(--border-strong); border-radius:999px;
-    padding:6px 14px 6px 6px; box-shadow:var(--shadow);
-    font-family:'DM Mono', monospace; font-size:12px; color:var(--text-dim);
-    cursor:pointer; user-select:none;
-  }
-  .theme-toggle .knob{
-    width:34px; height:20px; border-radius:999px; background:var(--surface-2);
-    border:1px solid var(--border-strong); position:relative; flex:none; transition:background .15s;
-  }
-  .theme-toggle .knob::after{
-    content:""; position:absolute; top:1px; left:1px; width:16px; height:16px; border-radius:50%;
-    background:var(--a2); transition:transform .15s;
-  }
-  :root[data-theme="dark"] .theme-toggle .knob::after{ transform:translateX(14px); background:var(--a3); }
-  @media (max-width:640px){ .theme-toggle{ position:static; margin:0 auto 18px; width:max-content; } }
 </style>
 </head>
 <body>
 
-<button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">
-  <span class="knob"></span>
-  <span id="themeToggleLabel">Light mode</span>
-</button>
-
-<header class="hero">
-  <div class="shell">
-    <div class="eyebrow">Complete Implementation Guide</div>
-    <h1 class="title">Find Similar Cases in Salesforce</h1>
-    <p class="dek">Everything in one place: how to decide between the three ways to build "find similar cases," and a full end-to-end build guide for each — the native Customer Experience Intelligence action, a custom Data Cloud RAG pipeline, and native SOSL search.</p>
-    <div class="legend3">
-      <span class="lg"><span class="dot" style="background:var(--a1);"></span>A · Out-of-the-box (Customer Experience Intelligence)</span>
-      <span class="lg"><span class="dot" style="background:var(--a2);"></span>B · Custom RAG (Data Cloud retriever + prompt template)</span>
-      <span class="lg"><span class="dot" style="background:var(--a3);"></span>C · SOSL (native full-text search)</span>
-    </div>
-    <div class="source-links">
-      Draws on two InfallibleTechie videos/blogs (<a href="https://www.infallibletechie.com/2025/10/find-similar-salesforce-cases-fast-with-data-cloud.html" target="_blank" rel="noopener">Oct 2025</a>, <a href="https://www.infallibletechie.com/2025/07/salesforce-agentforce-find-similar-cases.html" target="_blank" rel="noopener">Jul 2025</a>), Salesforce's official documentation on Data Cloud and the Find Similar Cases action, and standard SOSL/Apex patterns.
-    </div>
-  </div>
-</header>
-
-<div class="shell layout">
+<aside class="sidebar">
+  <a class="brand" href="index.html">
+    <span class="brand-mark">SF</span>
+    <span class="brand-text"><strong>Field Notes</strong><span>Salesforce &amp; Agentforce</span></span>
+  </a>
   <nav class="toc">
     <span class="toc-label">On this page</span>
     <div class="toc-part p0">Decide</div>
@@ -273,7 +250,33 @@
     <a href="#c-step-3">3. Expose to Flow/LWC</a>
     <a href="#c-tuning">Ranking &amp; tuning</a>
   </nav>
+</aside>
 
+<div class="content">
+<div class="pagebar">
+  <div class="shell pb-inner">
+    <a class="pagebar-home" href="index.html"><span class="pagebar-mark">SF</span><span>Field Notes</span></a>
+    <span class="pagebar-chevron" aria-hidden="true">&rsaquo;</span>
+    <span class="pagebar-here">Find Similar Cases in Salesforce</span>
+  </div>
+</div>
+<header class="hero">
+  <div class="shell">
+    <div class="eyebrow">Complete Implementation Guide</div>
+    <h1 class="title">Find Similar Cases in Salesforce</h1>
+    <p class="dek">Everything in one place: how to decide between the three ways to build "find similar cases," and a full end-to-end build guide for each — the native Customer Experience Intelligence action, a custom Data Cloud RAG pipeline, and native SOSL search.</p>
+    <div class="legend3">
+      <span class="lg"><span class="dot" style="background:var(--a1);"></span>A · Out-of-the-box (Customer Experience Intelligence)</span>
+      <span class="lg"><span class="dot" style="background:var(--a2);"></span>B · Custom RAG (Data Cloud retriever + prompt template)</span>
+      <span class="lg"><span class="dot" style="background:var(--a3);"></span>C · SOSL (native full-text search)</span>
+    </div>
+    <div class="source-links">
+      Draws on two InfallibleTechie videos/blogs (<a href="https://www.infallibletechie.com/2025/10/find-similar-salesforce-cases-fast-with-data-cloud.html" target="_blank" rel="noopener">Oct 2025</a>, <a href="https://www.infallibletechie.com/2025/07/salesforce-agentforce-find-similar-cases.html" target="_blank" rel="noopener">Jul 2025</a>), Salesforce's official documentation on Data Cloud and the Find Similar Cases action, and standard SOSL/Apex patterns.
+    </div>
+  </div>
+</header>
+
+<div class="shell layout">
   <main>
 
     <!-- ============ DECIDE ============ -->
@@ -759,28 +762,7 @@ List&lt;Resolution__c&gt; relatedResolutions = (List&lt;Resolution__c&gt;) resul
     Combines three companion guides from this conversation into one document: the out-of-the-box Customer Experience Intelligence path, the custom Data Cloud retriever + prompt template path, and native SOSL search. Object, field, and SKU names reflect what was documented or observed at the time of writing and may shift between Salesforce releases — verify against your org before building.
   </div>
 </footer>
-
-<script>
-  (function(){
-    var root = document.documentElement;
-    var btn = document.getElementById('themeToggle');
-    var label = document.getElementById('themeToggleLabel');
-    var isDark = false; // in-memory only — page always opens in light mode
-
-    function applyTheme(){
-      root.setAttribute('data-theme', isDark ? 'dark' : 'light');
-      btn.setAttribute('aria-pressed', String(isDark));
-      label.textContent = isDark ? 'Dark mode' : 'Light mode';
-    }
-
-    btn.addEventListener('click', function(){
-      isDark = !isDark;
-      applyTheme();
-    });
-
-    applyTheme();
-  })();
-</script>
+</div>
 
 </body>
 </html>

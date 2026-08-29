@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,24 +10,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#ffffff; --bg-soft:#f6f7f9; --bg-sunken:#eef1f5;
-  --text:#16202e; --text-soft:#54637a; --text-faint:#8494a8;
-  --line:#dfe4ec; --line-soft:#eaeef4;
-  --accent:#0b5cab; --accent-soft:#e7f0fb;
-  --ok:#116149; --ok-soft:#e3f4ee;
-  --warn:#8a5300; --warn-soft:#fdf1dc;
-  --stop:#a32222; --stop-soft:#fdeaea;
-  --shadow:0 1px 2px rgba(16,32,56,.06),0 8px 24px rgba(16,32,56,.06);
-}
-[data-theme="dark"]{
-  --bg:#0e141c; --bg-soft:#151d28; --bg-sunken:#1b2531;
-  --text:#e8eef6; --text-soft:#a2b1c4; --text-faint:#71829a;
-  --line:#26313f; --line-soft:#1e2833;
-  --accent:#6cb1f5; --accent-soft:#12263c;
-  --ok:#6ddcb4; --ok-soft:#0f2a22;
-  --warn:#f0c069; --warn-soft:#2c2313;
-  --stop:#f5928d; --stop-soft:#2e1717;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+  --bg:#f0f5f9; --bg-soft:#ffffff; --bg-sunken:#e7f0fb;
+  --text:#1e3448; --text-soft:#54637a; --text-faint:#7c8ba0;
+  --line:#d6e8f5; --line-soft:#e3eef7;
+  --sidebar-bg:#1a3a52;
+  --accent:#2e86c1; --accent-soft:#e7f0fb;
+  --ok:#0e6655; --ok-soft:#e3f5ec;
+  --warn:#d4ac0d; --warn-soft:#fbf3d6;
+  --stop:#c0392b; --stop-soft:#fdeaea;
+  --shadow:0 1px 2px rgba(26,58,82,.06),0 8px 24px rgba(26,58,82,.06);
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth; scroll-padding-top:24px}
@@ -36,25 +27,30 @@ body{margin:0; background:var(--bg); color:var(--text);
   font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   font-size:16.5px; line-height:1.6; -webkit-font-smoothing:antialiased;
   transition:background .25s ease,color .25s ease;}
-.wrap{display:grid; grid-template-columns:252px minmax(0,1fr); max-width:1320px; margin:0 auto}
-.side{position:sticky; top:0; height:100vh; overflow-y:auto;
-  border-right:1px solid var(--line); padding:30px 22px 60px; background:var(--bg-soft);}
+.wrap{min-height:100vh}
+.side{position:fixed; top:0; left:0; width:220px; height:100vh; overflow-y:auto; z-index:100;
+  padding:30px 20px 60px; background:var(--sidebar-bg);}
+.side a.brandlink{text-decoration:none; display:block}
 .brandmark{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:.7rem;
-  letter-spacing:.16em; text-transform:uppercase; color:var(--accent); margin-bottom:6px;}
-.side h2{font-family:"Space Grotesk",sans-serif; font-size:1.02rem; line-height:1.3; margin:0 0 20px; font-weight:600}
+  letter-spacing:.16em; text-transform:uppercase; color:#aed6f1; margin-bottom:6px;}
+.side h2{font-family:"Space Grotesk",sans-serif; font-size:1.02rem; line-height:1.3; margin:0 0 20px; font-weight:600; color:#fff}
 .side nav a{display:flex; gap:11px; align-items:baseline; padding:7px 10px; margin:1px -10px;
-  border-radius:7px; color:var(--text-soft); text-decoration:none; font-size:.87rem; line-height:1.4;
+  border-radius:7px; color:#d7e6f2; text-decoration:none; font-size:.87rem; line-height:1.4;
   transition:background .15s ease,color .15s ease;}
-.side nav a .n{font-family:"JetBrains Mono",monospace; font-size:.72rem; color:var(--text-faint); flex:0 0 auto}
-.side nav a:hover{background:var(--bg-sunken); color:var(--text)}
-.side nav a.on{background:var(--accent-soft); color:var(--accent); font-weight:600}
-.side nav a.on .n{color:var(--accent)}
-.side nav a:focus-visible,.toggle:focus-visible,a:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
-.toggle{margin-top:24px; width:100%; display:flex; align-items:center; justify-content:space-between;
-  gap:10px; padding:9px 12px; border:1px solid var(--line); border-radius:9px;
-  background:var(--bg); color:var(--text-soft); cursor:pointer; font-family:Inter,sans-serif; font-size:.8rem; font-weight:500;}
-.toggle:hover{color:var(--text); border-color:var(--text-faint)}
-main{padding:52px 52px 110px; min-width:0}
+.side nav a .n{font-family:"JetBrains Mono",monospace; font-size:.72rem; color:#aed6f1; flex:0 0 auto}
+.side nav a:hover{background:rgba(255,255,255,.08); color:#fff}
+.side nav a.on{background:var(--accent); color:#fff; font-weight:600}
+.side nav a.on .n{color:#fff}
+.side nav a:focus-visible,a:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+main{margin-left:220px; padding:40px 52px 72px; min-width:0; background:var(--bg); min-height:100vh}
+.pagebar{position:sticky; top:0; z-index:45; display:flex; align-items:center; gap:9px; flex-wrap:wrap;
+  margin:-40px -52px 34px; padding:12px 52px 13px; background:var(--bg); border-bottom:1px solid var(--line); font-size:.8rem;}
+.pagebar-home{display:inline-flex; align-items:center; gap:7px; text-decoration:none; color:var(--accent); font-weight:600; white-space:nowrap;}
+.pagebar-home:hover{text-decoration:underline}
+.pagebar-mark{width:20px; height:20px; border-radius:5px; background:var(--accent); color:#fff;
+  display:inline-flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; font-family:"Space Grotesk",sans-serif;}
+.pagebar-chevron{color:var(--text-faint)}
+.pagebar-here{color:var(--text-soft); font-weight:500}
 .eyebrow{font-family:"JetBrains Mono",monospace; font-size:.74rem; letter-spacing:.1em;
   text-transform:uppercase; color:var(--accent); margin-bottom:14px;}
 h1{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:2.4rem; line-height:1.12;
@@ -96,7 +92,6 @@ figcaption{font-size:.82rem; color:var(--text-faint); margin-top:8px; line-heigh
 .steps>li::before{content:counter(s); position:absolute; left:-13px; top:-3px; width:26px; height:26px;
   border-radius:50%; background:var(--accent); color:#fff; font-family:"JetBrains Mono",monospace;
   font-size:.76rem; display:flex; align-items:center; justify-content:center;}
-[data-theme="dark"] .steps>li::before{color:#0e141c}
 .steps>li .t{font-weight:600; display:block; margin-bottom:4px; font-family:"Space Grotesk",sans-serif; font-size:1.02rem}
 .steps>li p{margin:0 0 8px}
 .steps>li ul{margin:6px 0 0}
@@ -108,11 +103,11 @@ td:first-child{font-weight:500}
 footer{margin-top:70px; padding-top:24px; border-top:1px solid var(--line);
   color:var(--text-faint); font-size:.85rem; max-width:64ch;}
 @media (max-width:960px){
-  .wrap{grid-template-columns:1fr}
-  .side{position:static; height:auto; border-right:none; border-bottom:1px solid var(--line); padding:22px 20px}
+  .side{position:static; width:auto; height:auto; border-bottom:1px solid var(--line); padding:22px 20px}
   .side nav{display:flex; flex-wrap:wrap; gap:4px}
   .side nav a{font-size:.82rem}
-  main{padding:32px 20px 70px}
+  main{margin-left:0; padding:32px 20px 70px}
+  .pagebar{margin:-32px -20px 26px; padding:12px 20px 13px}
   h1{font-size:1.9rem} h2{font-size:1.3rem}
   td:first-child{white-space:normal}
 }
@@ -122,21 +117,24 @@ footer{margin-top:70px; padding-top:24px; border-top:1px solid var(--line);
 <div class="wrap">
 
 <aside class="side">
-  <div class="brandmark">Agentforce Ops</div>
-  <h2>Turn on Sessions &amp; Intents</h2>
+  <a class="brandlink" href="index.html">
+    <div class="brandmark">Field Notes</div>
+    <h2>Turn on Sessions &amp; Intents</h2>
+  </a>
   <nav id="toc">
     <a href="#prereqs"><span class="n">01</span><span>Prerequisites</span></a>
     <a href="#steps"><span class="n">02</span><span>Setup steps</span></a>
     <a href="#errors"><span class="n">03</span><span>The two empty states</span></a>
     <a href="#checklist"><span class="n">04</span><span>Checklist</span></a>
   </nav>
-  <button class="toggle" id="themeBtn" aria-label="Switch color theme">
-    <span id="themeLabel">Dark mode</span>
-    <span aria-hidden="true" id="themeIcon">&#9789;</span>
-  </button>
 </aside>
 
 <main>
+  <div class="pagebar">
+    <a class="pagebar-home" href="index.html"><span class="pagebar-mark">SF</span><span>Field Notes</span></a>
+    <span class="pagebar-chevron" aria-hidden="true">›</span>
+    <span class="pagebar-here">Agentforce Session Tracing</span>
+  </div>
   <div class="eyebrow">Agentforce Studio / Observe &amp; Optimize</div>
   <h1>Turn on Sessions &amp; Intents</h1>
   <p class="lede">Sessions &amp; Intents ships switched off and sits behind Data Cloud. Nothing in your agent's own configuration turns it on. Here are the prerequisites and the steps, nothing else.</p>
@@ -284,19 +282,6 @@ footer{margin-top:70px; padding-top:24px; border-top:1px solid var(--line);
 
 <script>
 (function(){
-  var root=document.documentElement, btn=document.getElementById('themeBtn'),
-      lbl=document.getElementById('themeLabel'), ico=document.getElementById('themeIcon');
-  function set(t){
-    root.setAttribute('data-theme',t);
-    lbl.textContent = t==='dark' ? 'Light mode' : 'Dark mode';
-    ico.innerHTML   = t==='dark' ? '&#9788;' : '&#9789;';
-    try{localStorage.setItem('sessions-guide-theme',t);}catch(e){}
-  }
-  var saved=null; try{saved=localStorage.getItem('sessions-guide-theme');}catch(e){}
-  set(saved || 'light');
-  btn.addEventListener('click',function(){
-    set(root.getAttribute('data-theme')==='dark' ? 'light' : 'dark');
-  });
   var links=[].slice.call(document.querySelectorAll('#toc a')),
       secs=links.map(function(a){return document.querySelector(a.getAttribute('href'));});
   function spy(){

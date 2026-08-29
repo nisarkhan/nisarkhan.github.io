@@ -3,24 +3,28 @@
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
   :root{
-    --ground:#f3f6fb;
+    --ground:#f0f5f9;
     --surface:#ffffff;
-    --surface-2:#edf1f9;
-    --ink:#10162a;
-    --ink-muted:#545f7a;
-    --ink-faint:#8892ab;
-    --line:#dde3ee;
-    --accent:#3f4fdb;
-    --accent-strong:#2e3cc4;
+    --surface-2:#e7f0fb;
+    --ink:#1e3448;
+    --ink-muted:#54637a;
+    --ink-faint:#7c8ba0;
+    --line:#d6e8f5;
+    --accent:#2e86c1;
+    --accent-strong:#1f5f8f;
     --accent-ink:#ffffff;
-    --accent-soft:#e7e9fc;
-    --accent-2:#c8720f;
-    --accent-2-soft:#fbead2;
-    --good:#1c8a5a;
+    --accent-soft:#e7f0fb;
+    --accent-2:#d4ac0d;
+    --accent-2-soft:#fbf3d6;
+    --good:#27ae60;
     --good-soft:#e3f5ec;
-    --bad:#c23b3b;
-    --bad-soft:#fbe4e4;
-    --shadow: 0 1px 2px rgba(16,22,42,0.04), 0 8px 24px -12px rgba(16,22,42,0.18);
+    --bad:#c0392b;
+    --bad-soft:#fdeaea;
+    --purple:#7d3c98;
+    --teal:#0e6655;
+    --sidebar-bg:#1a3a52;
+    --navy:#1a3a52;
+    --shadow: 0 1px 2px rgba(26,58,82,0.05), 0 8px 24px -12px rgba(26,58,82,0.18);
     --radius-lg:16px;
     --radius-md:11px;
     --radius-sm:7px;
@@ -43,39 +47,57 @@
   code, .mono{ font-family:"IBM Plex Mono", ui-monospace, monospace; }
   code{ background:var(--surface-2); padding:1px 6px; border-radius:5px; font-size:0.9em; color:var(--ink); }
 
-  .shell{ max-width:1320px; margin:0 auto; display:grid; grid-template-columns:236px minmax(0,1fr); min-height:100vh; }
-  @media (max-width:940px){ .shell{grid-template-columns:1fr;} }
+  .shell{ min-height:100vh; }
 
   .sidebar{
-    position:sticky; top:0; align-self:start; height:100vh; padding:26px 18px;
-    border-right:1px solid var(--line); display:flex; flex-direction:column; gap:22px; overflow-y:auto;
+    position:fixed; top:0; left:0; width:220px; height:100vh; overflow-y:auto; z-index:100;
+    padding:26px 18px; background:var(--sidebar-bg);
+    display:flex; flex-direction:column; gap:22px;
   }
-  @media (max-width:940px){ .sidebar{position:static; height:auto; border-right:none; border-bottom:1px solid var(--line);} }
   .brand{ display:flex; align-items:center; gap:9px; }
   .brand-mark{
-    width:32px;height:32px; border-radius:8px; background:linear-gradient(155deg, var(--bad), #e08a4f);
+    width:32px;height:32px; border-radius:8px; background:var(--accent);
     display:flex;align-items:center;justify-content:center; color:#fff; font-family:"Sora",sans-serif; font-weight:800;
     font-size:15px; flex:none; box-shadow:var(--shadow);
   }
   .brand-text{ display:flex; flex-direction:column; line-height:1.25; }
-  .brand-text strong{ font-family:"Sora",sans-serif; font-size:13.5px; font-weight:700; }
-  .brand-text span{ font-size:11px; color:var(--ink-faint); }
+  .brand-text strong{ font-family:"Sora",sans-serif; font-size:13.5px; font-weight:700; color:#fff; }
+  .brand-text span{ font-size:11px; color:var(--accent-soft); }
 
-  .toc-label{ font-size:10.5px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:2px; }
-  .toc{ list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:0; border-left:1px solid var(--line); }
+  .toc-label{ font-size:10.5px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#aed6f1; margin-bottom:2px; }
+  .toc{ list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:0; border-left:1px solid rgba(174,214,241,0.25); }
   .toc a{
     display:block; padding:5.5px 0 5.5px 13px; margin-left:-1px; border-left:1px solid transparent;
-    text-decoration:none; color:var(--ink-muted); font-size:12.6px; transition:color .15s ease, border-color .15s ease;
+    text-decoration:none; color:#d7e6f2; font-size:12.6px; transition:color .15s ease, border-color .15s ease;
   }
-  .toc a:hover{ color:var(--ink); }
-  .toc li.active > a{ color:var(--bad); border-left-color:var(--bad); font-weight:500; }
+  .toc a:hover{ color:#fff; }
+  .toc li.active > a{ color:#fff; border-left-color:#fff; font-weight:600; }
 
-  .source-card{ margin-top:auto; padding:13px; border-radius:var(--radius-md); background:var(--surface-2); border:1px solid var(--line); }
-  .source-card .sc-label{ font-size:10.5px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:5px; }
-  .source-card p{ margin:0; font-size:11.8px; color:var(--ink-muted); line-height:1.5; }
+  .source-card{ margin-top:auto; padding:13px; border-radius:var(--radius-md); background:rgba(255,255,255,0.06); border:1px solid rgba(174,214,241,0.22); }
+  .source-card .sc-label{ font-size:10.5px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:#aed6f1; margin-bottom:5px; }
+  .source-card p{ margin:0; font-size:11.8px; color:#c6d8e6; line-height:1.5; }
 
-  main{ padding:48px clamp(18px,4.5vw,64px) 100px; min-width:0; }
+  main{ margin-left:220px; padding:40px 52px 72px; min-width:0; background:var(--ground); min-height:100vh; }
   .content-col{ max-width:880px; }
+
+  .pagebar{
+    position:sticky; top:0; z-index:45;
+    display:flex; align-items:center; gap:9px; flex-wrap:wrap;
+    margin:-40px -52px 34px; padding:12px 52px 13px;
+    background:var(--ground); border-bottom:1px solid var(--line);
+    font-size:13px;
+  }
+  .pagebar-home{ display:inline-flex; align-items:center; gap:7px; text-decoration:none; color:var(--accent); font-weight:600; white-space:nowrap; }
+  .pagebar-home:hover{ text-decoration:underline; }
+  .pagebar-mark{ width:20px; height:20px; border-radius:5px; background:var(--accent); color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; }
+  .pagebar-chevron{ color:var(--ink-faint); }
+  .pagebar-here{ color:var(--ink-muted); font-weight:500; }
+
+  @media (max-width:940px){
+    .sidebar{ position:static; width:auto; height:auto; }
+    main{ margin-left:0; padding:32px 20px 56px; }
+    .pagebar{ margin:-32px -20px 26px; padding:12px 20px 13px; }
+  }
 
   .eyebrow{
     display:inline-flex; align-items:center; gap:7px; font-size:11.5px; font-weight:600; letter-spacing:0.08em;
@@ -185,13 +207,13 @@
 
 <div class="shell">
   <nav class="sidebar" aria-label="Reference sections">
-    <div class="brand">
+    <a class="brand" href="index.html" style="text-decoration:none;">
       <div class="brand-mark">!</div>
       <div class="brand-text">
         <strong>CLT Rendering Checklist</strong>
-        <span>Reference · not a tutorial</span>
+        <span>Field Notes · reference</span>
       </div>
-    </div>
+    </a>
 
     <div>
       <div class="toc-label">Jump to</div>
@@ -219,11 +241,13 @@
   <main>
     <div class="content-col">
 
+      <div class="pagebar">
+        <a class="pagebar-home" href="index.html"><span class="pagebar-mark">SF</span><span>Field Notes</span></a>
+        <span class="pagebar-chevron" aria-hidden="true">›</span>
+        <span class="pagebar-here">CLT Rendering Checklist</span>
+      </div>
+
       <div class="hero">
-        <a href="index.html" style="display:inline-flex; align-items:center; gap:6px; font-size:12.5px; color:var(--ink-faint); text-decoration:none; margin-bottom:14px;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          All topics
-        </a>
         <span class="eyebrow">⚠ Reference · CLT + LWC rendering</span>
         <h1>Custom Lightning Type &amp; LWC Rendering Checklist</h1>
         <p class="dek">Every requirement that determines whether a Custom Lightning Type actually renders in Agentforce — or silently falls back to plain text. Mandatory items are marked <span class="badge must">must</span>; everything else is a recommendation or convention. When in doubt, treat a missing mandatory item as the reason nothing is showing up.</p>
