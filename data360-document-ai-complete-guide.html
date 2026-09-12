@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One Org, Two Engines: Data 360 and the Core Platform</title>
+<meta name="description" content="How Data 360 relates to your org, why a Document AI build needs OAuth credentials to call that same org, and what each piece of a KYC extraction tutorial is doing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0f5f9; --surface: #ffffff; --ink: #1e3448; --muted: #54637a; --line: #d6e8f5;
+    --core: #2e86c1; --core-soft: #e7f0fb;
+    --lake: #0e6655; --lake-soft: #e3f3ef;
+    --bridge: #c8860b; --bridge-soft: #fbf1d8;
+    --warn: #c0392b; --warn-soft: #fdeaea;
+    --ok: #27ae60; --ok-soft: #e3f5ec;
+    --chip-bg: #e7f0fb; --chip-text: #1f5f8f;
+    --pre-bg: #1a3a52; --pre-text: #dbe6f0;
+    --sidebar-bg: #1a3a52; --sidebar-w: 220px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Inter", system-ui, sans-serif; font-size: 16px; line-height: 1.65; transition: background .2s, color .2s; }
+  h1, h2, h3 { font-family: "Space Grotesk", "Inter", sans-serif; line-height: 1.2; }
+  code { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .85em; background: var(--chip-bg); color: var(--chip-text); padding: .15em .45em; border-radius: 4px; }
+  pre { background: var(--pre-bg); color: var(--pre-text); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; overflow-x: auto; margin: 12px 0 16px; }
+  pre code { background: none; padding: 0; color: inherit; font-size: .82rem; line-height: 1.6; }
+  .cm { color: var(--muted); } .bad { color: var(--warn); } .good { color: var(--ok); }
+  a { color: var(--core); }
+  a:focus-visible, button:focus-visible { outline: 3px solid var(--bridge); outline-offset: 2px; }
+
+  .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w); background: var(--sidebar-bg); padding: 26px 18px; display: flex; flex-direction: column; gap: 18px; overflow-y: auto; z-index: 100; }
+  .brand { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+  .brand-mark { width: 32px; height: 32px; border-radius: 8px; background: var(--core); color: #fff; display: flex; align-items: center; justify-content: center; font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 12px; flex: none; }
+  .brand-text { display: flex; flex-direction: column; line-height: 1.3; }
+  .brand-text strong { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: .96rem; color: #fff; }
+  .brand-text span { display: block; font-family: "Inter", sans-serif; font-weight: 400; font-size: .74rem; color: #aed6f1; margin-top: 2px; }
+  .nav { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1px; }
+  .nav a { display: block; padding: 6px 10px; border-radius: 6px; color: #d7e6f2; text-decoration: none; font-size: .88rem; border-left: 3px solid transparent; }
+  .nav a:hover { color: #fff; background: rgba(255,255,255,.08); }
+  .nav a.active { color: #fff; background: var(--core); border-left-color: #fff; font-weight: 600; }
+  .nav .grp { font-size: .72rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: #aed6f1; padding: 14px 10px 4px; }
+  .side-card { margin-top: auto; padding: 12px 13px; border-radius: 10px; background: rgba(255,255,255,.06); border: 1px solid rgba(174,214,241,.22); }
+  .side-card .sc-label { font-family: "Inter", sans-serif; font-size: 10px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: #aed6f1; margin-bottom: 5px; }
+  .side-card p { margin: 0; font-size: 11.6px; color: #c6d8e6; line-height: 1.5; }
+
+  main { margin-left: var(--sidebar-w); padding: 40px 52px 84px; background: var(--bg); min-height: 100vh; }
+  .wrap { max-width: 880px; }
+  .prose { max-width: 70ch; }
+
+  .pagebar { position: sticky; top: 0; z-index: 45; display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin: -40px -52px 30px; padding: 12px 52px 13px; background: var(--bg); border-bottom: 1px solid var(--line); font-family: "Inter", sans-serif; font-size: 13px; }
+  .pagebar-home { display: inline-flex; align-items: center; gap: 7px; text-decoration: none; color: var(--core); font-weight: 600; white-space: nowrap; }
+  .pagebar-home:hover { text-decoration: underline; }
+  .pagebar-mark { width: 20px; height: 20px; border-radius: 5px; background: var(--core); color: #fff; display: inline-flex; align-items: center; justify-content: center; }
+  .pagebar-chevron { color: var(--muted); opacity: .6; }
+  .pagebar-here { color: var(--muted); font-weight: 500; }
+
+  .eyebrow { display: inline-block; font-family: "Inter", sans-serif; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--core); margin-bottom: 12px; }
+  header.hero { padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+  .hero h1 { font-size: clamp(2rem, 4vw, 2.7rem); margin: 0 0 14px; letter-spacing: -0.02em; }
+  .hero .lede { font-size: 1.15rem; color: var(--muted); margin: 0 0 16px; max-width: 62ch; }
+  .hero .note { font-size: .88rem; color: var(--muted); margin: 0; }
+
+  .part { padding-top: 52px; }
+  .part > .ptag { font-family: "Inter", sans-serif; font-size: .76rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--bridge); margin-bottom: 6px; }
+  .part > h2 { font-size: 1.85rem; margin: 0 0 8px; letter-spacing: -0.015em; }
+  .part > .psub { color: var(--muted); margin: 0 0 4px; max-width: 62ch; }
+  section { padding-top: 36px; scroll-margin-top: 16px; }
+  section h3 { font-size: 1.25rem; margin: 0 0 12px; }
+  section h4 { font-size: 1.03rem; margin: 22px 0 8px; }
+  p { margin: 0 0 14px; }
+
+  .bigline { font-family: "Space Grotesk", sans-serif; font-size: 1.25rem; font-weight: 600; line-height: 1.4; border-left: 4px solid var(--core); padding: 4px 0 4px 18px; margin: 10px 0 20px; max-width: 60ch; }
+
+  .callout { border-radius: 8px; padding: 16px 18px; margin: 18px 0; border-left: 4px solid; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout .t { font-weight: 600; margin-bottom: 4px; display: block; }
+  .callout.analogy { background: var(--bridge-soft); border-color: var(--bridge); }
+  .callout.core { background: var(--core-soft); border-color: var(--core); }
+  .callout.lake { background: var(--lake-soft); border-color: var(--lake); }
+  .callout.warn { background: var(--warn-soft); border-color: var(--warn); }
+  .callout.ok { background: var(--ok-soft); border-color: var(--ok); }
+
+  .verdict { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 18px 0 22px; background: var(--surface); }
+  .verdict div { padding: 18px 20px; }
+  .verdict div + div { border-left: 1px solid var(--line); }
+  .verdict .k { font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: 1.05rem; margin-bottom: 6px; }
+  .verdict .core .k { color: var(--core); }
+  .verdict .lake .k { color: var(--lake); }
+  .verdict p { margin: 0; font-size: .95rem; }
+
+  figure.diagram { margin: 18px 0 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  figure.diagram svg { width: 100%; height: auto; display: block; }
+  figure.diagram figcaption { font-size: .85rem; color: var(--muted); padding: 10px 6px 2px; }
+  .d-panel-core { fill: var(--core-soft); stroke: var(--core); }
+  .d-panel-lake { fill: var(--lake-soft); stroke: var(--lake); }
+  .d-row { fill: var(--surface); stroke: var(--line); }
+  .d-title { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 17px; fill: var(--ink); }
+  .d-sub { font-family: "Inter", sans-serif; font-size: 12px; fill: var(--muted); }
+  .d-txt { font-family: "Inter", sans-serif; font-size: 12.5px; fill: var(--ink); }
+  .d-mono { font-family: "JetBrains Mono", monospace; font-size: 11px; fill: var(--lake); }
+  .d-core-dot { fill: var(--core); } .d-lake-dot { fill: var(--lake); }
+  .d-arrow { stroke: var(--bridge); stroke-width: 2.4; fill: none; }
+  .d-head { fill: var(--bridge); }
+  .d-lbl { font-family: "Inter", sans-serif; font-size: 12px; font-weight: 600; fill: var(--bridge); }
+  .d-lbl2 { font-family: "Inter", sans-serif; font-size: 11px; fill: var(--muted); }
+  .b-org { fill: var(--core-soft); stroke: var(--core); }
+  .b-api { fill: var(--surface); stroke: var(--bridge); }
+  .b-lake { fill: var(--lake-soft); stroke: var(--lake); }
+  .n-core { fill: var(--core); } .n-bridge { fill: var(--bridge); } .n-lake { fill: var(--lake); }
+  .n-txt { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 13px; fill: #fff; }
+  .b-title { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 14.5px; fill: var(--ink); }
+  .b-txt { font-family: "Inter", sans-serif; font-size: 12px; fill: var(--ink); }
+  .b-tag { font-family: "Inter", sans-serif; font-size: 11px; fill: var(--muted); }
+  .zone { font-family: "Inter", sans-serif; font-size: 12px; font-weight: 600; fill: var(--muted); }
+  .arr { stroke: var(--muted); stroke-width: 2; fill: none; }
+  .arr-h { fill: var(--muted); }
+  .gate { fill: var(--bridge-soft); stroke: var(--bridge); }
+  .gate-t { font-family: "Inter", sans-serif; font-size: 11.5px; font-weight: 600; fill: var(--bridge); }
+
+  .tbl-wrap { overflow-x: auto; margin: 16px 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; min-width: 640px; }
+  th, td { text-align: left; padding: 11px 14px; vertical-align: top; border-bottom: 1px solid var(--line); }
+  tr:last-child td { border-bottom: none; }
+  thead th { font-family: "Space Grotesk", sans-serif; font-size: .96rem; background: var(--bg); }
+  thead th.c { color: var(--core); } thead th.l { color: var(--lake); }
+  tbody th { font-weight: 600; width: 20%; color: var(--muted); }
+  td.step { font-weight: 600; white-space: nowrap; }
+  td.role { font-weight: 600; color: var(--core); }
+  .pill { display: inline-block; font-size: .76rem; font-weight: 600; padding: 2px 9px; border-radius: 20px; white-space: nowrap; }
+  .pill.yes { background: var(--warn-soft); color: var(--warn); }
+  .pill.no { background: var(--ok-soft); color: var(--ok); }
+
+  ol.journey { list-style: none; counter-reset: s; padding: 0; margin: 18px 0; }
+  ol.journey li { counter-increment: s; position: relative; padding: 12px 16px 12px 62px; margin-bottom: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+  ol.journey li::before { content: counter(s); position: absolute; left: 16px; top: 12px; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: .95rem; color: #fff; }
+  ol.journey li.oncore::before { background: var(--core); }
+  ol.journey li.offcore::before { background: var(--lake); }
+  ol.journey .where { font-size: .78rem; font-weight: 600; margin-left: 6px; }
+  ol.journey li.oncore .where { color: var(--core); }
+  ol.journey li.offcore .where { color: var(--lake); }
+  ol.journey p { margin: 2px 0 0; font-size: .94rem; }
+
+  .users { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  .user { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; }
+  .user h4 { margin: 0 0 6px; font-size: 1.02rem; }
+  .user p { margin: 0; font-size: .93rem; }
+  .user.a { border-top: 3px solid var(--core); }
+  .user.b { border-top: 3px solid var(--lake); }
+
+  .finding { border-top: 1px solid var(--line); padding: 16px 0; }
+  .finding:last-of-type { border-bottom: 1px solid var(--line); }
+  .finding h4 { margin: 0 0 6px; }
+  .finding p { margin: 0 0 8px; }
+  .finding .eg { font-size: .92rem; color: var(--muted); }
+  .sev { display: inline-block; font-size: .74rem; font-weight: 600; padding: 2px 9px; border-radius: 20px; margin-left: 8px; vertical-align: 2px; font-family: "Inter", sans-serif; }
+  .sev.high { background: var(--warn-soft); color: var(--warn); }
+  .sev.med { background: var(--bridge-soft); color: var(--bridge); }
+  .sev.low { background: var(--code-bg); color: var(--muted); }
+  .sev.plus { background: var(--ok-soft); color: var(--ok); }
+
+  /* FAQ */
+  .faq { margin: 18px 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
+  .faq details { border-bottom: 1px solid var(--line); }
+  .faq details:last-child { border-bottom: none; }
+  .faq summary { cursor: pointer; list-style: none; padding: 14px 18px 14px 44px; position: relative; font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: 1rem; color: var(--ink); }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::before { content: "+"; position: absolute; left: 18px; top: 13px; font-family: "JetBrains Mono", monospace; font-size: 1.05rem; font-weight: 500; color: var(--core); }
+  .faq details[open] summary::before { content: "\2212"; }
+  .faq summary:hover { background: var(--bg); }
+  .faq summary .mine { display: block; font-family: "Inter", sans-serif; font-weight: 400; font-size: .82rem; color: var(--muted); margin-top: 4px; font-style: italic; }
+  .faq .a { padding: 0 18px 16px 44px; max-width: 72ch; }
+  .faq .a p { margin: 0 0 10px; font-size: .95rem; }
+  .faq .a p:last-child { margin-bottom: 0; }
+  .faq .a pre { margin: 10px 0 12px; }
+  .faq .a ul { margin: 0 0 10px; padding-left: 20px; font-size: .95rem; }
+  .faq .a li { margin-bottom: 5px; }
+  .faq .grp { font-family: "Inter", sans-serif; font-size: .76rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); background: var(--bg); padding: 9px 18px; border-bottom: 1px solid var(--line); }
+  .faqctl { display: flex; gap: 8px; margin: 10px 0 0; }
+  .faqctl button { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; font: inherit; font-size: .84rem; color: var(--muted); cursor: pointer; }
+  .faqctl button:hover { color: var(--ink); border-color: var(--core); }
+
+  .sources li { margin-bottom: 6px; font-size: .93rem; }
+
+  @media (max-width: 900px) {
+    .sidebar { position: static; width: auto; border-bottom: 1px solid rgba(174,214,241,.25); }
+    .nav { flex-direction: row; flex-wrap: wrap; align-items: center; }
+    .nav .grp { padding: 6px 4px; }
+    .side-card { margin-top: 12px; }
+    main { margin-left: 0; padding: 28px 20px 72px; }
+    .pagebar { margin: -28px -20px 22px; padding: 12px 20px 13px; }
+    .verdict, .users { grid-template-columns: 1fr; }
+    .verdict div + div { border-left: none; border-top: 1px solid var(--line); }
+  }
+  @media print {
+    .sidebar, .faqctl, .pagebar { display: none; }
+    main { margin-left: 0; }
+    .faq .a { display: block !important; }
+  }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <a class="brand" href="index.html">
+    <span class="brand-mark">OE</span>
+    <span class="brand-text">
+      <strong>One Org, Two Engines</strong>
+      <span>Field Notes · Data 360</span>
+    </span>
+  </a>
+  <ul class="nav" id="nav">
+    <li class="grp">Part 1</li>
+    <li><a href="#split">One org, two engines</a></li>
+    <li><a href="#compare">Side by side</a></li>
+    <li><a href="#journey">A record's journey</a></li>
+    <li class="grp">Part 2</li>
+    <li><a href="#why-eca">Why an External Client App</a></li>
+    <li><a href="#same-org">Same org, still a key</a></li>
+    <li><a href="#urls">Which URL is called</a></li>
+    <li class="grp">Part 3</li>
+    <li><a href="#steps">Your tutorial, step by step</a></li>
+    <li><a href="#runtime">Runtime sequence</a></li>
+    <li><a href="#users">The two-user trap</a></li>
+    <li><a href="#apex">Apex review</a></li>
+    <li><a href="#prod">Before production</a></li>
+    <li class="grp">Reference</li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#sources">Sources</a></li>
+  </ul>
+  <div class="side-card">
+    <div class="sc-label">In one line</div>
+    <p>Same org, two engines: core owns what exists and who can see it, Data 360 owns where the rows live and get crunched.</p>
+  </div>
+</aside>
+
+<main>
+<div class="wrap">
+
+<div class="pagebar">
+  <a class="pagebar-home" href="index.html" aria-label="Field Notes home"><span class="pagebar-mark" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span>Field Notes</span></a>
+  <span class="pagebar-chevron" aria-hidden="true">&rsaquo;</span>
+  <span class="pagebar-here">One Org, Two Engines: Data 360 and the Core Platform</span>
+</div>
+
+<header class="hero">
+  <span class="eyebrow">Data Cloud · Architecture</span>
+  <h1>Data 360, Document AI, and the External Client App</h1>
+  <p class="lede">Everything from one thread: how Data 360 relates to your org, why a Document AI build needs OAuth credentials to call that same org, and what each piece of the KYC tutorial is doing.</p>
+  <p class="note">Naming note: Salesforce renamed Data Cloud to Data 360. Same product, both names appear in the docs.</p>
+</header>
+
+<!-- ============ PART 1 ============ -->
+<div class="part">
+  <div class="ptag">Part 1</div>
+  <h2>Where Data 360 actually lives</h2>
+  <p class="psub">The starting point, because everything later follows from it.</p>
+</div>
+
+<section id="split" class="prose">
+  <h3>One org, two engines</h3>
+  <p>The instinct that Data 360 is a different instance is right. Data 360 runs within a dedicated functional domain hosted on Hyperforce, on AWS, and its storage is a native lakehouse built on Iceberg and Parquet with a Kubernetes-native compute fabric that runs Spark for processing and Hyper for SQL. Your org's records are not sitting in that lakehouse; copies of them are.</p>
+  <p>The nuance is that "altogether different" goes slightly too far. Metadata is designed, modeled, and stored as Salesforce metadata in a fully ACID-compliant database, and the Home Org is the org Data 360 is provisioned on. So the accurate split is:</p>
+
+  <div class="verdict">
+    <div class="core">
+      <div class="k">Shared control plane</div>
+      <p>What exists, how it is modeled, and who can see it. Lives in the core home org.</p>
+    </div>
+    <div class="lake">
+      <div class="k">Separate data plane</div>
+      <p>Where the rows are stored and processed. Lives in the Data 360 tenant on Hyperforce.</p>
+    </div>
+  </div>
+
+  <div class="callout analogy">
+    <span class="t">A hospital way to picture it</span>
+    <p>The core org is the front desk and chart system: one patient visit at a time, instantly and accurately. Data 360 is the records and analytics building across the street, holding every claim, lab result, and portal click from every system in bulk. Same ID badges, same directory of what is stored where, so staff walk between them without noticing. Different buildings, plumbing, and power.</p>
+  </div>
+
+  <figure class="diagram">
+    <svg viewBox="0 0 900 480" role="img" aria-labelledby="dg1T dg1D">
+      <title id="dg1T">Core home org and Data 360 tenant</title>
+      <desc id="dg1D">The core home org holds the control plane: Setup screens, metadata for DLOs and DMOs, users and permissions, CRM records, and automation. The Data 360 tenant on Hyperforce holds the data plane: lakehouse storage, extracted data, Spark and Hyper compute, a real-time layer, and search indexes. Records are copied from core into Data 360, metadata syncs both ways, and insights flow back into core.</desc>
+      <defs><marker id="ah1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head"/></marker></defs>
+
+      <rect x="16" y="16" width="354" height="448" rx="14" class="d-panel-core" stroke-width="1.5"/>
+      <text x="38" y="50" class="d-title">Your core org (home org)</text>
+      <text x="38" y="70" class="d-sub">Control plane: what exists and who can see it</text>
+      <rect x="36" y="94" width="314" height="44" rx="8" class="d-row"/><circle cx="54" cy="116" r="4" class="d-core-dot"/><text x="68" y="120" class="d-txt">Setup and the Data 360 app screens</text>
+      <rect x="36" y="148" width="314" height="44" rx="8" class="d-row"/><circle cx="54" cy="170" r="4" class="d-core-dot"/><text x="68" y="174" class="d-txt">Metadata for DLOs, DMOs, schema configs</text>
+      <rect x="36" y="202" width="314" height="44" rx="8" class="d-row"/><circle cx="54" cy="224" r="4" class="d-core-dot"/><text x="68" y="228" class="d-txt">Users, permission sets, data space access</text>
+      <rect x="36" y="256" width="314" height="44" rx="8" class="d-row"/><circle cx="54" cy="278" r="4" class="d-core-dot"/><text x="68" y="282" class="d-txt">CRM records in the transactional database</text>
+      <rect x="36" y="310" width="314" height="44" rx="8" class="d-row"/><circle cx="54" cy="332" r="4" class="d-core-dot"/><text x="68" y="336" class="d-txt">Apex, Flow, and the Agentforce runtime</text>
+      <text x="38" y="392" class="d-sub">Runs on first-party or Hyperforce infrastructure</text>
+      <text x="38" y="412" class="d-sub">One record at a time, ACID, governor limits</text>
+
+      <rect x="530" y="16" width="354" height="448" rx="14" class="d-panel-lake" stroke-width="1.5"/>
+      <text x="552" y="50" class="d-title">Data 360 tenant</text>
+      <text x="552" y="70" class="d-sub">Data plane: where rows live and get processed</text>
+      <rect x="550" y="94" width="314" height="44" rx="8" class="d-row"/><circle cx="568" cy="116" r="4" class="d-lake-dot"/><text x="582" y="120" class="d-txt">Lakehouse: Parquet files, Iceberg tables</text>
+      <rect x="550" y="148" width="314" height="44" rx="8" class="d-row"/><circle cx="568" cy="170" r="4" class="d-lake-dot"/><text x="582" y="174" class="d-txt">DLO, DMO, and extracted document data</text>
+      <rect x="550" y="202" width="314" height="44" rx="8" class="d-row"/><circle cx="568" cy="224" r="4" class="d-lake-dot"/><text x="582" y="228" class="d-txt">Spark and Hyper compute, identity resolution</text>
+      <rect x="550" y="256" width="314" height="44" rx="8" class="d-row"/><circle cx="568" cy="278" r="4" class="d-lake-dot"/><text x="582" y="282" class="d-txt">Document AI: OCR, LLM, Trust Layer</text>
+      <rect x="550" y="310" width="314" height="44" rx="8" class="d-row"/><circle cx="568" cy="332" r="4" class="d-lake-dot"/><text x="582" y="336" class="d-txt">Vector and keyword indexes for RAG</text>
+      <text x="552" y="392" class="d-sub">Always on Hyperforce, hosted on AWS</text>
+      <text x="552" y="412" class="d-sub">Billions of rows, batch and streaming, credits</text>
+      <text x="552" y="440" class="d-mono">own API host: *.c360a.salesforce.com</text>
+
+      <text x="450" y="146" text-anchor="middle" class="d-lbl">Records copied in</text>
+      <text x="450" y="160" text-anchor="middle" class="d-lbl2">CRM connector</text>
+      <line x1="378" y1="174" x2="520" y2="174" class="d-arrow" marker-end="url(#ah1)"/>
+      <text x="450" y="236" text-anchor="middle" class="d-lbl">Metadata sync</text>
+      <text x="450" y="250" text-anchor="middle" class="d-lbl2">definitions, access</text>
+      <line x1="382" y1="264" x2="518" y2="264" class="d-arrow" marker-start="url(#ah1)" marker-end="url(#ah1)"/>
+      <text x="450" y="326" text-anchor="middle" class="d-lbl">Insights sent back</text>
+      <text x="450" y="340" text-anchor="middle" class="d-lbl2">enrichment, actions, grounding</text>
+      <line x1="520" y1="354" x2="380" y2="354" class="d-arrow" marker-end="url(#ah1)"/>
+    </svg>
+    <figcaption>Left side decides what things are and who may see them. Right side does the heavy lifting on the actual data. The orange arrows are the only ways they touch.</figcaption>
+  </figure>
+</section>
+
+<section id="compare">
+  <h3>Side by side</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th></th><th class="c">Core platform</th><th class="l">Data 360</th></tr></thead>
+      <tbody>
+        <tr><th>Main job</th><td>Transactions: save a Case, update a Contact, run a trigger</td><td>Analytics and activation, plus real-time profile work</td></tr>
+        <tr><th>Storage</th><td>Relational database, row by row</td><td>Columnar Parquet organized as Iceberg tables in object storage</td></tr>
+        <tr><th>Compute</th><td>Shared app servers, governed per transaction</td><td>Elastic Kubernetes compute, Spark for processing, Hyper for SQL</td></tr>
+        <tr><th>Where it runs</th><td>First-party data centers or Hyperforce</td><td>Always Hyperforce, on AWS</td></tr>
+        <tr><th>Freshness</th><td>Immediate and consistent the moment you save</td><td>Near real-time to batch. Identity resolution as often as every 15 minutes</td></tr>
+        <tr><th>Security</th><td>Profiles, permission sets, OWD, sharing rules</td><td>Data spaces, permission sets, attribute-based policies, dynamic masking</td></tr>
+        <tr><th>Automation</th><td>Apex triggers, record-triggered flows</td><td>Data Actions, Data Cloud-triggered flows, streaming insights</td></tr>
+        <tr><th>Cost model</th><td>Licenses and data storage</td><td>Consumption credits for ingestion, processing, and queries</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="journey">
+  <h3>A record's journey across the bridge</h3>
+  <p class="prose">A service rep updates a patient's phone number. Watch which side each step happens on.</p>
+  <ol class="journey">
+    <li class="oncore"><strong>The save</strong><span class="where">core</span><p>Validation rules and triggers fire, and the change commits to the core database instantly.</p></li>
+    <li class="offcore"><strong>The copy</strong><span class="where">Data 360</span><p>The CRM data stream writes the change into the Contact DLO as a new Iceberg snapshot. Minutes, not milliseconds.</p></li>
+    <li class="offcore"><strong>The mapping</strong><span class="where">Data 360</span><p>Field mappings carry it into the Individual and Contact Point Phone DMOs.</p></li>
+    <li class="offcore"><strong>The match</strong><span class="where">Data 360</span><p>Identity resolution links this person to the same individual in the claims feed and the portal.</p></li>
+    <li class="offcore"><strong>The signal</strong><span class="where">Data 360</span><p>A calculated insight counts missed appointments in 90 days. It crosses the threshold, so a Data Action fires.</p></li>
+    <li class="oncore"><strong>The action</strong><span class="where">core</span><p>A Flow creates a follow-up Task, the rep sees the unified profile, and an agent grounds its answer in the data graph.</p></li>
+  </ol>
+  <div class="callout lake prose">
+    <span class="t">The design consequence</span>
+    <p>Steps 1 and 6 are in core. Steps 2 to 5 are off-core. The round trip is a pipeline, not a transaction, so nothing on the right side can roll back the save on the left. Never put Data 360 in a save path.</p>
+  </div>
+</section>
+
+<!-- ============ PART 2 ============ -->
+<div class="part">
+  <div class="ptag">Part 2</div>
+  <h2>Why the build needs OAuth credentials</h2>
+  <p class="psub">The part that feels wrong until you see where the request travels.</p>
+</div>
+
+<section id="why-eca" class="prose">
+  <h3>The External Client App is not a Document AI setting</h3>
+  <p class="bigline">Document AI doesn't need an External Client App. The REST API you call it through does.</p>
+  <p>Document AI runs in two modes. Batch processes documents referenced by an Unstructured Data Model Object, entirely inside the platform. Transactional processes one document via REST and returns structured JSON synchronously.</p>
+  <p>Choosing "Without a Source Object" when you built the schema put you on the transactional path. That path is only reachable as an HTTP endpoint, and every call to it must carry a bearer token. A token can only be issued to a registered app, which is what the ECA is.</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>What you're doing</th><th>ECA needed?</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Building and testing a schema on the Document AI screen</td><td><span class="pill no">No</span></td><td>You're logged in to the org UI. No API call from outside.</td></tr>
+        <tr><td>Batch processing documents behind a UDMO</td><td><span class="pill no">No</span></td><td>Runs inside Data 360. Source connectors carry their own credentials.</td></tr>
+        <tr><td>Testing the extract API in Postman</td><td><span class="pill yes">Yes</span></td><td>Postman is an outside app.</td></tr>
+        <tr><td>An external portal or MuleSoft sending a document</td><td><span class="pill yes">Yes</span></td><td>Classic integration: client credentials or JWT bearer.</td></tr>
+        <tr><td>Your own Apex or Flow calling the extract API</td><td><span class="pill yes">Yes</span></td><td>An HTTP callout to your own org is still an API call.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="same-org" class="prose">
+  <h3>Same org, and you still need a key</h3>
+  <p>This is the question that doesn't sit right at first: the Apex is in the core org, the endpoint is the core org, so what is the client ID and secret for?</p>
+  <p>The key has nothing to do with <em>which</em> org you're calling. It's about <em>how</em>.</p>
+  <h4>Apex can reach Salesforce two ways</h4>
+  <ul>
+    <li><strong>In-process:</strong> SOQL, DML, <code>ConnectApi</code> methods. The code never leaves the org's runtime, so it already runs as the current user and nobody asks who you are.</li>
+    <li><strong>Over HTTP:</strong> <code>Http.send()</code>. The request leaves Apex, travels the network, and comes back in through <code>yourdomain.my.salesforce.com</code>, the same front door Postman uses. HTTP carries no memory of where a request came from, so the API layer sees an anonymous request and demands proof of identity.</li>
+  </ul>
+  <p>You can prove it in Execute Anonymous. Same org, same code, rejected:</p>
+<pre><code>HttpRequest req = new HttpRequest();
+req.setEndpoint(URL.getOrgDomainUrl().toExternalForm()
+    + '/services/data/v65.0/ssot/document-processing/actions/extract-data');
+req.setMethod('POST');
+HttpResponse res = new Http().send(req);
+<span class="cm">// 401: INVALID_SESSION_ID, Session expired or invalid</span></code></pre>
+  <div class="callout analogy">
+    <span class="t">Living in a house</span>
+    <p>Running SOQL is walking from the kitchen to the bedroom. Nobody checks. An HTTP callout is stepping outside and ringing your own doorbell. The door doesn't know it's you, so you need your key.</p>
+  </div>
+  <h4>Why not reuse the logged-in user's session?</h4>
+  <p>There isn't a reliable one to borrow. In a screen flow, <code>UserInfo.getSessionId()</code> returns a Lightning session, and Salesforce deliberately blocks those from making API calls. In async contexts like Queueable or scheduled jobs it can come back empty. Client credentials lets the platform mint a fresh token at any time, including a scheduled job at 2 a.m. with no human involved.</p>
+  <div class="callout core">
+    <span class="t">So what the credentials really are</span>
+    <p>A service account login for your own org's API. Client ID is the username, the secret is the password, the Run As user is who the token represents, and the Named Credential automates "log in, get a token, attach it" so your Apex never handles any of it. If Salesforce shipped Document AI as a native Apex method or standard Flow action, you'd need none of this, same as you don't need a token to run SOQL.</p>
+  </div>
+</section>
+
+<section id="urls" class="prose">
+  <h3>Which URL is actually called</h3>
+  <p>Both calls go to your own org's My Domain URL, the one entered in the Named Credential. Using the org from the tutorial screenshots:</p>
+<pre><code><span class="cm">// Call 1: the Named Credential gets a token for you</span>
+POST https://orgfarm-7689eee47b-dev-ed.develop.my.salesforce.com/services/oauth2/token
+     grant_type=client_credentials&amp;client_id=3MVG9...&amp;client_secret=****
+
+<span class="cm">// Call 2: the one your Apex writes</span>
+POST https://orgfarm-7689eee47b-dev-ed.develop.my.salesforce.com
+     /services/data/v65.0/ssot/document-processing/actions/extract-data
+     ?htmlEncode=false&amp;extractDataWithConfidenceScore=true
+Authorization: Bearer 00D...   <span class="cm">(added by the Named Credential)</span></code></pre>
+  <p>At runtime <code>callout:DocumentAI_NamedCredential</code> is simply replaced with that base URL.</p>
+  <h4>What happens once it arrives</h4>
+  <p>The URL is core. The work isn't. This is where Part 1 connects back:</p>
+  <ul>
+    <li>The request comes back in through your org's API front door</li>
+    <li>Core validates the bearer token and the Run As user's permissions</li>
+    <li>The <code>/ssot/</code> path is the Data 360 API family (ssot means "single source of truth"), so Salesforce routes it internally to your Data 360 tenant</li>
+    <li>Document AI loads the schema configuration, runs OCR, and sends the document to the LLM through the Einstein Trust Layer</li>
+    <li>The JSON returns the same way, into your Apex <code>HttpResponse</code></li>
+  </ul>
+  <p>Core is the reception desk. Data 360 is the lab behind it. You only ever talk to reception.</p>
+  <div class="callout lake">
+    <span class="t">Worth knowing for other Data 360 APIs</span>
+    <p>The Query API and Ingestion API work differently: you trade your core token for a Data 360 token, then call a separate tenant host that typically ends in <code>c360a.salesforce.com</code>. Document AI's extract endpoint skips that step and handles the handoff internally, which is why the URL here stays on your core domain.</p>
+  </div>
+</section>
+
+<!-- ============ PART 3 ============ -->
+<div class="part">
+  <div class="ptag">Part 3</div>
+  <h2>Your KYC tutorial, decoded</h2>
+  <p class="psub">Data Cloud Course by Ankit Jain, plus the DocumentAIExtractor class from the course repo.</p>
+</div>
+
+<section id="steps">
+  <h3>Every step, and the question it answers</h3>
+  <p class="prose">Your tutorial uses the better pattern: the secret goes into an External Credential, and the Apex just calls <code>callout:DocumentAI_NamedCredential</code> with no token code at all. That's also why it has more setup steps than the simpler samples.</p>
+  <div class="callout analogy prose">
+    <span class="t">A staff badge for the lab's order system</span>
+    <p>The <strong>ECA</strong> is the badge account the lab recognizes. The <strong>External Credential</strong> is the badge, locked in the key cabinet. The <strong>permission set</strong> is the list of staff allowed to take it out. The <strong>Named Credential</strong> is the lab's address on the order slip. The <strong>schema</strong> is the test you're ordering.</p>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Tutorial step</th><th>Its job</th><th>What it really does</th><th>If you skip it</th></tr></thead>
+      <tbody>
+        <tr><td class="step">1. External Client App</td><td class="role">Who is calling</td><td>Registers an OAuth client and turns on client credentials so a machine can get a token with a key and secret. Run As user decides whose access the call gets.</td><td>Token request fails as an unknown client.</td></tr>
+        <tr><td class="step">1. Callback URL</td><td class="role">Placeholder</td><td><code>login.salesforce.com/services/oauth2/success</code> is only used by browser login flows. Client credentials never redirects.</td><td>Nothing at runtime, but the form requires it.</td></tr>
+        <tr><td class="step">1. OAuth scopes</td><td class="role">What the token may do</td><td>Your screenshot selects <code>api</code>, <code>full</code>, and <code>refresh_token, offline_access</code>. <code>api</code> is the one this needs. Client credentials issues no refresh tokens, so that scope does nothing here.</td><td>Without <code>api</code>, the extract call is rejected.</td></tr>
+        <tr><td class="step">2. External Credential</td><td class="role">How to get a token</td><td>OAuth 2.0, Client Credentials with Client Secret, pointed at <code>myDomain/services/oauth2/token</code>. The token recipe the platform runs for you.</td><td>You'd write the token callout in Apex yourself.</td></tr>
+        <tr><td class="step">2. Principal</td><td class="role">The locked-up key</td><td>Stores the ECA's client ID and secret, encrypted, outside your code.</td><td>No key to present.</td></tr>
+        <tr><td class="step">2. Permission set</td><td class="role">Who may use the key</td><td>External Credential Principal Access, assigned to the user running the flow.</td><td>Callout fails with a credential access error for everyone without it.</td></tr>
+        <tr><td class="step">2. Named Credential</td><td class="role">Where to send it</td><td>Base URL is your own My Domain, linked to the External Credential, Generate Authorization Header on.</td><td>Apex has no endpoint or header.</td></tr>
+        <tr><td class="step">3. Schema, without a source object</td><td class="role">What to extract</td><td>The reason for everything above. This choice means the transactional pipeline, reachable only through REST. The screen itself says it's for programmatic workflows.</td><td>Apex has no <code>KYC_Form</code> config to reference.</td></tr>
+        <tr><td class="step">4. Apex class</td><td class="role">The caller</td><td>Reads the file, posts to <code>extract-data</code> with the config name, parses JSON with confidence scores, maps fields for Contact.</td><td>The flow has no action to call.</td></tr>
+        <tr><td class="step">5. Screen flow</td><td class="role">The human loop</td><td>Upload, preview, extract, let the rep correct values, then update the Contact.</td><td>No user experience.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout lake prose">
+    <span class="t">The one thing to remember</span>
+    <p>Had you chosen "From a source object" in step 3, you'd be on the batch pipeline over a UDMO, and steps 1, 2, and 4 wouldn't exist at all. The API plumbing is the price of real-time, single-document extraction.</p>
+  </div>
+</section>
+
+<section id="runtime">
+  <h3>Runtime sequence</h3>
+  <p class="prose">What happens when a rep clicks Extract. Blue is your org's automation layer, orange is the API front door, teal is Data 360.</p>
+  <figure class="diagram">
+    <svg viewBox="0 0 900 470" role="img" aria-labelledby="dg2T dg2D">
+      <title id="dg2T">Runtime sequence of the KYC extraction call</title>
+      <desc id="dg2D">Step 1 the screen flow collects the KYC file. Step 2 the Apex action calls the Named Credential. Step 3 the Named Credential supplies the My Domain URL and adds the auth header. Step 4 the External Credential fetches a token using the stored client ID and secret, after a permission set check on the running user. Step 5 the token endpoint validates the key against the External Client App and issues a token that runs as the Run As user. Step 6 the extract-data API receives the bearer token and file. Step 7 Document AI in Data 360 applies the schema. Step 8 JSON returns to the flow for review and the Contact update.</desc>
+      <defs><marker id="m2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="arr-h"/></marker></defs>
+
+      <text x="20" y="30" class="zone">Row 1: inside your org, before anything leaves</text>
+      <rect x="20" y="44" width="190" height="112" rx="10" class="b-org" stroke-width="1.4"/>
+      <circle cx="42" cy="68" r="12" class="n-core"/><text x="42" y="72.5" text-anchor="middle" class="n-txt">1</text>
+      <text x="62" y="73" class="b-title">Screen Flow</text>
+      <text x="34" y="100" class="b-txt">Rep uploads the KYC file</text>
+      <text x="34" y="118" class="b-txt">Passes ContentDocumentId</text>
+      <text x="34" y="144" class="b-tag">Tutorial step 5</text>
+
+      <rect x="245" y="44" width="190" height="112" rx="10" class="b-org" stroke-width="1.4"/>
+      <circle cx="267" cy="68" r="12" class="n-core"/><text x="267" y="72.5" text-anchor="middle" class="n-txt">2</text>
+      <text x="287" y="73" class="b-title">Apex action</text>
+      <text x="259" y="100" class="b-txt">DocumentAIExtractor</text>
+      <text x="259" y="118" class="b-txt">Calls the Named Credential</text>
+      <text x="259" y="144" class="b-tag">Tutorial step 4</text>
+
+      <rect x="470" y="44" width="190" height="112" rx="10" class="b-org" stroke-width="1.4"/>
+      <circle cx="492" cy="68" r="12" class="n-core"/><text x="492" y="72.5" text-anchor="middle" class="n-txt">3</text>
+      <text x="512" y="73" class="b-title">Named Credential</text>
+      <text x="484" y="100" class="b-txt">Where: your My Domain URL</text>
+      <text x="484" y="118" class="b-txt">Adds the auth header</text>
+      <text x="484" y="144" class="b-tag">Tutorial step 2</text>
+
+      <rect x="695" y="44" width="190" height="112" rx="10" class="b-org" stroke-width="1.4"/>
+      <circle cx="717" cy="68" r="12" class="n-core"/><text x="717" y="72.5" text-anchor="middle" class="n-txt">4</text>
+      <text x="737" y="73" class="b-title">External Credential</text>
+      <text x="709" y="100" class="b-txt">How: client credentials</text>
+      <text x="709" y="118" class="b-txt">Principal holds the key</text>
+      <text x="709" y="144" class="b-tag">Tutorial step 2</text>
+
+      <line x1="212" y1="100" x2="240" y2="100" class="arr" marker-end="url(#m2)"/>
+      <line x1="437" y1="100" x2="465" y2="100" class="arr" marker-end="url(#m2)"/>
+      <line x1="662" y1="100" x2="690" y2="100" class="arr" marker-end="url(#m2)"/>
+
+      <rect x="560" y="176" width="325" height="30" rx="15" class="gate" stroke-width="1.2"/>
+      <text x="722" y="195.5" text-anchor="middle" class="gate-t">Permission set gate: may the running user use this key?</text>
+      <path d="M 790 210 L 790 262" class="arr" marker-end="url(#m2)"/>
+
+      <text x="20" y="252" class="zone">Row 2: through the front door and into Data 360, then back</text>
+      <rect x="695" y="268" width="190" height="120" rx="10" class="b-api" stroke-width="1.6"/>
+      <circle cx="717" cy="292" r="12" class="n-bridge"/><text x="717" y="296.5" text-anchor="middle" class="n-txt">5</text>
+      <text x="737" y="297" class="b-title">Token endpoint</text>
+      <text x="709" y="324" class="b-txt">ECA checks key and secret</text>
+      <text x="709" y="342" class="b-txt">Token runs as Run As user</text>
+      <text x="709" y="374" class="b-tag">Tutorial step 1</text>
+
+      <rect x="470" y="268" width="190" height="120" rx="10" class="b-api" stroke-width="1.6"/>
+      <circle cx="492" cy="292" r="12" class="n-bridge"/><text x="492" y="296.5" text-anchor="middle" class="n-txt">6</text>
+      <text x="512" y="297" class="b-title">extract-data API</text>
+      <text x="484" y="324" class="b-txt">Bearer token plus the file</text>
+      <text x="484" y="342" class="b-txt">ssot/document-processing</text>
+      <text x="484" y="374" class="b-tag">Called by the Apex</text>
+
+      <rect x="245" y="268" width="190" height="120" rx="10" class="b-lake" stroke-width="1.4"/>
+      <circle cx="267" cy="292" r="12" class="n-lake"/><text x="267" y="296.5" text-anchor="middle" class="n-txt">7</text>
+      <text x="287" y="297" class="b-title">Document AI</text>
+      <text x="259" y="324" class="b-txt">Applies the KYC_Form schema</text>
+      <text x="259" y="342" class="b-txt">OCR and LLM, JSON out</text>
+      <text x="259" y="374" class="b-tag">Tutorial step 3</text>
+
+      <rect x="20" y="268" width="190" height="120" rx="10" class="b-org" stroke-width="1.4"/>
+      <circle cx="42" cy="292" r="12" class="n-core"/><text x="42" y="296.5" text-anchor="middle" class="n-txt">8</text>
+      <text x="62" y="297" class="b-title">Back in the Flow</text>
+      <text x="34" y="324" class="b-txt">Rep reviews the fields</text>
+      <text x="34" y="342" class="b-txt">Flow updates the Contact</text>
+      <text x="34" y="374" class="b-tag">Tutorial step 5</text>
+
+      <line x1="693" y1="328" x2="665" y2="328" class="arr" marker-end="url(#m2)"/>
+      <line x1="468" y1="328" x2="440" y2="328" class="arr" marker-end="url(#m2)"/>
+      <line x1="243" y1="328" x2="215" y2="328" class="arr" marker-end="url(#m2)"/>
+      <text x="450" y="430" text-anchor="middle" class="b-tag">Steps 3 to 5 happen automatically inside one callout. Your Apex only writes step 2.</text>
+    </svg>
+    <figcaption>This is the runtime order. The tutorial builds the pieces in a different order: key first, then cabinet, then address, then the schema, then the code.</figcaption>
+  </figure>
+</section>
+
+<section id="users">
+  <h3>The two-user trap</h3>
+  <p class="prose">In the tutorial you are the admin, the flow runner, and the Run As user all at once, which hides the fact that two different users are involved in every call.</p>
+  <div class="users">
+    <div class="user a">
+      <h4>The person running the flow</h4>
+      <p>Needs the permission set with External Credential Principal Access. Otherwise the platform won't let their session use the stored key.</p>
+    </div>
+    <div class="user b">
+      <h4>The ECA's Run As user</h4>
+      <p>Whose permissions the Document AI call actually executes with, and whose name shows in API logs. Nobody logs in as this user.</p>
+    </div>
+  </div>
+  <div class="callout warn prose">
+    <span class="t">How this bites</span>
+    <p>You roll the flow out to the KYC operations team. It works perfectly when you test it and fails for every rep, because the permission set was only assigned to you. Fix: assign it to the reps or their permission set group, and keep the Run As user a dedicated integration user.</p>
+  </div>
+</section>
+
+<section id="apex">
+  <h3>What I noticed in DocumentAIExtractor.cls</h3>
+  <p class="prose">Read from the course repo. It works for the demo, but a few things matter before real documents go through it.</p>
+  <div class="prose">
+    <div class="finding">
+      <h4>It sends the whole file as base64<span class="sev high">Will hit limits</span></h4>
+      <p>The class loads <code>VersionData</code>, base64-encodes it, and puts it in the JSON body. Base64 adds about a third to the size, and the blob, the encoded string, and the body all sit in heap at once. A screen flow is synchronous, so the 6 MB heap and callout size limits apply. Files around 1.5 to 2 MB can fail, well below Document AI's own 10 MB limit.</p>
+      <p>Salesforce's own resume sample sends a file reference instead:</p>
+<pre><code><span class="cm">// Now: the file bytes travel through Apex heap</span>
+<span class="bad">'files' =&gt; new List&lt;Object&gt;{ new Map&lt;String,Object&gt;{ 'mimeType' =&gt; 'application/pdf', 'data' =&gt; base64Data } }</span>
+
+<span class="cm">// Lighter: pass the ContentVersion Id</span>
+<span class="good">'files' =&gt; new List&lt;Object&gt;{ new Map&lt;String,Object&gt;{ 'fileId' =&gt; cv.Id } }</span></code></pre>
+      <p>With <code>fileId</code> you can also drop <code>VersionData</code> from the SOQL query.</p>
+    </div>
+    <div class="finding">
+      <h4>The MIME type is hardcoded to PDF<span class="sev med">Bug</span></h4>
+      <p>The class works out the right MIME type with <code>getMimeType()</code>, then ignores it and sends <code>'application/pdf'</code>. A rep who photographs an ID card and uploads a JPG sends image bytes labeled as a PDF.</p>
+    </div>
+    <div class="finding">
+      <h4>The config name must match exactly<span class="sev med">Gotcha</span></h4>
+      <p>The body hardcodes <code>'idpConfigurationIdOrName' =&gt; 'KYC_Form'</code>. If your published schema's API name differs, you get a 400. Better to pass it from the flow or custom metadata so one class serves several document types.</p>
+    </div>
+    <div class="finding">
+      <h4>Dead code around the model<span class="sev low">Cleanup</span></h4>
+      <p>It builds a <code>requestBody</code> map with <code>mlModel</code> set to Gemini 2.0 Flash, then sends a different map. The model actually used is whatever the schema configuration specifies.</p>
+    </div>
+    <div class="finding">
+      <h4>The flow only processes the last file<span class="sev low">Behavior</span></h4>
+      <p>The loop overwrites <code>ContentDocumentVar</code> on every pass. If the upload allows multiple files, only the last is extracted. Restrict the upload to one file, or call the action per file.</p>
+    </div>
+    <div class="finding">
+      <h4>It already asks for confidence scores<span class="sev plus">Nice</span></h4>
+      <p>The endpoint uses <code>extractDataWithConfidenceScore=true</code> and <code>parseExtractedData()</code> captures a score per field. Use it: flag any field below a threshold on the review screen so the rep checks it before the Contact updates.</p>
+    </div>
+    <div class="finding">
+      <h4>It extracts government ID numbers<span class="sev high">Governance</span></h4>
+      <p>The mapping pulls PAN and Aadhaar numbers. Trust Layer PII masking doesn't currently apply to documents sent through Document AI, so these reach the model as-is. Store them in encrypted fields with tight field-level security, and confirm with the customer that sending ID documents to the chosen model meets their compliance rules.</p>
+    </div>
+  </div>
+</section>
+
+<section id="prod" class="prose">
+  <h3>Before a customer uses it</h3>
+  <p>In order of how often it causes trouble:</p>
+  <div class="finding"><h4>Assign the permission set to the real users</h4><p>Not just the admin who built it.</p></div>
+  <div class="finding"><h4>Swap the Run As user</h4><p>A dedicated integration user with only the access Document AI needs, instead of System Administrator.</p></div>
+  <div class="finding"><h4>Trim the scopes</h4><p>Keep <code>api</code>. Drop <code>full</code> and <code>refresh_token, offline_access</code>.</p></div>
+  <div class="finding"><h4>Send fileId, not base64</h4><p>Removes the heap problem and the MIME bug in one change.</p></div>
+  <div class="finding"><h4>Plan for the API's pace</h4><p>Synchronous, typically 5 to 15 seconds, capped at 50 calls per minute per tenant. Fine behind a button. Wrong in a bulk trigger.</p></div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<div class="part">
+  <div class="ptag">Reference</div>
+  <h2 id="faq">FAQ</h2>
+  <p class="psub">The first five are the questions from the thread, in the order they came up. The rest are the ones that tend to follow.</p>
+  <div class="faqctl">
+    <button id="openAll" type="button">Expand all</button>
+    <button id="closeAll" type="button">Collapse all</button>
+  </div>
+</div>
+
+<section id="faq-body" style="padding-top: 18px;">
+  <div class="faq" id="faqBox">
+    <div class="grp">The questions from the thread</div>
+
+    <details open>
+      <summary>Is Data 360 a different instance from the core platform?
+        <span class="mine">"Data cloud technically all together different instance than Platform instance. Data Cloud is a hyperscale platform"</span>
+      </summary>
+      <div class="a">
+        <p>Mostly yes, and the instinct is right. Data 360 runs in a dedicated functional domain on Hyperforce, on AWS, with a lakehouse built on Iceberg and Parquet and its own Spark and Hyper compute. Your org's rows are not in that lakehouse; copies of them are.</p>
+        <p>The one correction is that the control plane stays in core. Metadata is stored as Salesforce metadata in an ACID database, and the home org owns Setup, users, and permission sets. So: shared control plane, separate data plane.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Why do I need an External Client App just to create Document AI?
+        <span class="mine">"when i create a document AI in the data cloud why do i need to create external client app i do not understand that"</span>
+      </summary>
+      <div class="a">
+        <p>You don't, for Document AI itself. Building a schema on the Document AI screen needs nothing extra, and neither does the batch pipeline over a UDMO.</p>
+        <p>You need it because the tutorial uses the transactional pipeline, chosen the moment you picked "Without a Source Object". That pipeline is only reachable as a REST endpoint, every call needs a bearer token, and tokens are only issued to registered apps. The ECA is that registration.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>The Apex is in the core org and the endpoint is the core org. What is the client ID and secret even for?
+        <span class="mine">"if your apex code still in the core org then what is the useage of client and secrete here?"</span>
+      </summary>
+      <div class="a">
+        <p>The key isn't about which org you're calling. It's about how.</p>
+        <p>In-process Apex (SOQL, DML, <code>ConnectApi</code>) never leaves the org's runtime, so it already runs as the current user and nobody asks who you are. An HTTP callout leaves Apex, travels the network, and comes back in through the same front door Postman uses. HTTP carries no memory of where a request came from, so the API layer sees an anonymous request and asks for identity.</p>
+        <p>Document AI extraction is only reachable over HTTP, so your Apex has to take that route, and the credentials are a service account login for your own org's API.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Where is the request going? Which URL is it calling?
+        <span class="mine">"so where is the request going or calling the endpoint? which url its calling"</span>
+      </summary>
+      <div class="a">
+        <p>Both calls go to your own org's My Domain URL, the one in the Named Credential:</p>
+<pre><code>POST https://&lt;your-domain&gt;.my.salesforce.com/services/oauth2/token
+POST https://&lt;your-domain&gt;.my.salesforce.com
+     /services/data/v65.0/ssot/document-processing/actions/extract-data</code></pre>
+        <p>The URL is core, but the work isn't. The <code>/ssot/</code> path is the Data 360 API family, so Salesforce routes the request internally to your Data 360 tenant where Document AI runs, then returns the JSON the same way. Core is the reception desk; Data 360 is the lab behind it.</p>
+      </div>
+    </details>
+
+    <div class="grp">Follow-on questions about authentication</div>
+
+    <details>
+      <summary>Can I prove the org really rejects its own Apex?</summary>
+      <div class="a">
+        <p>Run this in Execute Anonymous. Same org, same code, rejected:</p>
+<pre><code>HttpRequest req = new HttpRequest();
+req.setEndpoint(URL.getOrgDomainUrl().toExternalForm()
+    + '/services/data/v65.0/ssot/document-processing/actions/extract-data');
+req.setMethod('POST');
+HttpResponse res = new Http().send(req);
+<span class="cm">// 401: INVALID_SESSION_ID, Session expired or invalid</span></code></pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>Why can't Apex reuse the logged-in user's session?</summary>
+      <div class="a">
+        <p>There's no reliable session to borrow. In a screen flow, <code>UserInfo.getSessionId()</code> returns a Lightning session, and Salesforce deliberately blocks those from making API calls. In async contexts like Queueable or scheduled jobs it can come back empty. Client credentials lets the platform mint a fresh token at any time, including an unattended job at 2 a.m.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>What's the difference between the ECA, External Credential, Named Credential, and permission set?</summary>
+      <div class="a">
+        <ul>
+          <li><strong>External Client App:</strong> who is calling. The registered OAuth client.</li>
+          <li><strong>External Credential:</strong> how to get a token, and where the key and secret live.</li>
+          <li><strong>Permission set:</strong> who in the org may use that key.</li>
+          <li><strong>Named Credential:</strong> where to send the call, plus it attaches the auth header.</li>
+        </ul>
+        <p>Badge account, badge in the key cabinet, list of staff who may take it out, and the address on the order slip.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Why a callback URL if client credentials never redirects?</summary>
+      <div class="a">
+        <p>It does nothing for this flow. The field is required on the form, so tutorials fill it with a placeholder. Yours uses <code>login.salesforce.com/services/oauth2/success</code>; the Salesforce guide uses Postman's callback because it expects you to test there.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Which OAuth scopes does this actually need?</summary>
+      <div class="a">
+        <p><code>api</code> is the one that matters. Salesforce's architect guidance lists <code>api</code> and <code>cdp_ingest_api</code> for the transactional pipeline. Your screenshot also selects <code>full</code> and <code>refresh_token, offline_access</code>; client credentials issues no refresh tokens, so that does nothing, and <code>full</code> is far more than the call needs.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Why isn't this calling a c360a.salesforce.com host?</summary>
+      <div class="a">
+        <p>Because the extract endpoint doesn't work that way. The Query API and Ingestion API make you trade your core token for a Data 360 token first, then call a separate tenant host that typically ends in <code>c360a.salesforce.com</code>. Document AI's extract endpoint lets you call the core domain and handles the handoff internally. Useful to know when the auth steps in Data 360 API docs suddenly look different.</p>
+      </div>
+    </details>
+
+    <div class="grp">Setup and operations</div>
+
+    <details>
+      <summary>It works for me but fails for everyone else. Why?</summary>
+      <div class="a">
+        <p>Almost always the permission set. Two users are involved in every call and, as the builder, you're usually both, which hides the split.</p>
+        <ul>
+          <li>The person running the flow needs External Credential Principal Access.</li>
+          <li>The ECA's Run As user is whose permissions the call executes with.</li>
+        </ul>
+        <p>Assign the permission set to the real users or their permission set group, and make the Run As user a dedicated integration user.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Why does the call take so long?</summary>
+      <div class="a">
+        <p>The extraction API is fully synchronous, typically 5 to 15 seconds depending on file size and schema complexity. Set caller timeouts to at least 30 seconds. Fine behind a button a rep clicks; wrong anywhere that needs an instant response.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Can I run this from a record-triggered flow on a bulk load?</summary>
+      <div class="a">
+        <p>Not directly. The API allows 50 extraction calls per minute per tenant, and each call burns credits. A load of 500 documents would blow straight through it. For high volume, use the batch pipeline with a UDMO, which is what it's built for.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Does the extracted data end up in Data 360 or in my org?</summary>
+      <div class="a">
+        <p>In this tutorial, neither by default. The transactional pipeline returns JSON to the caller and persists nothing on its own. Your flow then writes selected fields onto the Contact, so those land in the core database.</p>
+        <p>If you want the extraction to feed identity resolution, calculated insights, or Agentforce grounding, route the payload into a DLO yourself, or use the batch pipeline, which writes to DLOs automatically.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Is the document's PII masked before it reaches the LLM?</summary>
+      <div class="a">
+        <p>No. The Einstein Trust Layer enforces zero data retention with the model provider, but masking operates at the prompt level, not the document level. Salesforce's architect guidance states masking isn't currently supported for multimodal input, so documents go to the model as-is.</p>
+        <p>Your tutorial extracts PAN and Aadhaar numbers, so raise this directly with any customer before real ID documents go through it.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Is "Extract Data from Document" in Flow the same thing?</summary>
+      <div class="a">
+        <p>No. That standard action belongs to the MuleSoft for Flow: IDP add-on and requires that license per user. It isn't the Data 360 Document AI REST path, so don't assume it removes the need for an ECA in a Data 360 design.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<section id="sources" class="prose">
+  <h3>Sources</h3>
+  <ul class="sources">
+    <li><a href="https://architect.salesforce.com/docs/architect/fundamentals/guide/data-360-architecture.html" target="_blank" rel="noopener">Data 360 Architecture</a>, Salesforce Architects</li>
+    <li><a href="https://architect.salesforce.com/docs/architect/fundamentals/guide/data360-document-ai.html" target="_blank" rel="noopener">Data 360 Document AI</a>, Salesforce Architects: pipelines, authentication, limits, Trust Layer behavior</li>
+    <li><a href="https://architect.salesforce.com/docs/architect/fundamentals/guide/data360_security_architecture" target="_blank" rel="noopener">Data 360 Security Architecture</a>, Salesforce Architects</li>
+    <li><a href="https://developer.salesforce.com/docs/ai/automate-resume-processing/guide/aes-create-apex-classes.html" target="_blank" rel="noopener">Automate Resume Processing: Create Apex Classes</a>, Salesforce Developers</li>
+    <li><a href="https://help.salesforce.com/s/articleView?id=data.c360_a_document_ai.htm&amp;language=en_US" target="_blank" rel="noopener">Document AI</a>, Salesforce Help</li>
+    <li><a href="https://github.com/techjourneywithankit/Udemy-Data-360/blob/main/force-app/main/default/classes/DocumentAIExtractor.cls" target="_blank" rel="noopener">DocumentAIExtractor.cls</a>, course GitHub repo</li>
+    <li>Uploaded tutorial: "Document AI", Data Cloud Course by Ankit Jain</li>
+  </ul>
+</section>
+
+</div>
+</main>
+
+<script>
+  const box = document.getElementById('faqBox');
+  document.getElementById('openAll').addEventListener('click', () => {
+    box.querySelectorAll('details').forEach(d => d.open = true);
+  });
+  document.getElementById('closeAll').addEventListener('click', () => {
+    box.querySelectorAll('details').forEach(d => d.open = false);
+  });
+
+  const links = [...document.querySelectorAll('#nav a')];
+  const sections = links.map(a => document.querySelector(a.getAttribute('href')));
+  const spy = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => s && spy.observe(s));
+</script>
+</body>
+</html>
