@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Document AI vs Prompt Builder</title>
+<meta name="description" content="Questions that come up whenever a Salesforce design touches a PDF: Data Cloud Document AI vs Agentforce Prompt Builder file inputs, answered in order.">
+<style>
+  :root {
+    --paper: #f0f5f9;
+    --panel: #ffffff;
+    --ink: #1e3448;
+    --ink-soft: #54637a;
+    --rule: #d6e8f5;
+    --extract: #0e6655;
+    --extract-wash: #e3f3ef;
+    --reason: #7d3c98;
+    --reason-wash: #efe2f5;
+    --chip-bg: #e7f0fb;
+    --chip-text: #1f5f8f;
+    --pre-bg: #1a3a52;
+    --pre-text: #dbe6f0;
+    --sidebar-bg: #1a3a52;
+    --accent: #2e86c1;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{animation-duration:.001ms !important; transition-duration:.001ms !important;} }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Charter, "Bitstream Charter", "Iowan Old Style", Georgia, serif;
+    font-size: 17px;
+    line-height: 1.62;
+  }
+
+  /* ---------- shell ---------- */
+  .shell{ min-height:100vh; }
+
+  .sidebar{
+    position: fixed; top: 0; left: 0; width: 220px; height: 100vh; overflow-y: auto; z-index: 100;
+    padding: 26px 18px; background: var(--sidebar-bg);
+    display: flex; flex-direction: column; gap: 22px;
+    font-family: "Helvetica Neue", Arial, system-ui, sans-serif;
+  }
+  .brand{ display:flex; align-items:center; gap:9px; text-decoration:none; }
+  .brand-mark{
+    width:32px; height:32px; border-radius:8px; background:var(--accent); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:12px; flex:none;
+  }
+  .brand-text{ display:flex; flex-direction:column; line-height:1.25; }
+  .brand-text strong{ font-size:13.5px; font-weight:700; color:#fff; }
+  .brand-text span{ font-size:11px; color:#aed6f1; }
+
+  .toc-label{ font-size:10px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:#aed6f1; margin-bottom:6px; }
+  .toc{ list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:0; border-left:1px solid rgba(174,214,241,.25); }
+  .toc a{
+    display:block; padding:6.5px 0 6.5px 13px; margin-left:-1px; border-left:1px solid transparent;
+    text-decoration:none; color:#d7e6f2; font-size:12.6px; line-height:1.4;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .toc a:hover{ color:#fff; }
+  .toc li.active > a{ color:#fff; border-left-color:#fff; font-weight:600; }
+
+  .side-card{ margin-top:auto; padding:12px 13px; border-radius:10px; background:rgba(255,255,255,.06); border:1px solid rgba(174,214,241,.22); }
+  .side-card .sc-label{ font-family:"Helvetica Neue",Arial,system-ui,sans-serif; font-size:10px; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:#aed6f1; margin-bottom:5px; }
+  .side-card p{ margin:0; font-size:11.6px; color:#c6d8e6; line-height:1.5; font-family: Charter, Georgia, serif; }
+
+  /* ---------- main ---------- */
+  main{ margin-left:220px; padding:40px 52px 84px; min-width:0; background:var(--paper); min-height:100vh; }
+  .content-col{ max-width:800px; }
+
+  .pagebar{
+    position:sticky; top:0; z-index:45;
+    display:flex; align-items:center; gap:9px; flex-wrap:wrap;
+    margin:-40px -52px 30px; padding:12px 52px 13px;
+    background:var(--paper); border-bottom:1px solid var(--rule);
+    font-family:"Helvetica Neue",Arial,system-ui,sans-serif; font-size:13px;
+  }
+  .pagebar-home{ display:inline-flex; align-items:center; gap:7px; text-decoration:none; color:var(--accent); font-weight:600; white-space:nowrap; }
+  .pagebar-home:hover{ text-decoration:underline; }
+  .pagebar-mark{ width:20px; height:20px; border-radius:5px; background:var(--accent); color:#fff; display:inline-flex; align-items:center; justify-content:center; }
+  .pagebar-chevron{ color:var(--ink-soft); opacity:.6; }
+  .pagebar-here{ color:var(--ink-soft); font-weight:500; }
+
+  /* ---------- hero ---------- */
+  .hero{ border-bottom: 2px solid var(--ink); padding-bottom: 22px; margin-bottom: 6px; }
+  .eyebrow{
+    display:inline-block; font-family:"Helvetica Neue",Arial,system-ui,sans-serif; font-size:11px; font-weight:600;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--accent); margin-bottom:12px;
+  }
+  .hero h1 {
+    font-size: 2.15rem; line-height: 1.15; margin: 0 0 10px;
+    font-weight: 600; letter-spacing: -0.01em; max-width: 24ch; color: var(--ink);
+  }
+  .hero .dek { margin: 0; color: var(--ink-soft); max-width: 60ch; }
+
+  section.qa {
+    border-top: 1px solid var(--rule);
+    padding: 34px 0 8px;
+  }
+  section.qa h2 {
+    font-size: 1.3rem; font-weight: 600; margin: 0 0 14px;
+    letter-spacing: -0.01em; max-width: 40ch; line-height: 1.3;
+    scroll-margin-top: 90px;
+  }
+  section.qa .lede {
+    font-weight: 600;
+    border-left: 3px solid var(--ink);
+    padding-left: 14px;
+    margin: 0 0 18px;
+  }
+  p { max-width: 72ch; }
+  h3 { font-size: 1.02rem; font-weight: 600; margin: 24px 0 4px; }
+
+  table {
+    width: 100%; border-collapse: collapse;
+    font-family: "Helvetica Neue", Arial, system-ui, sans-serif;
+    font-size: 0.88rem; margin: 16px 0 4px;
+  }
+  th, td { text-align: left; vertical-align: top; padding: 12px 13px; border-bottom: 1px solid var(--rule); }
+  thead th { border-bottom: 2px solid var(--ink); font-weight: 600; font-size: 0.84rem; }
+  tbody th { font-weight: 600; color: var(--ink-soft); width: 24%; }
+  tbody tr:hover td, tbody tr:hover th { background: var(--panel); }
+  .c-extract { color: var(--extract); }
+  .c-reason { color: var(--reason); }
+
+  .case {
+    border: 1px solid var(--rule); border-left-width: 5px; border-radius: 0 10px 10px 0;
+    padding: 20px 24px; margin: 18px 0;
+  }
+  .case.extract { border-left-color: var(--extract); background: var(--extract-wash); }
+  .case.reason { border-left-color: var(--reason); background: var(--reason-wash); }
+  .case h3 { margin-top: 0; }
+  .case p:last-child { margin-bottom: 0; }
+
+  pre {
+    background: var(--pre-bg); color: var(--pre-text); border: 1px solid var(--rule);
+    border-radius: 8px; padding: 15px 17px; overflow-x: auto;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.8rem; line-height: 1.65;
+  }
+  code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.86em; background: var(--chip-bg); color: var(--chip-text); padding: 1px 6px; border-radius: 4px; }
+  pre code { background: none; padding: 0; color: inherit; }
+
+  .flag {
+    background: var(--panel); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 16px 20px; margin: 20px 0 4px;
+  }
+  .flag p { margin: 0; }
+
+  ul.plain { max-width: 72ch; }
+  ul.plain li { margin-bottom: 8px; }
+
+  ol.flow { counter-reset: step; list-style: none; padding: 0; margin: 14px 0 0; }
+  ol.flow li {
+    counter-increment: step; position: relative;
+    padding: 0 0 16px 46px; max-width: 70ch;
+  }
+  ol.flow li::before {
+    content: counter(step);
+    position: absolute; left: 0; top: 2px;
+    width: 30px; height: 30px;
+    display: grid; place-items: center;
+    border: 1px solid var(--rule); border-radius: 50%;
+    font-family: "Helvetica Neue", Arial, system-ui, sans-serif;
+    font-size: 0.82rem; color: var(--ink-soft); background: var(--panel);
+  }
+
+  .watch p { margin: 0 0 14px; max-width: 72ch; }
+  .watch p:last-child { margin-bottom: 0; }
+
+  a { color: var(--reason); }
+
+  footer {
+    margin-top: 48px; padding-top: 18px; border-top: 2px solid var(--ink);
+    color: var(--ink-soft); max-width: 800px;
+    font-family: "Helvetica Neue", Arial, system-ui, sans-serif; font-size: 0.8rem;
+  }
+  footer a { color: var(--reason); }
+
+  @media (max-width: 920px){
+    .sidebar{ position: static; width: auto; height: auto; }
+    main{ margin-left: 0; padding: 32px 20px 60px; }
+    .pagebar{ margin: -32px -20px 24px; padding: 12px 20px 13px; }
+  }
+
+  @media (max-width: 700px) {
+    body { font-size: 16px; }
+    .hero h1 { font-size: 1.7rem; }
+    table, thead, tbody, th, td, tr { display: block; }
+    thead { display: none; }
+    tbody tr { border-bottom: 2px solid var(--ink); margin-bottom: 16px; }
+    tbody th { width: auto; padding-bottom: 2px; }
+    td { border: 0; padding-top: 2px; }
+  }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <nav class="sidebar" aria-label="Questions">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">DA</span>
+        <span class="brand-text">
+          <strong>Document AI vs Prompt Builder</strong>
+          <span>Field Notes · FAQ</span>
+        </span>
+      </a>
+
+      <div>
+        <div class="toc-label">Questions</div>
+        <ul class="toc" id="toc">
+          <li><a href="#q1">What's the difference between the two?</a></li>
+          <li><a href="#q2">When do I use one over the other?</a></li>
+          <li><a href="#q3">Does the file have to be a ContentDocument?</a></li>
+          <li><a href="#q4">Where does Document AI store the file?</a></li>
+          <li><a href="#q5">Does Document AI store only the extracted values?</a></li>
+          <li><a href="#q6">Does Prompt Builder store the file too?</a></li>
+          <li><a href="#q7">What else trips people up in review?</a></li>
+        </ul>
+      </div>
+
+      <div class="side-card">
+        <div class="sc-label">In one line</div>
+        <p>Extract once with Document AI if the answer feeds something downstream. Read once with Prompt Builder if a human just needs the gist.</p>
+      </div>
+    </nav>
+
+    <main>
+      <div class="content-col">
+
+        <div class="pagebar">
+          <a class="pagebar-home" href="index.html" aria-label="Field Notes home"><span class="pagebar-mark" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span>Field Notes</span></a>
+          <span class="pagebar-chevron" aria-hidden="true">&rsaquo;</span>
+          <span class="pagebar-here">Document AI vs Prompt Builder</span>
+        </div>
+
+        <header class="hero">
+          <span class="eyebrow">Agentforce · Data Cloud</span>
+          <h1>Document AI and Prompt Builder file inputs</h1>
+          <p class="dek">Questions that come up whenever a Salesforce design touches a PDF, answered in order.</p>
+        </header>
+
+        <section class="qa">
+          <h2 id="q1">What is the difference between Agentforce Prompt Builder reading a document and Data Cloud Document AI?</h2>
+          <p class="lede">They solve two different problems that happen to start with the same PDF. One turns a document into fields. The other lets a model read a document and talk about it.</p>
+
+          <p><b class="c-extract">Document AI</b> lives in Data Cloud, now branded Data 360, and is intelligent document processing. It uses LLMs to extract structured data from unstructured documents such as invoices, resumes, lab reports, and purchase orders. You start with a schema configuration: pick the document type, choose the model, upload sample documents, then auto-extract or hand-define the fields. The schema is the contract, so every document of that type comes back with the same typed fields. It supports real-time mode, invoking the API directly for documents stored in Salesforce or sent at run time, and batch mode, which processes large volumes from external sources through unstructured data model objects.</p>
+
+          <p><b class="c-reason">Prompt Builder file inputs</b> are multimodal prompting, not extraction. Since Spring '25 you can pass files into a prompt template, either as a File object when invoking programmatically from Apex, an LWC, REST, or an Agentforce action, or by putting the file on a record's Notes and Attachments. Supported types include PNG, JPEG, and PDF on models that accept them, and the model limitations panel in the template config shows the real ceilings on file size and count. The output is text: a summary, an email draft, a generated field value.</p>
+
+          <table>
+            <thead>
+              <tr><th scope="col">&nbsp;</th><th scope="col" class="c-extract">Document AI</th><th scope="col" class="c-reason">Prompt Builder file input</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Core job</th><td>Extract structured data from unstructured files</td><td>Reason over a file and generate content</td></tr>
+              <tr><th scope="row">Output</th><td>Typed fields you can map, query, and report on</td><td>Text. Structure only if you ask for it and parse it yourself</td></tr>
+              <tr><th scope="row">Setup</th><td>Schema configuration with sample documents and defined fields</td><td>Prompt template with instructions, merge fields, and a file input</td></tr>
+              <tr><th scope="row">Modes</th><td>Real time via API, and batch over a UDMO</td><td>One resolve call, one response</td></tr>
+              <tr><th scope="row">Repeatability</th><td>High. Field names and types stay stable across thousands of documents</td><td>Prompt dependent. Same document, slightly different wording each run</td></tr>
+              <tr><th scope="row">Volume</th><td>Built for pipelines. Batch mode exists specifically for large external document sets</td><td>Built for a moment in a workflow. One or a few files at a time</td></tr>
+              <tr><th scope="row">Licensing</th><td>Requires Data Cloud / Data 360</td><td>Prompt Builder with an Agentforce or Einstein entitlement</td></tr>
+              <tr><th scope="row">File types</th><td>PDF and images today, DocX on the roadmap, context under 20 MB</td><td>PDF, PNG, JPEG, limited by the selected model</td></tr>
+              <tr><th scope="row">Agentforce use</th><td>Surfaced to an agent as a topic or action, or called from Flow and Apex</td><td>The prompt template becomes an agent action directly</td></tr>
+              <tr><th scope="row">Trust Layer</th><td>Runs inside the Salesforce AI stack</td><td>Every resolve goes through the Einstein Trust Layer, with masking and audit</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="qa">
+          <h2 id="q2">When should I use one over the other, with a real example?</h2>
+          <p class="lede">If the answer is a value something downstream consumes, extract it. If the answer is a judgment a human reads once, generate it.</p>
+
+          <div class="case extract">
+            <h3>Provider credentialing packets, use Document AI</h3>
+            <p>A payer receives credentialing packets through an SFTP drop that lands in S3, a few thousand a month. Each contains an NPI, a state license number, a license expiration date, and a malpractice coverage amount. Those dates drive a renewal workflow and a quarterly compliance report.</p>
+            <p>The document type repeats, the fields are known, and downstream automation needs real values. A connector ingests the S3 folder, a UDLO references the files, batch mode extracts against the schema into a DLO, the DLO maps to a DMO, and a Flow updates Provider records. The packets never become files in the org.</p>
+            <p>A prompt template would be the wrong tool: thousands of full PDFs through an LLM every month, no guarantee a field is named the same way twice, and no batch path.</p>
+          </div>
+
+          <div class="case reason">
+            <h3>A doctor's letter on a case, use a Prompt Builder file input</h3>
+            <p>A member attaches a three page letter from their physician to a case, explaining why an out of network referral is medically necessary. The agent needs to know what is being asked and what is missing before routing it.</p>
+            <p>Every letter is different and no stable field set exists. A Flex prompt template takes the case record plus the attached file and returns a summary and a suggested next step, surfaced as an agent action or a button on the case.</p>
+            <p>Document AI would be the wrong tool here: a week spent defining a schema for a document type that has no shape, and it breaks on the first letter that does not follow the pattern.</p>
+          </div>
+
+          <h3>The gray zone, which is where most requirements actually sit</h3>
+          <p>The document type repeats, but the output people want is a judgment. Lab reports, contracts, claims correspondence. The answer is both, in sequence: Document AI extracts once into structured fields, then a prompt template grounds on those fields and related records rather than on the raw PDF. The generation step gets cheap, repeatable context and the expensive document read happens exactly once.</p>
+
+          <h3>Worked example: a prior authorization packet</h3>
+          <p>A member uploads a six page prior auth packet to an Experience Cloud site. Run it both ways and the division of labor becomes obvious.</p>
+          <p><b class="c-extract">With Document AI:</b> you build a schema for "prior auth packet" with member ID, date of service, diagnosis codes, requesting provider NPI, and requested units. Every packet comes back with those same fields and a Flow writes them onto the case and the member record. If a field is missing you know exactly which one, because the schema said it should be there. This is the version you can report on and audit six months later.</p>
+          <p><b class="c-reason">With a prompt template file input:</b> a Flex template takes the packet plus the case record and returns a short clinical summary for the reviewer, covering what is being requested, for whom, and what is missing. Genuinely useful to a human, and not something you would want to store in a numeric field or run a report against.</p>
+          <p><b>What most orgs actually build:</b> both. Document AI does the extraction, and the prompt template reads the extracted data plus the case to write the reviewer summary or the member response. Extraction feeds generation.</p>
+
+          <h3>The combined pattern</h3>
+          <ol class="flow">
+            <li>Document lands in Salesforce or is ingested into Data Cloud through a connector.</li>
+            <li>Document AI runs against its schema configuration and returns typed fields.</li>
+            <li>Flow or Apex maps those fields onto records, or they land in a data lake object and get mapped to a DMO.</li>
+            <li>A prompt template grounds on the record and the DMO, not on the raw PDF, and generates the summary, email, or next best action.</li>
+            <li>The agent calls that prompt template as an action, with clean and cheap context instead of a whole document in every turn.</li>
+          </ol>
+          <p>The architectural point: sending a large PDF into a prompt on every turn is expensive and non deterministic. Extract once, then generate from the structured result.</p>
+
+          <h3>Four questions that settle it fast</h3>
+          <ul class="plain">
+            <li>Will anything downstream query, filter, or report on the result? Reports need fields, not paragraphs.</li>
+            <li>Does the same document type arrive again next week? A schema pays for itself when it does.</li>
+            <li>How many documents per run? One in a user flow suits a prompt template. Thousands needs batch.</li>
+            <li>Does a human read the output once and move on? Then structure is overhead.</li>
+          </ul>
+        </section>
+
+        <section class="qa">
+          <h2 id="q3">In both cases, does the file have to be a ContentDocument?</h2>
+          <p class="lede">No. Prompt Builder requires it. Document AI does not.</p>
+
+          <p><b class="c-reason">Prompt Builder</b> needs the file to already exist as a Salesforce file before the prompt can see it. It comes in either as a File object passed as an input when invoking from Apex, an LWC, REST, or an agent action, or from the record's Notes and Attachments related list. Either way it is a ContentDocument and ContentVersion sitting in the org, counting against file storage.</p>
+
+          <p><b class="c-extract">Document AI</b> does not require one. The real-time API takes the bytes inline in the request body, and batch mode works over files ingested by Data Cloud connectors that stay in the external store entirely.</p>
+
+  <pre><code>POST /services/data/{api_version}/ssot/document-processing/actions/extract-data
+
+{
+  "mlModel": "llmgateway__VertexAIGemini20Flash001",
+  "schemaConfig": "JSON_Schema",
+  "files": [
+    { "mimeType": "application/pdf", "Data": "&lt;base64&gt;" }
+  ]
+}</code></pre>
+
+          <p>The response comes back as typed key and value pairs, one entry per field in the schema.</p>
+
+          <div class="flag">
+            <p><b>Why this matters in a design review.</b> If documents already arrive in Salesforce through an Experience Cloud upload or email-to-case, both paths are open and you choose on the merits. If they arrive in S3, SharePoint, or an SFTP drop, forcing them into ContentDocument purely so a prompt template can read them is a storage bill you did not need to pay.</p>
+          </div>
+        </section>
+
+        <section class="qa">
+          <h2 id="q4">With Document AI, where does the uploaded file actually get stored?</h2>
+          <p class="lede">Document AI is a processor, not a document repository. It never becomes the system of record for the file.</p>
+
+          <table>
+            <thead>
+              <tr><th scope="col">Path</th><th scope="col">Where the file ends up</th><th scope="col">What persists</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Real-time API</th>
+                <td>Nowhere. The bytes travel as base64 in the request and are processed in memory</td>
+                <td>Only the extracted JSON in the response, which you persist yourself</td>
+              </tr>
+              <tr>
+                <th scope="row">Batch over a UDLO</th>
+                <td>Stays in the external blob store. Data Cloud references files rather than copying them, and the UDLO holds only metadata: file path, size, content type, parent relationships, timestamps</td>
+                <td>Extracted data written into a new DLO based on your schema</td>
+              </tr>
+              <tr>
+                <th scope="row">File already in Salesforce</th>
+                <td>Stays in ContentVersion and ContentDocument, untouched. Document AI reads the bytes and hands back fields</td>
+                <td>Whatever your Flow or Apex maps onto the record</td>
+              </tr>
+              <tr>
+                <th scope="row">Sample docs in the schema config UI</th>
+                <td>Used to infer and validate the schema. Not a runtime path and not a document library</td>
+                <td>The schema configuration itself. Confirm sample retention in your own org if PHI is involved</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p>The consequence for regulated work: retention, records management, and audit stay attached to whichever store the document already lives in. Adopting Document AI does not pull documents into a new retention scope.</p>
+        </section>
+
+        <section class="qa">
+          <h2 id="q5">So Document AI only extracts the values and stores those, not the physical attachment in Data Cloud?</h2>
+          <p class="lede">Yes on the file. Partly on the values, because where they land differs by mode.</p>
+
+          <p><b>On the file, that is correct.</b> Data Cloud references unstructured files rather than copying them, so in batch mode the PDF stays in S3, Azure, GCS, Box, or wherever the connector points, and the UDLO row holds only metadata about it. In real-time mode the bytes are transient. If the file came from Salesforce it stays in ContentDocument, which is core Salesforce storage, not Data Cloud. No path puts the physical document into Data Cloud.</p>
+
+          <p><b>On the values, it depends on the mode.</b> Batch mode persists them for you, into a new DLO shaped by your schema, which you then map to a DMO. Real-time mode persists nothing. It hands the extracted key and value pairs back in the API response, and you decide what happens next, whether that is a Flow writing onto a Case, Apex creating records, or an agent using them in the moment and never storing them at all.</p>
+
+          <div class="flag">
+            <p><b>One distinction to keep separate, and the one that gets asked about in a PHI conversation.</b> All of the above is about the extraction path. If you also build a search index over that same UDMO for RAG grounding, Data Cloud chunks and vectorizes the content, and those chunks and embeddings do persist in Data Cloud. "Data Cloud does not copy the file" is accurate. It is not the same claim as "no representation of the content exists in Data Cloud."</p>
+          </div>
+        </section>
+
+        <section class="qa">
+          <h2 id="q6">And on the Prompt Builder side, does it read, extract, and store the attachment in ContentDocument?</h2>
+          <p class="lede">The sequence runs the other way, and it reads rather than extracts.</p>
+
+          <p><b>The file has to already be a ContentDocument before the prompt can see it.</b> Prompt Builder does not create or store it. Something else put it there: an Experience Cloud upload, email-to-case, a user dragging it onto a record, an API call. ContentDocument is a precondition on this path, not an output of it.</p>
+
+          <p><b>It reads, it does not extract.</b> The model receives the PDF or image as multimodal input alongside your merge fields and returns text. There is no schema, no typed fields, no key and value pairs. If you ask for JSON in the instructions you may well get JSON, but nothing enforces it and you own the parsing and the failure handling.</p>
+
+          <p><b>Nothing is written back to the file.</b> The ContentDocument is untouched by the run. Where the generated text lands depends on the template type: a Field Generation template writes into the target field on the record, a Sales Email template drops a draft in the composer, a Flex template returns text to whatever invoked it.</p>
+
+          <h3>The clean contrast</h3>
+          <p>Document AI reads bytes that may live anywhere, returns typed fields, and stores no file. Prompt Builder reads a file that must already be in Salesforce, returns prose, and stores no file either.</p>
+
+          <div class="flag">
+            <p><b>The cost argument worth making out loud.</b> Because the file stays in ContentDocument and is re-sent to the model on every invocation, a prompt that reads a 40 page PDF pays the full token cost every time someone clicks the button. Document AI pays it once and the fields are reusable forever. That is the real reason extract-then-generate wins on recurring document types.</p>
+          </div>
+        </section>
+
+        <section class="qa">
+          <h2 id="q7">What else trips people up in a design review?</h2>
+          <p class="lede">Five things that come up often enough to be worth having ready.</p>
+          <div class="watch">
+            <p><b>Naming.</b> Data Cloud is now branded Data 360, so Document AI is documented under both names. Same feature, and someone will ask.</p>
+            <p><b>Model support is not universal.</b> Prompt Builder file inputs only work on models that accept the file type, and the model limitations panel in the template config shows the real ceilings on file size and count. Check it there rather than trusting a blog, including this one.</p>
+            <p><b>Document AI is not the older tools.</b> Intelligent Document Reader is OCR led and template oriented. MuleSoft IDP is a separate service with its own quotas and its own licensing. Neither is Document AI, and conflating them in front of a customer costs credibility.</p>
+            <p><b>Structured output from a prompt is a convention, not a guarantee.</b> Ask a prompt template for JSON and you will usually get JSON, but nothing enforces it and you own the parsing and the failure handling. Document AI's schema is the enforced version of that promise.</p>
+            <p><b>Cost shape.</b> A document inside a prompt burns tokens on every single call. An extraction runs once and the result is reusable forever. On a recurring document type that difference compounds fast.</p>
+          </div>
+        </section>
+
+        <footer>
+          <p>Sources:
+            <a href="https://help.salesforce.com/s/articleView?id=data.c360_a_document_ai.htm&language=en_US">Document AI, Salesforce Help</a> ,
+            <a href="https://developer.salesforce.com/blogs/2025/08/process-unstructured-data-with-document-ai">Process Unstructured Data with Document AI</a> ,
+            <a href="https://developer.salesforce.com/blogs/2025/09/integrate-data-clouds-document-ai-with-agentforce">Integrate Data Cloud's Document AI with Agentforce</a> ,
+            <a href="https://developer.salesforce.com/blogs/2025/05/unlock-multi-modal-ai-with-file-inputs-in-prompt-builder">Unlock Multi-Modal AI with File Inputs in Prompt Builder</a> ,
+            <a href="https://help.salesforce.com/s/articleView?language=en_US&id=data.c360_a_unstructured_data_about.htm&type=5">Unstructured Data in Data 360</a>
+          </p>
+          <p>Prepared 12 September 2026. Limits, supported file types, and product naming move release to release, so confirm in your own org before committing to a design.</p>
+        </footer>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function(){
+      try{
+        var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+        var sections = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+        function onScroll(){
+          var pos = window.scrollY + 130, idx = -1;
+          sections.forEach(function(sec, i){ if(sec && sec.offsetTop <= pos) idx = i; });
+          links.forEach(function(a, i){ a.parentElement.classList.toggle('active', i === idx); });
+        }
+        window.addEventListener('scroll', onScroll, {passive:true});
+        onScroll();
+      }catch(e){}
+    })();
+  </script>
+</body>
+</html>
