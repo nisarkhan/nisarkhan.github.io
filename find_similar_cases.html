@@ -10,17 +10,17 @@
 
 <style>
   :root{
-    --bg:#f0f5f9; --surface:#ffffff; --surface-2:#e7f0fb;
-    --text:#1e3448; --text-dim:#54637a; --text-faint:#7c8ba0;
-    --border:#d6e8f5; --border-strong:#aed6f1;
-    --sidebar-bg:#1a3a52;
+    --bg:#f8fbf9; --surface:#ffffff; --surface-2:#e4f5ec;
+    --text:#14201a; --text-dim:#586960; --text-faint:#7f9188;
+    --border:#e1ebe4; --border-strong:#a8cdb8;
+    --sidebar-bg:#142820;
     --a1:#d4ac0d; --a1-ink:#9a7d0a; --a1-soft:#fbf3d6;   /* A · OOTB — amber */
     --a2:#0e6655; --a2-ink:#0b5145; --a2-soft:#d9efe9;   /* B · Custom RAG — teal */
     --a3:#7d3c98; --a3-ink:#63307a; --a3-soft:#efe2f5;   /* C · SOSL — purple */
     --warn:#c0392b; --warn-soft:#fdeaea;
     --ok:#27ae60; --ok-soft:#e3f5ec;
-    --code-bg:#1a3a52; --code-text:#dbe6f0; --code-faint:#8fb0c6;
-    --shadow: 0 1px 2px rgba(26,58,82,.05), 0 8px 24px -12px rgba(26,58,82,.16);
+    --code-bg:#142820; --code-text:#dce8e0; --code-faint:#8fb0a0;
+    --shadow: 0 1px 2px rgba(20,40,32,.05), 0 8px 24px -12px rgba(20,40,32,.16);
   }
 
   *{box-sizing:border-box;}
@@ -40,19 +40,19 @@
   }
   .sidebar .brand{ display:flex; align-items:center; gap:9px; text-decoration:none; }
   .sidebar .brand-mark{
-    width:32px; height:32px; border-radius:8px; background:var(--a2); color:#fff;
+    width:32px; height:32px; border-radius:8px; background:#286948; color:#fff;
     display:flex; align-items:center; justify-content:center;
     font-family:'Spectral', serif; font-weight:700; font-size:14px; flex:none;
   }
   .sidebar .brand-text{ display:flex; flex-direction:column; line-height:1.25; }
   .sidebar .brand-text strong{ font-family:'Spectral', serif; font-size:13.5px; font-weight:700; color:#fff; }
-  .sidebar .brand-text span{ font-size:11px; color:#aed6f1; }
+  .sidebar .brand-text span{ font-size:11px; color:#a8cdb8; }
   .content{ margin-left:220px; min-height:100vh; background:var(--bg); }
   .pagebar{ position:sticky; top:0; z-index:45; background:var(--bg); border-bottom:1px solid var(--border); padding:12px 0 13px; }
   .pagebar .pb-inner{ display:flex; align-items:center; gap:9px; flex-wrap:wrap; font-size:13px; }
-  .pagebar-home{ display:inline-flex; align-items:center; gap:7px; text-decoration:none; color:#2e86c1; font-weight:700; white-space:nowrap; font-family:'Manrope', sans-serif; }
+  .pagebar-home{ display:inline-flex; align-items:center; gap:7px; text-decoration:none; color:#286948; font-weight:700; white-space:nowrap; font-family:'Manrope', sans-serif; }
   .pagebar-home:hover{ text-decoration:underline; }
-  .pagebar-mark{ width:20px; height:20px; border-radius:5px; background:#2e86c1; color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; font-family:'Spectral', serif; }
+  .pagebar-mark{ width:20px; height:20px; border-radius:5px; background:#286948; color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; font-family:'Spectral', serif; }
   .pagebar-chevron{ color:var(--text-faint); }
   .pagebar-here{ color:var(--text-dim); font-weight:600; font-family:'Manrope', sans-serif; }
   @media (max-width:940px){
@@ -74,11 +74,11 @@
   /* Layout */
   .layout{ display:block; padding:40px 0 90px; }
   nav.toc{ display:flex; flex-direction:column; gap:2px; font-size:12.3px; }
-  nav.toc .toc-label{ font-family:'DM Mono', monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#aed6f1; margin-bottom:8px; }
-  nav.toc a{ color:#d7e6f2; text-decoration:none; padding:5px 0 5px 12px; border-left:2px solid rgba(174,214,241,.25); }
+  nav.toc .toc-label{ font-family:'DM Mono', monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#a8cdb8; margin-bottom:8px; }
+  nav.toc a{ color:#cfe6da; text-decoration:none; padding:5px 0 5px 12px; border-left:2px solid rgba(168,205,184,.25); }
   nav.toc a:hover{ color:#fff; border-left-color:#fff; }
   nav.toc .toc-part{ margin-top:14px; font-size:11px; font-weight:700; letter-spacing:.04em; padding:5px 8px; border-radius:6px; }
-  nav.toc .toc-part.p0{ color:#d7e6f2; }
+  nav.toc .toc-part.p0{ color:#cfe6da; }
   nav.toc .toc-part.pa{ color:#f0cf7a; background:rgba(212,172,13,.20); }
   nav.toc .toc-part.pb{ color:#7ed3c3; background:rgba(14,102,85,.32); }
   nav.toc .toc-part.pc{ color:#d6a9e6; background:rgba(125,60,152,.32); }
@@ -214,7 +214,7 @@
 <aside class="sidebar">
   <a class="brand" href="index.html">
     <span class="brand-mark">SF</span>
-    <span class="brand-text"><strong>Field Notes</strong><span>Salesforce &amp; Agentforce</span></span>
+    <span class="brand-text"><strong>Nisar Khan</strong><span>Salesforce &amp; Agentforce</span></span>
   </a>
   <nav class="toc">
     <span class="toc-label">On this page</span>
@@ -255,7 +255,7 @@
 <div class="content">
 <div class="pagebar">
   <div class="shell pb-inner">
-    <a class="pagebar-home" href="index.html" aria-label="Field Notes home"><span class="pagebar-mark" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span>Field Notes</span></a>
+    <a class="pagebar-home" href="index.html" aria-label="Nisar Khan home"><span class="pagebar-mark" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span>Nisar Khan</span></a>
     <span class="pagebar-chevron" aria-hidden="true">&rsaquo;</span>
     <span class="pagebar-here">Find Similar Cases in Salesforce</span>
   </div>

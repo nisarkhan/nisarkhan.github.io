@@ -7,21 +7,21 @@
 <meta name="description" content="Questions that come up whenever a Salesforce design touches a PDF: Data Cloud Document AI vs Agentforce Prompt Builder file inputs, answered in order.">
 <style>
   :root {
-    --paper: #f0f5f9;
+    --paper: #f8fbf9;
     --panel: #ffffff;
-    --ink: #1e3448;
-    --ink-soft: #54637a;
-    --rule: #d6e8f5;
+    --ink: #14201a;
+    --ink-soft: #586960;
+    --rule: #e1ebe4;
     --extract: #0e6655;
     --extract-wash: #e3f3ef;
     --reason: #7d3c98;
     --reason-wash: #efe2f5;
-    --chip-bg: #e7f0fb;
-    --chip-text: #1f5f8f;
-    --pre-bg: #1a3a52;
-    --pre-text: #dbe6f0;
-    --sidebar-bg: #1a3a52;
-    --accent: #2e86c1;
+    --chip-bg: #e4f5ec;
+    --chip-text: #1f4d38;
+    --pre-bg: #142820;
+    --pre-text: #dce8e0;
+    --sidebar-bg: #142820;
+    --accent: #286948;
   }
 
   * { box-sizing: border-box; }
@@ -55,21 +55,21 @@
   }
   .brand-text{ display:flex; flex-direction:column; line-height:1.25; }
   .brand-text strong{ font-size:13.5px; font-weight:700; color:#fff; }
-  .brand-text span{ font-size:11px; color:#aed6f1; }
+  .brand-text span{ font-size:11px; color:#a8cdb8; }
 
-  .toc-label{ font-size:10px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:#aed6f1; margin-bottom:6px; }
-  .toc{ list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:0; border-left:1px solid rgba(174,214,241,.25); }
+  .toc-label{ font-size:10px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:#a8cdb8; margin-bottom:6px; }
+  .toc{ list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:0; border-left:1px solid rgba(168,205,184,.25); }
   .toc a{
     display:block; padding:6.5px 0 6.5px 13px; margin-left:-1px; border-left:1px solid transparent;
-    text-decoration:none; color:#d7e6f2; font-size:12.6px; line-height:1.4;
+    text-decoration:none; color:#cfe6da; font-size:12.6px; line-height:1.4;
     transition:color .15s ease, border-color .15s ease;
   }
   .toc a:hover{ color:#fff; }
   .toc li.active > a{ color:#fff; border-left-color:#fff; font-weight:600; }
 
-  .side-card{ margin-top:auto; padding:12px 13px; border-radius:10px; background:rgba(255,255,255,.06); border:1px solid rgba(174,214,241,.22); }
-  .side-card .sc-label{ font-family:"Helvetica Neue",Arial,system-ui,sans-serif; font-size:10px; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:#aed6f1; margin-bottom:5px; }
-  .side-card p{ margin:0; font-size:11.6px; color:#c6d8e6; line-height:1.5; font-family: Charter, Georgia, serif; }
+  .side-card{ margin-top:auto; padding:12px 13px; border-radius:10px; background:rgba(255,255,255,.06); border:1px solid rgba(168,205,184,.22); }
+  .side-card .sc-label{ font-family:"Helvetica Neue",Arial,system-ui,sans-serif; font-size:10px; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:#a8cdb8; margin-bottom:5px; }
+  .side-card p{ margin:0; font-size:11.6px; color:#bcd8c8; line-height:1.5; font-family: Charter, Georgia, serif; }
 
   /* ---------- main ---------- */
   main{ margin-left:220px; padding:40px 52px 84px; min-width:0; background:var(--paper); min-height:100vh; }
@@ -208,7 +208,7 @@
         <span class="brand-mark">DA</span>
         <span class="brand-text">
           <strong>Document AI vs Prompt Builder</strong>
-          <span>Field Notes · FAQ</span>
+          <span>Nisar Khan · FAQ</span>
         </span>
       </a>
 
@@ -235,7 +235,7 @@
       <div class="content-col">
 
         <div class="pagebar">
-          <a class="pagebar-home" href="index.html" aria-label="Field Notes home"><span class="pagebar-mark" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span>Field Notes</span></a>
+          <a class="pagebar-home" href="index.html" aria-label="Nisar Khan home"><span class="pagebar-mark" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span>Nisar Khan</span></a>
           <span class="pagebar-chevron" aria-hidden="true">&rsaquo;</span>
           <span class="pagebar-here">Document AI vs Prompt Builder</span>
         </div>

@@ -1,19 +1,19 @@
 <title>CLT Rendering Checklist</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
   :root{
-    --ground:#f0f5f9;
+    --ground:#f8fbf9;
     --surface:#ffffff;
-    --surface-2:#e7f0fb;
-    --ink:#1e3448;
-    --ink-muted:#54637a;
-    --ink-faint:#7c8ba0;
-    --line:#d6e8f5;
-    --accent:#2e86c1;
-    --accent-strong:#1f5f8f;
+    --surface-2:#e4f5ec;
+    --ink:#14201a;
+    --ink-muted:#586960;
+    --ink-faint:#7f9188;
+    --line:#e1ebe4;
+    --accent:#286948;
+    --accent-strong:#1f4d38;
     --accent-ink:#ffffff;
-    --accent-soft:#e7f0fb;
+    --accent-soft:#e4f5ec;
     --accent-2:#d4ac0d;
     --accent-2-soft:#fbf3d6;
     --good:#27ae60;
@@ -22,8 +22,8 @@
     --bad-soft:#fdeaea;
     --purple:#7d3c98;
     --teal:#0e6655;
-    --sidebar-bg:#1a3a52;
-    --navy:#1a3a52;
+    --sidebar-bg:#142820;
+    --navy:#142820;
     --shadow: 0 1px 2px rgba(26,58,82,0.05), 0 8px 24px -12px rgba(26,58,82,0.18);
     --radius-lg:16px;
     --radius-md:11px;
@@ -35,16 +35,16 @@
     margin:0;
     background:var(--ground);
     color:var(--ink);
-    font-family:"IBM Plex Sans", system-ui, sans-serif;
+    font-family:"Geist", system-ui, sans-serif;
     font-size:15.5px;
     line-height:1.6;
     -webkit-font-smoothing:antialiased;
   }
   @media (prefers-reduced-motion: reduce){ *{animation-duration:.001ms !important; transition-duration:.001ms !important;} }
 
-  h1,h2,h3,h4{ font-family:"Sora", system-ui, sans-serif; color:var(--ink); line-height:1.2; text-wrap:balance; margin:0; }
+  h1,h2,h3,h4{ font-family:"Space Grotesk", system-ui, sans-serif; color:var(--ink); line-height:1.2; text-wrap:balance; margin:0; }
   a{ color:var(--accent); }
-  code, .mono{ font-family:"IBM Plex Mono", ui-monospace, monospace; }
+  code, .mono{ font-family:"JetBrains Mono", ui-monospace, monospace; }
   code{ background:var(--surface-2); padding:1px 6px; border-radius:5px; font-size:0.9em; color:var(--ink); }
 
   .shell{ min-height:100vh; }
@@ -57,25 +57,25 @@
   .brand{ display:flex; align-items:center; gap:9px; }
   .brand-mark{
     width:32px;height:32px; border-radius:8px; background:var(--accent);
-    display:flex;align-items:center;justify-content:center; color:#fff; font-family:"Sora",sans-serif; font-weight:800;
+    display:flex;align-items:center;justify-content:center; color:#fff; font-family:"Space Grotesk",sans-serif; font-weight:800;
     font-size:15px; flex:none; box-shadow:var(--shadow);
   }
   .brand-text{ display:flex; flex-direction:column; line-height:1.25; }
-  .brand-text strong{ font-family:"Sora",sans-serif; font-size:13.5px; font-weight:700; color:#fff; }
+  .brand-text strong{ font-family:"Space Grotesk",sans-serif; font-size:13.5px; font-weight:700; color:#fff; }
   .brand-text span{ font-size:11px; color:var(--accent-soft); }
 
-  .toc-label{ font-size:10.5px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#aed6f1; margin-bottom:2px; }
-  .toc{ list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:0; border-left:1px solid rgba(174,214,241,0.25); }
+  .toc-label{ font-size:10.5px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#a8cdb8; margin-bottom:2px; }
+  .toc{ list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:0; border-left:1px solid rgba(168,205,184,0.25); }
   .toc a{
     display:block; padding:5.5px 0 5.5px 13px; margin-left:-1px; border-left:1px solid transparent;
-    text-decoration:none; color:#d7e6f2; font-size:12.6px; transition:color .15s ease, border-color .15s ease;
+    text-decoration:none; color:#cfe6da; font-size:12.6px; transition:color .15s ease, border-color .15s ease;
   }
   .toc a:hover{ color:#fff; }
   .toc li.active > a{ color:#fff; border-left-color:#fff; font-weight:600; }
 
-  .source-card{ margin-top:auto; padding:13px; border-radius:var(--radius-md); background:rgba(255,255,255,0.06); border:1px solid rgba(174,214,241,0.22); }
-  .source-card .sc-label{ font-size:10.5px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:#aed6f1; margin-bottom:5px; }
-  .source-card p{ margin:0; font-size:11.8px; color:#c6d8e6; line-height:1.5; }
+  .source-card{ margin-top:auto; padding:13px; border-radius:var(--radius-md); background:rgba(255,255,255,0.06); border:1px solid rgba(168,205,184,0.22); }
+  .source-card .sc-label{ font-size:10.5px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:#a8cdb8; margin-bottom:5px; }
+  .source-card p{ margin:0; font-size:11.8px; color:#bcd8c8; line-height:1.5; }
 
   main{ margin-left:220px; padding:40px 52px 72px; min-width:0; background:var(--ground); min-height:100vh; }
   .content-col{ max-width:880px; }
@@ -108,7 +108,7 @@
   .hero .dek{ font-size:16.5px; color:var(--ink-muted); max-width:70ch; margin:0; }
 
   section.block{ margin-bottom:52px; scroll-margin-top:22px; }
-  section.block .kicker{ font-family:"IBM Plex Mono",monospace; font-size:11.5px; font-weight:500; color:var(--accent-2); letter-spacing:0.04em; margin-bottom:7px; }
+  section.block .kicker{ font-family:"JetBrains Mono",monospace; font-size:11.5px; font-weight:500; color:var(--accent-2); letter-spacing:0.04em; margin-bottom:7px; }
   section.block h2{ font-size:23px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
   section.block h3{ font-size:16px; font-weight:700; margin:24px 0 10px; }
   section.block > p{ color:var(--ink-muted); margin:0 0 14px; max-width:74ch; }
@@ -129,7 +129,7 @@
   .critical-item{ display:grid; grid-template-columns:26px 1fr; gap:12px; }
   .critical-item + .critical-item{ padding-top:10px; border-top:1px solid color-mix(in srgb, var(--bad) 22%, transparent); }
   .critical-num{
-    width:24px;height:24px; border-radius:7px; background:var(--bad); color:#fff; font-family:"Sora",sans-serif;
+    width:24px;height:24px; border-radius:7px; background:var(--bad); color:#fff; font-family:"Space Grotesk",sans-serif;
     font-weight:800; font-size:12px; display:flex; align-items:center; justify-content:center; flex:none;
   }
   .critical-item h4{ font-size:14.5px; font-weight:700; margin-bottom:3px; color:var(--ink); }
@@ -148,7 +148,7 @@
   @media (max-width:640px){ .req-grid{grid-template-columns:1fr;} }
   .req-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md); padding:14px 15px; box-shadow:var(--shadow); }
   .req-card .rc-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; gap:8px; }
-  .req-card .rc-name{ font-family:"IBM Plex Mono",monospace; font-size:12.8px; font-weight:600; color:var(--ink); }
+  .req-card .rc-name{ font-family:"JetBrains Mono",monospace; font-size:12.8px; font-weight:600; color:var(--ink); }
   .req-card p{ margin:0; font-size:12.4px; color:var(--ink-muted); line-height:1.5; }
 
   /* tables */
@@ -166,7 +166,7 @@
   /* file tree */
   .file-tree{
     background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-md); padding:15px 17px; margin:16px 0;
-    font-family:"IBM Plex Mono",monospace; font-size:12.3px; line-height:1.85; color:var(--ink-muted); overflow-x:auto;
+    font-family:"JetBrains Mono",monospace; font-size:12.3px; line-height:1.85; color:var(--ink-muted); overflow-x:auto;
   }
   .file-tree .dir{ color:var(--ink); font-weight:600; }
   .file-tree .leaf{ color:var(--accent-2); }
@@ -184,13 +184,13 @@
   .checklist .cl-text span.sub{ display:block; font-size:12px; color:var(--ink-muted); margin-top:2px; }
   .checklist-group{ margin:22px 0 8px; }
   .checklist-group .cg-label{
-    font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600; color:var(--accent);
+    font-family:"JetBrains Mono",monospace; font-size:11px; font-weight:600; color:var(--accent);
     text-transform:uppercase; letter-spacing:0.05em; margin-bottom:2px;
   }
 
   /* code block */
   .code-block{ background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-md); padding:14px 16px; overflow-x:auto; margin:14px 0; }
-  .code-block pre{ margin:0; font-family:"IBM Plex Mono",monospace; font-size:12.2px; line-height:1.6; color:var(--ink); white-space:pre; }
+  .code-block pre{ margin:0; font-family:"JetBrains Mono",monospace; font-size:12.2px; line-height:1.6; color:var(--ink); white-space:pre; }
   .code-block .c-key{ color:var(--accent); }
   .code-block .c-str{ color:var(--good); }
 
@@ -211,7 +211,7 @@
       <div class="brand-mark">!</div>
       <div class="brand-text">
         <strong>CLT Rendering Checklist</strong>
-        <span>Field Notes · reference</span>
+        <span>Nisar Khan · reference</span>
       </div>
     </a>
 
@@ -242,7 +242,7 @@
     <div class="content-col">
 
       <div class="pagebar">
-        <a class="pagebar-home" href="index.html" aria-label="Field Notes home"><span class="pagebar-mark" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span>Field Notes</span></a>
+        <a class="pagebar-home" href="index.html" aria-label="Nisar Khan home"><span class="pagebar-mark" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span>Nisar Khan</span></a>
         <span class="pagebar-chevron" aria-hidden="true">›</span>
         <span class="pagebar-here">CLT Rendering Checklist</span>
       </div>

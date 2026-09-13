@@ -6,24 +6,24 @@
 <title>Adding Claude Code Skills</title>
 <meta name="description" content="How to add a skill to a project, and why there's no terminal command for it.">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
   :root{
-    --sidebar-bg:#1a3a52;
-    --page-bg:#f0f5f9;
-    --text:#1e3448;
-    --text-soft:#54637a;
-    --primary:#2e86c1;
-    --primary-strong:#1f5f8f;
-    --light-blue:#aed6f1;
-    --card-border:#d6e8f5;
+    --sidebar-bg:#142820;
+    --page-bg:#f8fbf9;
+    --text:#14201a;
+    --text-soft:#586960;
+    --primary:#286948;
+    --primary-strong:#1f4d38;
+    --light-blue:#a8cdb8;
+    --card-border:#e1ebe4;
     --card-bg:#ffffff;
     --green:#27ae60;
     --amber:#d4ac0d;
     --purple:#7d3c98;
     --red:#c0392b;
     --teal:#0e6655;
-    --navy:#1a3a52;
+    --navy:#142820;
     --shadow: 0 1px 2px rgba(26,58,82,0.05), 0 8px 24px -12px rgba(26,58,82,0.18);
     --radius-lg:14px;
     --radius-md:10px;
@@ -35,16 +35,16 @@
     margin:0;
     background:var(--page-bg);
     color:var(--text);
-    font-family:"IBM Plex Sans", system-ui, sans-serif;
+    font-family:"Geist", system-ui, sans-serif;
     font-size:15.5px;
     line-height:1.6;
     -webkit-font-smoothing:antialiased;
   }
   @media (prefers-reduced-motion: reduce){ *{animation-duration:.001ms !important; transition-duration:.001ms !important;} }
 
-  h1,h2{ font-family:"Sora", system-ui, sans-serif; color:var(--text); line-height:1.2; text-wrap:balance; margin:0; }
+  h1,h2{ font-family:"Space Grotesk", system-ui, sans-serif; color:var(--text); line-height:1.2; text-wrap:balance; margin:0; }
   a{ color:var(--primary); }
-  code{ font-family:"IBM Plex Mono", ui-monospace, monospace; background:#e7f0fb; padding:1px 6px; border-radius:5px; font-size:0.9em; }
+  code{ font-family:"JetBrains Mono", ui-monospace, monospace; background:#e4f5ec; padding:1px 6px; border-radius:5px; font-size:0.9em; }
   :focus-visible{ outline:2px solid var(--primary); outline-offset:2px; border-radius:4px; }
 
   /* ---------- sidebar ---------- */
@@ -58,48 +58,48 @@
   .brand-mark{
     width:34px; height:34px; border-radius:9px; background:var(--primary); color:#fff;
     display:flex; align-items:center; justify-content:center;
-    font-family:"Sora", system-ui, sans-serif; font-weight:800; font-size:15px; flex:none;
+    font-family:"Space Grotesk", system-ui, sans-serif; font-weight:800; font-size:15px; flex:none;
   }
-  .brand-name{ font-family:"Sora", system-ui, sans-serif; font-weight:700; font-size:15px; color:#fff; letter-spacing:-0.01em; }
+  .brand-name{ font-family:"Space Grotesk", system-ui, sans-serif; font-weight:700; font-size:15px; color:#fff; letter-spacing:-0.01em; }
   .brand-sub{ font-size:11px; color:var(--light-blue); margin-top:1px; }
   nav.topics{ display:flex; flex-direction:column; gap:22px; }
   .topic-group{ display:flex; flex-direction:column; gap:4px; }
   .topic-label{
-    font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:10.5px; font-weight:600;
+    font-family:"JetBrains Mono", ui-monospace, monospace; font-size:10.5px; font-weight:600;
     letter-spacing:0.08em; text-transform:uppercase; color:var(--light-blue);
     padding:0 10px; margin-bottom:2px;
   }
   .topic-link{
     display:flex; align-items:center; gap:9px;
     padding:8px 10px; border-radius:var(--radius-sm);
-    color:#d7e6f2; text-decoration:none; font-size:13.5px; font-weight:500;
+    color:#cfe6da; text-decoration:none; font-size:13.5px; font-weight:500;
     border:1px solid transparent;
   }
   .topic-link:hover{ background:rgba(255,255,255,0.08); color:#fff; }
   .topic-link.active{ background:var(--primary); color:#fff; font-weight:600; }
   .topic-link .dot{ width:6px; height:6px; border-radius:50%; background:var(--light-blue); flex:none; }
   .topic-link.active .dot{ background:#fff; }
-  .topic-empty{ padding:8px 10px; font-size:12.5px; color:rgba(174,214,241,0.65); font-style:italic; }
-  .sidebar-foot{ margin-top:auto; padding:0 10px; font-size:11px; color:rgba(174,214,241,0.75); line-height:1.6; }
+  .topic-empty{ padding:8px 10px; font-size:12.5px; color:rgba(168,205,184,0.65); font-style:italic; }
+  .sidebar-foot{ margin-top:auto; padding:0 10px; font-size:11px; color:rgba(168,205,184,0.75); line-height:1.6; }
 
   /* ---------- main ---------- */
   main{ margin-left:220px; padding:40px 52px 72px; min-height:100vh; background:var(--page-bg); }
   .content-col{ max-width:680px; }
 
-  .eyebrow{ display:inline-block; font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--primary); margin-bottom:12px; }
+  .eyebrow{ display:inline-block; font-family:"JetBrains Mono", ui-monospace, monospace; font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--primary); margin-bottom:12px; }
   h1{ font-size:27px; font-weight:800; letter-spacing:-0.01em; margin-bottom:8px; }
   .dek{ color:var(--text-soft); font-size:14.5px; max-width:56ch; margin-bottom:36px; }
 
   .step{ margin-bottom:32px; }
   .step h2{ font-size:16px; font-weight:700; display:flex; align-items:center; gap:9px; margin-bottom:10px; }
-  .step-num{ width:22px; height:22px; border-radius:6px; background:#e7f0fb; color:var(--primary-strong); font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; flex:none; }
+  .step-num{ width:22px; height:22px; border-radius:6px; background:#e4f5ec; color:var(--primary-strong); font-family:"JetBrains Mono", ui-monospace, monospace; font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; flex:none; }
   .step p{ color:var(--text-soft); font-size:13.5px; margin:0 0 10px; }
 
-  .code-block{ background:var(--navy); color:#e8ecf8; border-radius:var(--radius-md); padding:14px 16px; overflow-x:auto; font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:12.8px; line-height:1.65; box-shadow:var(--shadow); }
+  .code-block{ background:var(--navy); color:#e8ecf8; border-radius:var(--radius-md); padding:14px 16px; overflow-x:auto; font-family:"JetBrains Mono", ui-monospace, monospace; font-size:12.8px; line-height:1.65; box-shadow:var(--shadow); }
   .code-block .c-com{ color:#8fb3cf; }
   .code-block .c-key{ color:#9fd0f5; }
   .code-block .c-str{ color:#f0c069; }
-  .file-label{ font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:11px; color:var(--text-soft); margin-bottom:6px; }
+  .file-label{ font-family:"JetBrains Mono", ui-monospace, monospace; font-size:11px; color:var(--text-soft); margin-bottom:6px; }
 
   .callout{ display:flex; gap:11px; background:#fdeaea; border:1px solid rgba(192,57,43,0.28); border-radius:var(--radius-md); padding:13px 15px; margin-top:6px; }
   .callout p{ margin:0; font-size:13px; color:var(--text); }
@@ -133,7 +133,7 @@
     <a class="brand" href="index.html">
       <span class="brand-mark">SF</span>
       <span>
-        <span class="brand-name">Field Notes</span>
+        <span class="brand-name">Nisar Khan</span>
         <div class="brand-sub">Salesforce &amp; Agentforce</div>
       </span>
     </a>
@@ -169,7 +169,7 @@
   <main>
     <div class="content-col">
     <div class="pagebar">
-      <a class="pagebar-home" href="index.html" aria-label="Field Notes home"><span class="pagebar-mark" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span>Field Notes</span></a>
+      <a class="pagebar-home" href="index.html" aria-label="Nisar Khan home"><span class="pagebar-mark" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span>Nisar Khan</span></a>
       <span class="pagebar-chevron" aria-hidden="true">›</span>
       <span class="pagebar-here">Adding Skills</span>
     </div>
