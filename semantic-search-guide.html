@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semantic Search with Apex: Implementation Guide</title>
+<meta name="description" content="The complete, verified path from an empty Data Cloud to a working Agentforce agent that finds similar records by meaning, not keyword — every command, field name, and code sample tested end-to-end against a live org.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --sidebar-bg:#1a3a52;
+    --ground:#f0f5f9;
+    --surface:#ffffff;
+    --surface-2:#e7f0fb;
+    --ink:#1e3448;
+    --ink-muted:#54637a;
+    --ink-faint:#7c8ba0;
+    --line:#d6e8f5;
+    --accent:#2e86c1;
+    --accent-strong:#1f5f8f;
+    --green:#1f8a4c;
+    --amber:#9a7d0a;
+    --red:#c0392b;
+    --purple:#7d3c98;
+    --navy:#1a3a52;
+    --shadow: 0 1px 2px rgba(26,58,82,0.05), 0 8px 24px -12px rgba(26,58,82,0.18);
+    --radius-lg:16px;
+    --radius-md:11px;
+    --radius-sm:7px;
+  }
+
+  *{box-sizing:border-box;}
+  html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth; scroll-padding-top:20px; }
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{animation-duration:.001ms !important; transition-duration:.001ms !important;} }
+  body{
+    margin:0;
+    background:var(--ground);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", system-ui, sans-serif;
+    font-size:15.5px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{ font-family:"Sora", system-ui, sans-serif; color:var(--ink); line-height:1.2; text-wrap:balance; margin:0; }
+  a{ color:var(--accent); }
+  code, .mono{ font-family:"IBM Plex Mono", ui-monospace, monospace; }
+  code{ background:var(--surface-2); padding:1px 6px; border-radius:5px; font-size:0.88em; color:var(--accent-strong); }
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+
+  /* ---------- shell ---------- */
+  .shell{ min-height:100vh; }
+
+  .sidebar{
+    position:fixed; top:0; left:0; width:220px; height:100vh; overflow-y:auto; z-index:100;
+    padding:26px 18px; background:var(--sidebar-bg);
+    display:flex; flex-direction:column; gap:22px;
+  }
+  .brand{ display:flex; align-items:center; gap:9px; text-decoration:none; }
+  .brand-mark{
+    width:32px; height:32px; border-radius:8px; background:var(--accent); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-family:"Sora", system-ui, sans-serif; font-weight:800; font-size:12px; flex:none;
+  }
+  .brand-text{ display:flex; flex-direction:column; line-height:1.25; }
+  .brand-text strong{ font-family:"Sora", system-ui, sans-serif; font-size:13.5px; font-weight:700; color:#fff; }
+  .brand-text span{ font-size:11px; color:#aed6f1; }
+
+  .toc-label{ font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:10px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#aed6f1; margin-bottom:6px; }
+  .toc{ list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:0; border-left:1px solid rgba(174,214,241,0.25); }
+  .toc a{
+    display:block; padding:6px 0 6px 13px; margin-left:-1px; border-left:1px solid transparent;
+    text-decoration:none; color:#d7e6f2; font-size:12.4px; line-height:1.4;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .toc a:hover{ color:#fff; }
+  .toc li.active > a{ color:#fff; border-left-color:#fff; font-weight:600; }
+
+  .side-card{ margin-top:auto; padding:12px 13px; border-radius:var(--radius-md); background:rgba(255,255,255,0.06); border:1px solid rgba(174,214,241,0.22); }
+  .side-card .sc-label{ font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:10px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:#aed6f1; margin-bottom:5px; }
+  .side-card p{ margin:0; font-size:11.4px; color:#c6d8e6; line-height:1.5; }
+
+  /* ---------- main ---------- */
+  main{ margin-left:220px; padding:40px 52px 84px; min-width:0; background:var(--ground); min-height:100vh; }
+  .content-col{ max-width:860px; }
+
+  .pagebar{
+    position:sticky; top:0; z-index:45;
+    display:flex; align-items:center; gap:9px; flex-wrap:wrap;
+    margin:-40px -52px 30px; padding:12px 52px 13px;
+    background:var(--ground); border-bottom:1px solid var(--line);
+    font-size:13px;
+  }
+  .pagebar-home{ display:inline-flex; align-items:center; gap:7px; text-decoration:none; color:var(--accent); font-weight:600; white-space:nowrap; }
+  .pagebar-home:hover{ text-decoration:underline; }
+  .pagebar-mark{ width:20px; height:20px; border-radius:5px; background:var(--accent); color:#fff; display:inline-flex; align-items:center; justify-content:center; }
+  .pagebar-chevron{ color:var(--ink-faint); }
+  .pagebar-here{ color:var(--ink-muted); font-weight:500; }
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:linear-gradient(135deg, var(--accent) 0%, var(--navy) 100%);
+    color:#fff; border-radius:var(--radius-lg); padding:32px 36px; margin-bottom:26px;
+    box-shadow:var(--shadow);
+  }
+  .hero .eyebrow{
+    display:inline-block; font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:11px; font-weight:600;
+    letter-spacing:0.08em; text-transform:uppercase; color:#cfe6f7; margin-bottom:10px;
+  }
+  .hero h1{ font-size:27px; font-weight:800; letter-spacing:-0.01em; margin-bottom:10px; color:#fff; }
+  .hero .dek{ color:#dcecf7; font-size:14.5px; max-width:70ch; margin:0; }
+  .hero-badges{ display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .h-badge{ background:rgba(255,255,255,0.16); border-radius:999px; padding:5px 13px; font-size:12px; white-space:nowrap; color:#fff; }
+  .h-badge strong{ font-weight:700; }
+  .h-badge a{ color:#fff; text-decoration:underline; }
+
+  /* ---------- callouts ---------- */
+  .callout{ border-radius:var(--radius-md); padding:15px 18px; margin:16px 0; border-left:4px solid; font-size:13.6px; line-height:1.65; background:var(--surface); box-shadow:var(--shadow); max-width:76ch; }
+  .callout .c-label{ display:block; font-weight:700; font-size:13.5px; margin-bottom:6px; }
+  .callout p{ margin:0; max-width:none; }
+  .callout p + p{ margin-top:8px; }
+  .callout ul{ margin:8px 0 0; padding-left:20px; }
+  .callout li{ margin-bottom:5px; font-size:13.3px; }
+  .callout.info{ border-left-color:var(--accent); } .callout.info .c-label{ color:var(--accent); }
+  .callout.warn{ border-left-color:#d4ac0d; background:#fbf3d6; } .callout.warn .c-label{ color:var(--amber); }
+  .callout.danger{ border-left-color:var(--red); background:#fdeaea; } .callout.danger .c-label{ color:var(--red); }
+  .callout.success{ border-left-color:#27ae60; background:#e3f5ec; } .callout.success .c-label{ color:var(--green); }
+
+  /* ---------- diagram ---------- */
+  .diagram{
+    background:var(--navy); color:#a9d4ef; font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:12.3px; line-height:1.7; border-radius:var(--radius-md); padding:18px 22px;
+    overflow-x:auto; white-space:pre; margin-bottom:18px; box-shadow:var(--shadow);
+  }
+
+  /* ---------- sections ---------- */
+  section.block{ margin-bottom:48px; scroll-margin-top:20px; }
+  .s-badge-row{ display:flex; align-items:center; gap:13px; margin-bottom:16px; }
+  .s-badge{ width:34px; height:34px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-family:"Sora",system-ui,sans-serif; font-weight:700; font-size:14px; flex:none; }
+  .s-title{ font-size:20px; font-weight:700; }
+  section.block h4{ font-size:15px; font-weight:700; margin:22px 0 8px; }
+  section.block h4:first-of-type{ margin-top:0; }
+  section.block p{ color:var(--ink-muted); margin:0 0 12px; max-width:76ch; }
+  section.block p strong{ color:var(--ink); font-weight:600; }
+  section.block ul, section.block ol{ margin:0 0 12px; padding-left:20px; max-width:76ch; color:var(--ink-muted); }
+  section.block li{ margin-bottom:5px; }
+  section.block li strong{ color:var(--ink); font-weight:600; }
+
+  /* ---------- tables ---------- */
+  .table-wrap{ overflow-x:auto; margin:14px 0 20px; border:1px solid var(--line); border-radius:var(--radius-md); background:var(--surface); }
+  table{ width:100%; border-collapse:collapse; font-size:13px; min-width:520px; }
+  th, td{ text-align:left; padding:10px 13px; border-bottom:1px solid var(--line); vertical-align:top; }
+  thead th{ background:var(--surface-2); color:var(--ink-muted); font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:10.8px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; }
+  tbody tr:last-child td{ border-bottom:none; }
+  td:first-child{ font-weight:500; color:var(--ink); }
+  .fill-blank{ color:var(--ink-faint); font-style:italic; }
+
+  /* ---------- code blocks ---------- */
+  .code-block{ position:relative; margin:14px 0 20px; border-radius:var(--radius-md); overflow:hidden; box-shadow:var(--shadow); max-width:76ch; }
+  .code-label{ background:#132c40; color:#8fb3cf; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; padding:8px 16px; font-family:"IBM Plex Mono", ui-monospace, monospace; }
+  pre{ background:var(--navy); color:#dbe6f0; font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:12.3px; line-height:1.6; padding:15px 18px; overflow-x:auto; margin:0; }
+  pre .cm{ color:#8fb3cf; }
+  pre .kw{ color:#9fd0f5; }
+  pre .str{ color:#8fe0b0; }
+  pre .fn{ color:#f0cf7a; }
+
+  /* ---------- badges / pills ---------- */
+  .badge{ display:inline-block; font-size:11px; font-weight:700; padding:3px 10px; border-radius:12px; white-space:nowrap; }
+  .badge-yes{ background:#e3f5ec; color:var(--green); }
+  .badge-no{ background:var(--surface-2); color:var(--ink-muted); }
+  .badge-critical{ background:#fdeaea; color:var(--red); }
+
+  code.inline-big{ display:block; background:var(--surface-2); color:var(--accent-strong); padding:10px 14px; border-radius:var(--radius-sm); margin:8px 0; font-size:12.3px; max-width:76ch; }
+
+  footer.page-foot{ margin-top:52px; padding-top:20px; border-top:1px solid var(--line); font-size:11.5px; color:var(--ink-faint); max-width:76ch; }
+  footer.page-foot a{ color:var(--ink-faint); text-decoration:underline; }
+
+  @media (max-width:920px){
+    .sidebar{ position:static; width:auto; height:auto; }
+    main{ margin-left:0; padding:32px 20px 60px; }
+    .pagebar{ margin:-32px -20px 26px; padding:12px 20px 13px; }
+  }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <nav class="sidebar" aria-label="Guide sections">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">SS</span>
+        <span class="brand-text">
+          <strong>Semantic Search Guide</strong>
+          <span>Field Notes · Agentforce</span>
+        </span>
+      </a>
+
+      <div>
+        <div class="toc-label">Contents</div>
+        <ul class="toc" id="toc">
+          <li><a href="#s0">0. Architecture at a glance</a></li>
+          <li><a href="#s1">1. Data Cloud setup</a></li>
+          <li><a href="#s2">2. The Apex layer</a></li>
+          <li><a href="#s3">3. Wiring into the agent</a></li>
+          <li><a href="#s4">4. Testing</a></li>
+          <li><a href="#s5">5. Permissions checklist</a></li>
+          <li><a href="#appendix-a">A · Name reference</a></li>
+          <li><a href="#appendix-b">B · File map</a></li>
+          <li><a href="#appendix-c">C · Diff from the plan</a></li>
+          <li><a href="#references">References</a></li>
+        </ul>
+      </div>
+
+      <div class="side-card">
+        <div class="sc-label">In one line</div>
+        <p>Two Data Cloud vector searches merged by best score, hydrated from live CRM, with a keyword fallback if Data Cloud is unavailable.</p>
+      </div>
+    </nav>
+
+    <main>
+      <div class="content-col">
+
+        <div class="pagebar">
+          <a class="pagebar-home" href="index.html" aria-label="Field Notes home"><span class="pagebar-mark" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span>Field Notes</span></a>
+          <span class="pagebar-chevron" aria-hidden="true">&rsaquo;</span>
+          <span class="pagebar-here">Semantic search guide with Apex</span>
+        </div>
+
+        <header class="hero">
+          <span class="eyebrow">Agentforce · Data Cloud</span>
+          <h1>Semantic Search Implementation Guide</h1>
+          <p class="dek">The complete, verified path from an empty Data Cloud to a working Agentforce agent that finds similar Cases and RFI Questions by <em>meaning</em>, not keyword. Every command, field name, and code sample here was tested end-to-end against a live org.</p>
+          <div class="hero-badges">
+            <span class="h-badge"><strong>Audience:</strong>&nbsp;an engineer setting this up for the first time</span>
+            <span class="h-badge"><strong>Agent:</strong>&nbsp;RFI_Case_Analysis_Agent_Script</span>
+            <span class="h-badge"><strong>Status:</strong>&nbsp;live &amp; tested</span>
+            <span class="h-badge"><strong>Repo:</strong>&nbsp;<a href="https://github.com/nisarkhan/amazon-fintech.git">github.com/nisarkhan/amazon-fintech</a></span>
+            <span class="h-badge"><strong>Also see:</strong>&nbsp;the original planning PDF (kept locally, not linked here)</span>
+          </div>
+        </header>
+
+        <div class="callout warn">
+          <span class="c-label">⚠ This guide reflects what was actually built</span>
+          <p>An earlier design document laid out the <em>planned</em> architecture. Several things changed once it was actually built — see <a href="#appendix-c">Appendix C</a> for the full diff. Where the two disagree, trust this document.</p>
+        </div>
+
+        <!-- ============ 0. ARCHITECTURE ============ -->
+        <section class="block" id="s0">
+          <div class="s-badge-row"><span class="s-badge">0</span><h2 class="s-title">Architecture at a glance</h2></div>
+
+          <div class="diagram">Agentforce Agent (Agent Script)
+  "RFI_Case_Analysis_Agent_Script"  — 2 actions
+      │
+      ├── get_case_summary  ──► apex://GetCaseSummaryFields   (pure SOQL, no Data Cloud)
+      │                              │
+      │                              └─► CaseSummaryResponse (CLT) ──► caseSummaryCard (LWC)
+      │
+      └── find_similar      ──► apex://FindSimilarCases       (Data Cloud vector search
+                                       │                        + SOQL/SOSL fallback)
+                                       └─► SimilarCasesResponse (CLT) ──► similarCasesCard (LWC)
+
+FindSimilarRfiQuestions  — same pattern as FindSimilarCases, but NOT yet wired to an
+                            agent action (see §3.4)
+
+Data Cloud:
+  Case_Home  ──► ssot__Case__dlm  ──► Case_index__dlm / Case_chunk__dlm
+  RFI_Question__c_Home ──► RFI_Question_c_Home__dlm ──► RFI_Question_c_Home_index__dlm / _chunk__dlm</div>
+
+          <p>Three Apex classes matter here:</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Class</th><th>Uses Data Cloud?</th><th>Wired to agent action?</th></tr></thead>
+              <tbody>
+                <tr><td><code>GetCaseSummaryFields</code></td><td><span class="badge badge-no">No</span> — pure SOQL (record Id, Case Number, keyword phrase, SOSL)</td><td><span class="badge badge-yes">✓ get_case_summary</span></td></tr>
+                <tr><td><code>FindSimilarCases</code></td><td><span class="badge badge-yes">Yes</span> — vector search, primary path</td><td><span class="badge badge-yes">✓ find_similar</span></td></tr>
+                <tr><td><code>FindSimilarRfiQuestions</code></td><td><span class="badge badge-yes">Yes</span> — vector search, primary path</td><td><span class="badge badge-no">not wired</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p><code>GetCaseSummaryFields</code> was deliberately <strong>not</strong> migrated to Data Cloud — it does exact lookups (by Id, by Case Number, or an exact-phrase match), which SOQL already does instantly. Semantic search earns its cost on the <em>fuzzy</em> "find similar" use case, not on "look up this specific case."</p>
+        </section>
+
+        <!-- ============ 1. DATA CLOUD SETUP ============ -->
+        <section class="block" id="s1">
+          <div class="s-badge-row"><span class="s-badge">1</span><h2 class="s-title">Data Cloud setup</h2></div>
+
+          <h4>1.1 Prerequisites</h4>
+          <ul>
+            <li>Data Cloud provisioned and enabled on the org</li>
+            <li>Salesforce CRM Connector active: <strong>Setup → Data Cloud → Salesforce CRM</strong></li>
+            <li><code>Case</code> and <code>RFI_Question__c</code> objects already have data in the org</li>
+          </ul>
+
+          <h4>1.2 Create two CRM Data Streams</h4>
+          <p><strong>Setup → Data Cloud → Data Streams → New → Connected Source: Salesforce CRM</strong></p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Object</th><th>Stream name</th><th>Category</th><th>Key fields</th></tr></thead>
+              <tbody>
+                <tr><td><code>Case</code></td><td><code>Case_Home</code></td><td>Other</td><td>Id (PK), CaseNumber, Subject, Description, Status, Priority, Origin, CreatedDate, ClosedDate</td></tr>
+                <tr><td><code>RFI_Question__c</code></td><td><code>RFI_Question__c_Home</code></td><td>Other</td><td>Id (PK), Name, Question_Text__c, Response_Text__c, Category__c, Status__c, Priority__c, Due_Date__c, Requesting_Institution__c, <strong>Case__c (FK)</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Click <strong>Deploy</strong> on each, then wait for <code>ImportRunStatus = SUCCESS</code>. Don't trust the <code>TotalRowsProcessed</code> column — check <code>TotalNumberOfRowsAdded</code> instead; the former is frequently <code>0</code> even on a healthy stream.</p>
+
+          <div class="callout warn">
+            <span class="c-label">⚠ Case__c is the field that makes cross-object matching possible</span>
+            <p>If you skip mapping <code>Case__c</code>, "find similar cases via RFI questions" (§2.1) degrades to Case-text-only matching.</p>
+          </div>
+
+          <h4>1.3 Map each stream to a Data Model Object (DMO)</h4>
+          <p><strong>Data Streams → (stream) → Data Mapping → Start</strong></p>
+          <ul>
+            <li><strong>Case_Home</strong> → auto-maps to the standard <code>ssot__Case__dlm</code>. Only carries the fields you mapped — ours has <code>ssot__Id__c</code>, <code>ssot__CaseNumber__c</code>, <code>ssot__Subject__c</code>, <code>ssot__Description__c</code>, <code>ssot__CreatedDate__c</code>. (Status/Priority/Origin weren't mapped — <code>FindSimilarCases</code> hydrates those from live CRM after the vector search, so it doesn't matter, see §2.2.)</li>
+            <li><strong>RFI_Question__c_Home</strong> → create a <strong>new</strong> custom DMO. Map all 9 custom fields including <code>Case__c</code>.</li>
+          </ul>
+
+          <div class="callout danger">
+            <span class="c-label">⚠ Data Cloud renames your fields when it creates a custom DMO</span>
+            <p>In our org, mapping <code>RFI_Question__c</code> produced a DMO named <strong><code>RFI_Question_c_Home__dlm</code></strong> (not <code>RFI_Question__c__dlm</code>), with fields like <strong><code>Question_Text_c__c</code></strong>, <strong><code>Case_c__c</code></strong>, <strong><code>Status_c__c</code></strong> — Data Cloud inserts <code>_c</code> before the trailing <code>__c</code>. <strong>Your names will likely differ from ours.</strong> After mapping, confirm the actual names:</p>
+            <div class="code-block"><pre>sf sobject describe --sobject &lt;YourRfiDmoName&gt;__dlm --target-org &lt;alias&gt;</pre></div>
+            <p>Every hardcoded name in the Apex (§2) must match exactly what you see here.</p>
+          </div>
+
+          <h4>1.4 Build two Search Indexes</h4>
+          <p><strong>Setup → Data Cloud → Search Indexes → New → Advanced Setup</strong></p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Setting</th><th>Case index</th><th>RFI Question index</th></tr></thead>
+              <tbody>
+                <tr><td>Search Type</td><td>Hybrid Search</td><td>Hybrid Search</td></tr>
+                <tr><td>Source Object</td><td><code>ssot__Case__dlm</code> (search "Case")</td><td>your RFI DMO (search "RFI")</td></tr>
+                <tr><td>Fields to Chunk</td><td><code>Subject</code>, <code>Description</code></td><td><code>Question_Text_c__c</code>, <code>Response_Text_c__c</code> (your names)</td></tr>
+                <tr><td>Embedding Model</td><td>E5 Large V2</td><td>E5 Large V2</td></tr>
+                <tr><td>Index name</td><td colspan="2">pick something memorable — it becomes your table prefix</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Click <strong>Review and Build</strong>, then wait for status = <strong>Ready</strong> (5–15 min). The index name determines the resulting tables: <code>&lt;YourIndexName&gt;_index__dlm</code> and <code>&lt;YourIndexName&gt;_chunk__dlm</code>. Confirm a chunk count &gt; 0:</p>
+          <div class="code-block"><pre>SELECT COUNT() FROM &lt;YourIndexName&gt;_chunk__dlm</pre></div>
+
+          <div class="callout info">
+            <span class="c-label">Why chunk Subject + Description (not Subject alone)</span>
+            <p>In a compliance-RFI context, the regulatory detail — entity names, citations, procedural language — lives in <em>Description</em>, not the (often generic) Subject line. Chunking both lets a coordinator's plain words ("a regulator wants our books and records") match a Description that never uses those words but describes a books-and-records examination.</p>
+          </div>
+
+          <h4>1.5 Test in Query Editor before writing any Apex</h4>
+          <p><strong>Data Cloud → Query Editor → New</strong></p>
+          <div class="code-block">
+            <div class="code-label">SQL · Data Cloud Query Editor</div>
+            <pre>SELECT v.score__c AS score, c.ssot__CaseNumber__c AS case_no, c.ssot__Subject__c AS subject
+FROM vector_search(TABLE(Case_index__dlm), 'a regulator wants our books and records', '', 10) v
+JOIN Case_chunk__dlm cc ON v.RecordId__c = cc.RecordId__c
+JOIN ssot__Case__dlm  c  ON cc.SourceRecordId__c = c.ssot__Id__c
+ORDER BY score DESC</pre>
+          </div>
+          <p>Swap in your actual index/DMO names. You should get relevant results with <strong>no shared keywords</strong> between your query text and the matched Subject — that's proof it's working semantically, not lexically.</p>
+
+          <h4>1.6 Permissions</h4>
+          <p>Assign a <strong>Data Cloud User</strong> (or <strong>Data Cloud Admin</strong>) permission set to whichever user runs the Apex. Without it, <code>ConnectApi.CdpQuery.queryANSISql</code> throws an access error.</p>
+        </section>
+
+        <!-- ============ 2. APEX LAYER ============ -->
+        <section class="block" id="s2">
+          <div class="s-badge-row"><span class="s-badge">2</span><h2 class="s-title">The Apex layer</h2></div>
+
+          <h4>2.1 FindSimilarCases.cls — the core pattern</h4>
+          <p>The naive approach (query one Data Cloud index) misses a whole category of matches: a Case's own Subject/Description may say nothing about a topic that its RFI Questions discuss in detail (e.g. "structuring" rarely appears in a Case title, but often appears in an attached RFI question). So <code>FindSimilarCases</code> runs <strong>two</strong> vector searches and merges them by best score:</p>
+
+          <div class="code-block">
+            <div class="code-label">Apex · FindSimilarCases.cls</div>
+            <pre><span class="kw">public with sharing class</span> FindSimilarCases {
+
+    <span class="kw">private static final</span> String CASE_INDEX = <span class="str">'Case_index__dlm'</span>;
+    <span class="kw">private static final</span> String CASE_CHUNK = <span class="str">'Case_chunk__dlm'</span>;
+    <span class="kw">private static final</span> String RFI_INDEX  = <span class="str">'RFI_Question_c_Home_index__dlm'</span>; <span class="cm">// &lt;- your names</span>
+    <span class="kw">private static final</span> String RFI_CHUNK  = <span class="str">'RFI_Question_c_Home_chunk__dlm'</span>; <span class="cm">// &lt;- go here</span>
+
+    <span class="cm">// ... Request/Response/@InvocableMethod unchanged from the keyword-only version ...</span>
+
+    <span class="kw">private static</span> List&lt;Id&gt; <span class="fn">semanticCaseSearch</span>(String keywords, Integer limitVal) {
+        Integer fetch = limitVal * 5;                 <span class="cm">// over-fetch: one case -&gt; several chunks</span>
+        String kw = String.escapeSingleQuotes(keywords);
+        Map&lt;Id, Decimal&gt; best = <span class="kw">new</span> Map&lt;Id, Decimal&gt;(); <span class="cm">// Case id -&gt; best score from EITHER index</span>
+
+        <span class="cm">// Pass 1 — match on the Case's own Subject / Description</span>
+        accumulate(best,
+            <span class="str">'SELECT v.score__c AS rel, cc.SourceRecordId__c AS refid '</span>
+          + <span class="str">'FROM vector_search(TABLE('</span> + CASE_INDEX + <span class="str">'), \''</span> + kw + <span class="str">'\', \'\', '</span> + fetch + <span class="str">') v '</span>
+          + <span class="str">'JOIN '</span> + CASE_CHUNK + <span class="str">' cc ON v.RecordId__c = cc.RecordId__c ORDER BY rel DESC'</span>);
+
+        <span class="cm">// Pass 2 — match on the RFI questions attached to the Case</span>
+        accumulate(best,
+            <span class="str">'SELECT v.score__c AS rel, q.Case_c__c AS refid '</span>            <span class="cm">// &lt;- your FK field name</span>
+          + <span class="str">'FROM vector_search(TABLE('</span> + RFI_INDEX + <span class="str">'), \''</span> + kw + <span class="str">'\', \'\', '</span> + fetch + <span class="str">') v '</span>
+          + <span class="str">'JOIN '</span> + RFI_CHUNK + <span class="str">' rc ON v.RecordId__c = rc.RecordId__c '</span>
+          + <span class="str">'JOIN RFI_Question_c_Home__dlm q ON rc.SourceRecordId__c = q.Id__c '</span>  <span class="cm">// &lt;- your DMO name</span>
+          + <span class="str">'ORDER BY rel DESC'</span>);
+
+        List&lt;ScoredId&gt; ranked = <span class="kw">new</span> List&lt;ScoredId&gt;();
+        <span class="kw">for</span> (Id cid : best.keySet()) ranked.add(<span class="kw">new</span> ScoredId(cid, best.get(cid)));
+        ranked.sort();                                 <span class="cm">// descending, via Comparable</span>
+
+        List&lt;Id&gt; ordered = <span class="kw">new</span> List&lt;Id&gt;();
+        <span class="kw">for</span> (ScoredId s : ranked) { ordered.add(s.rid); <span class="kw">if</span> (ordered.size() &gt;= limitVal) <span class="kw">break</span>; }
+        <span class="kw">return</span> ordered;
+    }
+    <span class="cm">// accumulate(), ScoredId, runCdpQuery(), hydrateOrdered(), keywordFallback() — see §2.2–§2.4</span>
+}</pre>
+          </div>
+          <p>Search <code>"how do we spot structuring"</code> → the Case whose title says nothing about structuring, but whose RFI question says <em>"detect structuring patterns"</em>, comes back <strong>ranked #1</strong> — because its best score came from Pass 2.</p>
+
+          <h4>2.2 Hydrate from live CRM, don't trust the DMO for display fields</h4>
+          <p>Data Cloud only has the fields you mapped. Rather than adding every display field to the DMO and keeping it in sync, the pattern is: <strong>use Data Cloud only for ranking</strong>, then pull the actual record from CRM:</p>
+          <div class="code-block">
+            <div class="code-label">Apex</div>
+            <pre><span class="kw">private static</span> List&lt;Case&gt; <span class="fn">hydrateOrdered</span>(List&lt;Id&gt; ids) {
+    Map&lt;Id, Case&gt; byId = <span class="kw">new</span> Map&lt;Id, Case&gt;([
+        SELECT Id, CaseNumber, Subject, Description, Status, Priority, Origin,
+               CreatedDate, ClosedDate
+        FROM Case WHERE Id IN :ids
+    ]);
+    List&lt;Case&gt; ordered = <span class="kw">new</span> List&lt;Case&gt;();
+    <span class="kw">for</span> (Id i : ids) { <span class="kw">if</span> (byId.containsKey(i)) { ordered.add(byId.get(i)); } }
+    <span class="kw">return</span> ordered;
+}</pre>
+          </div>
+          <p>This also means the card always shows <em>current</em> data even if Data Cloud hasn't re-synced yet.</p>
+
+          <h4>2.3 ⚠ The ConnectApi.CdpQuery row-iteration bug — and the fix</h4>
+          <div class="callout danger">
+            <span class="c-label">This is the single most important thing in this guide</span>
+            <p><code>ConnectApi.CdpQuery.queryANSISql(...)</code> returns <code>CdpQueryOutput.data</code> as a <code>List&lt;Object&gt;</code> whose elements are internal <code>ApexMapWrapper</code> objects, not plain maps. We found, empirically:</p>
+            <ul>
+              <li><code>output.data.size()</code> — safe</li>
+              <li>Casting <strong>one</strong> element, <code>(Map&lt;String,Object&gt;) output.data[0]</code> — safe</li>
+              <li><strong>Casting a second element, or iterating with a <code>for</code> loop</strong> — aborts the entire transaction with an opaque, uncatchable <code>UNKNOWN_EXCEPTION…(126874768)</code> and <strong>no debug logs at all</strong>. Happens the same way in anonymous Apex and in a real invocable call from the agent.</li>
+            </ul>
+          </div>
+          <p>This will bite anyone who writes the "obvious" code:</p>
+          <div class="code-block">
+            <div class="code-label">Apex · Do not do this</div>
+            <pre><span class="cm">// ❌ aborts with UNKNOWN_EXCEPTION as soon as you touch row 2+</span>
+<span class="kw">for</span> (Object row : cdpOutput.data) {
+    Map&lt;String,Object&gt; m = (Map&lt;String,Object&gt;) row;   <span class="cm">// fine on row 0, fails from row 1 on</span>
+    ...
+}</pre>
+          </div>
+          <p><strong>The fix</strong> — copy out of the lazy collection, then round-trip <em>each row</em> through JSON individually:</p>
+          <div class="code-block">
+            <div class="code-label">Apex · the working pattern</div>
+            <pre><span class="kw">private static</span> List&lt;Object&gt; <span class="fn">runCdpQuery</span>(String sql) {
+    ConnectApi.CdpQueryInput qi = <span class="kw">new</span> ConnectApi.CdpQueryInput();
+    qi.sql = sql;
+    ConnectApi.CdpQueryOutput out = ConnectApi.CdpQuery.queryANSISql(qi);
+
+    List&lt;Object&gt; clean = <span class="kw">new</span> List&lt;Object&gt;();
+    <span class="kw">if</span> (out != <span class="kw">null</span> &amp;&amp; out.data != <span class="kw">null</span>) {
+        List&lt;Object&gt; raw = <span class="kw">new</span> List&lt;Object&gt;();
+        raw.addAll(out.data);                                  <span class="cm">// copy out of the lazy wrapper</span>
+        <span class="kw">for</span> (Object row : raw) {
+            clean.add(JSON.deserializeUntyped(JSON.serialize(row)));  <span class="cm">// per-row round-trip</span>
+        }
+    }
+    <span class="kw">return</span> clean;
+}</pre>
+          </div>
+          <p>After this, <code>clean</code> is a plain <code>List&lt;Object&gt;</code> of plain <code>Map&lt;String,Object&gt;</code> — iterate it however you like. Every query in this project goes through <code>runCdpQuery()</code> — never call <code>ConnectApi.CdpQuery.queryANSISql</code> directly and iterate the result.</p>
+
+          <h4>2.4 Always keep a keyword fallback</h4>
+          <div class="code-block">
+            <div class="code-label">Apex</div>
+            <pre>List&lt;Id&gt; caseIds = <span class="kw">new</span> List&lt;Id&gt;();
+<span class="kw">try</span> {
+    caseIds = semanticCaseSearch(cleaned, limitVal);
+} <span class="kw">catch</span> (Exception e) {
+    System.debug(LoggingLevel.WARN, <span class="str">'vector search failed, using keyword fallback: '</span> + e.getMessage());
+}
+List&lt;Case&gt; caseResults = !caseIds.isEmpty()
+    ? hydrateOrdered(caseIds)
+    : keywordFallback(cleaned, limitVal);   <span class="cm">// SOQL LIKE, then SOSL</span></pre>
+          </div>
+          <p>If Data Cloud is down, the index isn't built yet, or the org never had Data Cloud provisioned, the agent still works — just with keyword matching. This also makes the class testable: <code>Test.isRunningTest()</code> short-circuits to the fallback, with an optional <code>mockCdpRows</code> seam to unit-test the semantic-parsing path without a real callout.</p>
+
+          <h4>2.5 FindSimilarRfiQuestions.cls — same pattern, one index</h4>
+          <p>Identical structure, single vector search against the RFI index, each result carries its parent Case (<code>parentCaseId</code>, <code>parentCaseNumber</code>) via the FK:</p>
+          <div class="code-block">
+            <div class="code-label">Apex</div>
+            <pre><span class="str">'SELECT v.score__c AS rel, r.Id__c AS refid '</span>
++ <span class="str">'FROM vector_search(TABLE('</span> + RFI_INDEX + <span class="str">'), \''</span> + kw + <span class="str">'\', \'\', '</span> + fetch + <span class="str">') v '</span>
++ <span class="str">'JOIN '</span> + RFI_CHUNK + <span class="str">' rc ON v.RecordId__c = rc.RecordId__c '</span>
++ <span class="str">'JOIN '</span> + RFI_DMO + <span class="str">' r ON rc.SourceRecordId__c = r.Id__c '</span>
++ <span class="str">'ORDER BY rel DESC'</span></pre>
+          </div>
+          <p>Built and tested, but <strong>not yet exposed as an agent action</strong> — see §3.4 to wire it up.</p>
+
+          <h4>2.6 What we deliberately did not need</h4>
+          <ul>
+            <li><strong>No <code>callout=true</code></strong> on <code>@InvocableMethod</code>. We tested <code>ConnectApi.CdpQuery</code> immediately after a DML insert in the same transaction (simulating a trigger/before-save flow context) and it succeeded — the platform doesn't treat it as a blocking HTTP callout for the "uncommitted work pending" restriction. An earlier design doc for this project claimed it was required; that didn't hold up in testing. Harmless to add if you ever do see a <code>CalloutException</code>.</li>
+            <li><strong>No Named Credential, Connected App, or Remote Site Setting</strong> — <code>ConnectApi.CdpQuery</code> handles its own connectivity via the org's CRM Connector.</li>
+            <li><strong>No Custom Metadata Type for index names</strong> — fine for a single-org POC. If packaging for multiple customer orgs (each will name their index differently), move the index/DMO constants into a Custom Metadata Type instead of hardcoding.</li>
+          </ul>
+        </section>
+
+        <!-- ============ 3. AGENT WIRING ============ -->
+        <section class="block" id="s3">
+          <div class="s-badge-row"><span class="s-badge">3</span><h2 class="s-title">Wiring into the Agentforce agent</h2></div>
+
+          <h4>3.1 The agent bundle</h4>
+          <p>Authoring bundle: <code>force-app/main/default/aiAuthoringBundles/RFI_Case_Analysis_Agent_Script/</code> (<code>agent_type: "AgentforceEmployeeAgent"</code>, no <code>default_agent_user</code> needed). Two subagents, one action each:</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Subagent</th><th>Action</th><th>target</th><th>source (GenAiFunction)</th><th>Output CLT</th></tr></thead>
+              <tbody>
+                <tr><td><code>case_analysis</code></td><td><code>get_case_summary</code></td><td><code>apex://GetCaseSummaryFields</code></td><td><code>RFI_GetCaseSummaryFields</code></td><td><code>c__CaseSummaryResponse</code></td></tr>
+                <tr><td><code>similar_case_search</code></td><td><code>find_similar</code></td><td><code>apex://FindSimilarCases</code></td><td><code>RFI_FindSimilarCases</code></td><td><code>c__SimilarCasesResponse</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>3.2 ⚠ filter_from_agent — the setting that decides whether the card renders</h4>
+          <p>Each action's output block has:</p>
+          <div class="code-block">
+            <div class="code-label">Agent Script · .agent</div>
+            <pre>outputs:
+    caseSummaryData: object
+        complex_data_type_name: <span class="str">"c__CaseSummaryResponse"</span>
+        filter_from_agent: <span class="kw">True</span>     <span class="cm">// &lt;- must be True, not False</span>
+        is_displayable: <span class="kw">True</span></pre>
+          </div>
+          <div class="callout danger">
+            <span class="c-label">Set filter_from_agent: True on both outputs</span>
+            <p>This compiles to <code>copilotAction:isUsedByPlanner</code> in the action's schema.</p>
+            <ul>
+              <li><strong>False</strong> → <code>isUsedByPlanner: true</code> → the entire action JSON is injected into the planner/LLM's context every turn. Once the model can see every field value, a request that sounds like it wants a <em>slice</em> of the data ("just the due date", "the answered ones") tips it into <strong>answering in prose and skipping the card</strong> — while a holistic ask ("summarize case X") still renders fine. Same wiring, inconsistent behavior.</li>
+              <li><strong>True</strong> → <code>isUsedByPlanner: false</code> → the model <strong>never sees the payload</strong>, so it has nothing to summarize — its only option is to render the card via <code>show_command</code>. Verified 5/5 across a range of prompt phrasings after the fix, vs. intermittent failures before it.</li>
+            </ul>
+          </div>
+          <p><code>is_displayable</code> and <code>complex_data_type_name</code> control <em>whether the card can render at all</em>; <code>filter_from_agent</code> controls <em>whether the model chooses to render it instead of talking about the data</em>. The second one is the one that's easy to get backwards and hard to diagnose — it looks like "the CLT is broken" when it's actually "the model had a choice and sometimes chose text."</p>
+          <p><em>Trade-off: with <code>filter_from_agent: True</code>, the model can no longer answer follow-up questions about that data in plain text — it must re-invoke the action and re-render. Fine for a display-only card; not for conversational Q&amp;A over the same payload.</em></p>
+
+          <h4>3.3 The GenAiFunction metadata</h4>
+          <div class="code-block">
+            <div class="code-label">XML · RFI_FindSimilarCases.genAiFunction-meta.xml</div>
+            <pre>&lt;GenAiFunction xmlns=<span class="str">"http://soap.sforce.com/2006/04/metadata"</span>&gt;
+    &lt;invocationTarget&gt;FindSimilarCases&lt;/invocationTarget&gt;
+    &lt;invocationTargetType&gt;apex&lt;/invocationTargetType&gt;
+    ...
+&lt;/GenAiFunction&gt;</pre>
+          </div>
+          <p><code>invocationTarget</code> must exactly match the Apex class name. Deploy the Apex before the <code>GenAiFunction</code>/agent bundle when deploying in separate steps.</p>
+
+          <h4>3.4 To also expose FindSimilarRfiQuestions as an agent action</h4>
+          <ol>
+            <li>Create <code>genAiFunctions/RFI_FindSimilarRfiQuestions/</code> pointing <code>invocationTarget</code> at <code>FindSimilarRfiQuestions</code>.</li>
+            <li><em>(Optional, for a rich card)</em> Create a Custom Lightning Type + renderer LWC for <code>SimilarRfiQuestionsResponse</code>/<code>SimilarRfiQuestionItem</code>, mirroring <code>CaseSummaryResponse</code>/<code>caseSummaryCard</code>.</li>
+            <li>Add a new action block to the <code>.agent</code> file, same shape as <code>find_similar</code>, with <code>filter_from_agent: True</code> from the start.</li>
+            <li><code>sf agent publish</code> (creates a new version) → <code>sf agent activate</code>.</li>
+          </ol>
+
+          <h4>3.5 Deploy → Publish → Activate</h4>
+          <div class="code-block">
+            <div class="code-label">Bash</div>
+            <pre>sf project deploy start --metadata AiAuthoringBundle:RFI_Case_Analysis_Agent_Script --target-org &lt;alias&gt;
+sf agent publish authoring-bundle --api-name RFI_Case_Analysis_Agent_Script --target-org &lt;alias&gt;
+sf agent activate            --api-name RFI_Case_Analysis_Agent_Script --target-org &lt;alias&gt;</pre>
+          </div>
+          <p><strong>Deploy</strong> puts the authoring source into the org (visible as a DRAFT in Agentforce Studio); <strong>Publish</strong> compiles it into a runnable version (also regenerates <code>Bot</code>/<code>BotVersion</code>/<code>GenAiPlannerBundle</code> locally); <strong>Activate</strong> makes that version live. None of the three steps do the others.</p>
+        </section>
+
+        <!-- ============ 4. TESTING ============ -->
+        <section class="block" id="s4">
+          <div class="s-badge-row"><span class="s-badge">4</span><h2 class="s-title">Testing</h2></div>
+
+          <h4>4.1 Three ways to run a query</h4>
+          <ol>
+            <li><strong>Query Editor</strong> (§1.5) — fastest, shows raw scores.</li>
+            <li><strong>Anonymous Apex</strong> — tests the actual class:
+              <div class="code-block">
+                <div class="code-label">Apex</div>
+                <pre>FindSimilarCases.Request req = <span class="kw">new</span> FindSimilarCases.Request();
+req.searchKeywords = <span class="str">'we are being sued and must preserve records'</span>;
+req.maxResults = 5;
+SimilarCasesResponse r = FindSimilarCases.findSimilarCases(
+    <span class="kw">new</span> List&lt;FindSimilarCases.Request&gt;{ req })[0].similarCasesData;
+System.debug(r.resultCount + <span class="str">' :: '</span> + r.message);
+<span class="kw">for</span> (SimilarCaseItem i : r.cases) System.debug(i.caseNumber + <span class="str">'  '</span> + i.subject);</pre>
+              </div>
+            </li>
+            <li><strong>Through the agent</strong> — <code>sf agent preview start --api-name RFI_Case_Analysis_Agent_Script</code>, then ask e.g. <em>"find similar cases about a regulator inspection."</em></li>
+          </ol>
+
+          <h4>4.2 Prove it's semantic, not keyword</h4>
+          <p>Ask something whose words don't appear in the record it should find:</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Ask</th><th>Finds (no shared keywords)</th></tr></thead>
+              <tbody>
+                <tr><td><code>we are being sued and must preserve records</code></td><td>"Civil litigation hold – preservation of account activity logs"</td></tr>
+                <tr><td><code>evidence that customer funds are fully backed</code></td><td>"Provide evidence of proof of reserves … asset backing"</td></tr>
+                <tr><td><code>how do we spot structuring</code></td><td>the case whose RFI question is "…detect structuring patterns"</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Contrast: <code>SELECT Id FROM Case WHERE Subject LIKE '%being sued%'</code> → 0 rows. Same phrase through <code>FindSimilarCases</code> → the right cases, ranked.</p>
+
+          <h4>4.3 The "phrase, not keyword" rule</h4>
+          <p>Vector search needs <em>context</em> to embed meaningfully. <code>money laundering</code> (2 words) returns noisy, near-random matches; <code>anti money laundering program controls</code> (a real phrase) returns the right AML cases at a meaningfully higher score. Coach users (and agent prompt instructions) toward short natural-language phrases, not single keywords.</p>
+
+          <h4>4.4 Known soft spots</h4>
+          <ul>
+            <li><strong>Very short queries drift</strong> — the embedding model can lock onto surface word-shape ("structuring" ≈ "structural") when there isn't enough context to disambiguate.</li>
+            <li><strong>No relevance floor today</strong> — <code>maxResults</code> always returns that many rows even if only the #1 result is real; rows below it can be noise. Add a minimum-score cutoff in <code>accumulate()</code>/<code>semanticCaseSearch()</code> if that matters for your dataset.</li>
+            <li><strong>Duplicate rows across chunks</strong> — a long record can match on 2+ of its own chunks. Both classes de-duplicate by keeping the best score per record id; ad hoc Query Editor SQL needs manual de-duping.</li>
+          </ul>
+        </section>
+
+        <!-- ============ 5. PERMISSIONS ============ -->
+        <section class="block" id="s5">
+          <div class="s-badge-row"><span class="s-badge">5</span><h2 class="s-title">Permissions checklist</h2></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Permission</th><th>Where</th><th>Needed for</th></tr></thead>
+              <tbody>
+                <tr><td>Data Cloud User/Admin</td><td>assign to the Agentforce running user</td><td><code>ConnectApi.CdpQuery</code></td></tr>
+                <tr><td>Read/Edit FLS on <code>RFI_Question__c</code> fields</td><td>a permission set</td><td><strong>newly deployed custom fields are invisible — even to System Administrator, even in Apex — until FLS is explicitly granted.</strong> Easy to mistake for a code bug; it isn't one.</td></tr>
+                <tr><td>Apex class access</td><td><code>FindSimilarCases</code>, <code>FindSimilarRfiQuestions</code>, <code>GetCaseSummaryFields</code> in the running user's permission set</td><td>agent action invocation</td></tr>
+                <tr><td>Object CRUD</td><td><code>Case</code> (read), <code>RFI_Question__c</code> (read, or create/edit for demo data)</td><td>&nbsp;</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ============ APPENDIX A ============ -->
+        <section class="block" id="appendix-a">
+          <div class="s-badge-row"><span class="s-badge">A</span><h2 class="s-title">Name reference — fill in your org's values</h2></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Guide placeholder</th><th>Our org's actual value</th><th>Your org's value</th></tr></thead>
+              <tbody>
+                <tr><td>Case DMO</td><td><code>ssot__Case__dlm</code></td><td class="fill-blank">—</td></tr>
+                <tr><td>Case index / chunk</td><td><code>Case_index__dlm</code> / <code>Case_chunk__dlm</code></td><td class="fill-blank">—</td></tr>
+                <tr><td>RFI DMO</td><td><code>RFI_Question_c_Home__dlm</code></td><td class="fill-blank">—</td></tr>
+                <tr><td>RFI index / chunk</td><td><code>RFI_Question_c_Home_index__dlm</code> / <code>_chunk__dlm</code></td><td class="fill-blank">—</td></tr>
+                <tr><td>RFI question text field</td><td><code>Question_Text_c__c</code></td><td class="fill-blank">—</td></tr>
+                <tr><td>RFI response text field</td><td><code>Response_Text_c__c</code></td><td class="fill-blank">—</td></tr>
+                <tr><td>RFI → Case FK field</td><td><code>Case_c__c</code></td><td class="fill-blank">—</td></tr>
+                <tr><td>RFI DMO primary key</td><td><code>Id__c</code></td><td class="fill-blank">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ============ APPENDIX B ============ -->
+        <section class="block" id="appendix-b">
+          <div class="s-badge-row"><span class="s-badge">B</span><h2 class="s-title">File map</h2></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>File</th><th>Role</th></tr></thead>
+              <tbody>
+                <tr><td><code>classes/FindSimilarCases.cls</code> (+Test)</td><td>two-index semantic search for Cases</td></tr>
+                <tr><td><code>classes/FindSimilarRfiQuestions.cls</code> (+Test)</td><td>semantic search for RFI Questions</td></tr>
+                <tr><td><code>classes/GetCaseSummaryFields.cls</code></td><td>pure-SOQL exact case lookup (unchanged, no Data Cloud)</td></tr>
+                <tr><td><code>classes/SimilarCasesResponse.cls</code>, <code>SimilarCaseItem.cls</code></td><td>CLT DTOs for the Case-search card</td></tr>
+                <tr><td><code>classes/SimilarRfiQuestionsResponse.cls</code>, <code>SimilarRfiQuestionItem.cls</code></td><td>DTOs for RFI-question search (not yet CLT-bound)</td></tr>
+                <tr><td><code>lightningTypes/</code>, <code>lwc/caseSummaryCard</code>, <code>lwc/similarCasesCard</code></td><td>the visual cards</td></tr>
+                <tr><td><code>genAiFunctions/</code></td><td>agent-action ↔ Apex bindings</td></tr>
+                <tr><td><code>aiAuthoringBundles/RFI_Case_Analysis_Agent_Script/</code></td><td>the live Agent Script source (<code>filter_from_agent: True</code>)</td></tr>
+                <tr><td><code>scripts/SEMANTIC_SEARCH_TEST_GUIDE.md</code></td><td>prompt-level test guide with real before/after results</td></tr>
+                <tr><td><code>scripts/apex/SeedRfiData.apex</code>, <code>SeedRfiBulkData.apex</code></td><td>demo data generators</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ============ APPENDIX C ============ -->
+        <section class="block" id="appendix-c">
+          <div class="s-badge-row"><span class="s-badge">C</span><h2 class="s-title">Differences from the original design document</h2></div>
+          <p>An earlier planning document laid out the intended architecture. What actually shipped differs in a few places:</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Plan said</th><th>What we actually built/found</th></tr></thead>
+              <tbody>
+                <tr><td>Migrate <code>GetCaseSummaryFields</code> to semantic search too</td><td>Left it as pure SOQL — exact lookups don't benefit from vector search, and it's simpler/faster as-is</td></tr>
+                <tr><td><code>FindSimilarCases</code> queries <code>Case_index__dlm</code> only</td><td>Queries <strong>two</strong> indexes (Case text + RFI questions) and merges by best score — §2.1</td></tr>
+                <tr><td><code>FindSimilarRfiQuestions</code> not mentioned</td><td>New class we added, same pattern, single index</td></tr>
+                <tr><td>DMO/index names given as fixed (<code>RFI_Question__c_index__dlm</code>, field <code>Question_Text__c</code>)</td><td><strong>Names are org-specific</strong> — ours came out as <code>RFI_Question_c_Home_index__dlm</code> / <code>Question_Text_c__c</code>. Always verify with <code>sf sobject describe</code> (§1.3)</td></tr>
+                <tr><td><code>callout=true</code> required on <code>@InvocableMethod</code></td><td>Not required in practice (§2.6) — tested calling <code>ConnectApi.CdpQuery</code> immediately after a DML insert in the same transaction with no <code>CalloutException</code></td></tr>
+                <tr><td>Row iteration pattern: <code>for (Object rowObj : cdpOutput.data)</code> directly</td><td><strong>This exact pattern triggers the UNKNOWN_EXCEPTION bug</strong> (§2.3) once you touch more than one row — the JSON round-trip fix is not optional</td></tr>
+                <tr><td>No mention of CLT rendering reliability</td><td><code>filter_from_agent</code> must be <code>True</code>, or the card intermittently renders as plain text instead (§3.2) — the plan's code samples don't touch the agent-output layer at all</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ============ REFERENCES ============ -->
+        <section class="block" id="references">
+          <div class="s-badge-row"><span class="s-badge">🔗</span><h2 class="s-title">References</h2></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Reference</th><th>What it is</th></tr></thead>
+              <tbody>
+                <tr><td><a href="https://github.com/nisarkhan/amazon-fintech.git">github.com/nisarkhan/amazon-fintech</a></td><td>Source repository — all Apex classes, the Agent Script bundle, CLTs/LWCs, and this guide live here.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <footer class="page-foot">Field Notes · verified against a live org · <a href="https://github.com/nisarkhan/amazon-fintech.git">github.com/nisarkhan/amazon-fintech</a></footer>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function(){
+      try{
+        var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+        var sections = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+        function onScroll(){
+          var pos = window.scrollY + 130, idx = -1;
+          sections.forEach(function(sec, i){ if(sec && sec.offsetTop <= pos) idx = i; });
+          links.forEach(function(a, i){ a.parentElement.classList.toggle('active', i === idx); });
+        }
+        window.addEventListener('scroll', onScroll, {passive:true});
+        onScroll();
+      }catch(e){}
+    })();
+  </script>
+</body>
+</html>
