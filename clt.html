@@ -805,8 +805,8 @@
 
       <section class="block" id="critical">
         <div class="kicker">// read this first</div>
-        <h2>🔴 Critical - the 5 rules that cause silent failures</h2>
-        <p>These five are singled out because getting them wrong produces <strong>no error message</strong>. The org
+        <h2>🔴 Critical - the 7 rules that cause silent failures</h2>
+        <p>These seven are singled out because getting them wrong produces <strong>no error message</strong>. The org
           deploys cleanly, the action runs, and the platform just quietly falls back to plain-text conversation or a
           broken form. If a CLT "isn't working," check these before anything else.</p>
 
@@ -861,6 +861,29 @@
                   from user</strong> / <strong>Show in conversation</strong> respectively. Any one left
                 <code>false</code> silently disables CLT rendering for that side, even with a correctly built component
                 sitting right there.</p>
+            </div>
+          </div>
+          <div class="critical-item">
+            <div class="critical-num">6</div>
+            <div>
+              <h4><code>filter_from_agent</code> must be <code>false</code> on any output you want rendered</h4>
+              <p><code>filter_from_agent: True</code> hides that output from the LLM entirely - not just from the
+                visible conversation, from the model's context. If the LLM never sees the output, it cannot include the
+                rendered component in its response, no matter how correctly everything else is wired. Reserve
+                <code>true</code> only for values (like a raw <code>lead_id</code>) the action should return
+                programmatically but the LLM never needs to reason about or display.</p>
+            </div>
+          </div>
+          <div class="critical-item">
+            <div class="critical-num">7</div>
+            <div>
+              <h4>The action's description and reasoning instructions must explicitly tell the LLM to render the
+                component</h4>
+              <p>A generic action description, plus a reasoning instruction like "never output text," can backfire:
+                without an explicit directive - e.g. <code>__show_tool_results__</code> in the action description, "do
+                NOT convert to text" in the output description, and "ALWAYS include the returned component" in
+                reasoning - the LLM may summarize the result as plain text, or suppress the component right along with
+                everything else it was told not to say.</p>
             </div>
           </div>
         </div>
@@ -1137,7 +1160,10 @@
               just received. Reasoning instructions need an explicit, capitalized instruction: <strong>do not generate
                 any text, summary, or conversational response - let the rendered component be the entire response, and
                 never print the raw JSON in chat.</strong> This isn't a wiring failure the platform can detect; the
-              component renders correctly either way, so nothing else on this page will catch it.</p>
+              component renders correctly either way, so nothing else on this page will catch it. The instruction has to
+              cut both ways, too: telling the model only to suppress text, without also explicitly saying <strong>always
+                include the returned component</strong>, can backfire into suppressing the component right along with
+              it - see Critical Rule #7.</p>
           </div>
         </div>
 
@@ -1403,7 +1429,8 @@
                 <td>Output</td>
                 <td><code>false</code> to keep it in LLM context, <code>true</code> to hide it</td>
                 <td>Use to keep IDs (e.g. <code>lead_id</code>) out of the model's context while still returning them
-                  programmatically.</td>
+                  programmatically. Setting this <code>true</code> on a displayable output hides it from the LLM
+                  entirely - see Critical Rule #6.</td>
               </tr>
             </tbody>
           </table>
@@ -1583,6 +1610,29 @@
             </tbody>
           </table>
         </div>
+
+        <h3>Wrong vs. correct - Agent Script directives</h3>
+        <p>These two settings look harmless but decide whether the LLM ever sees, and ever includes, the component
+          you've otherwise wired correctly.</p>
+        <div class="code-block"><pre># WRONG - card will NOT render
+outputs:
+    extractionResult: object
+        filter_from_agent: True   # hides the output from the LLM entirely
+        is_displayable: True</pre></div>
+        <div class="code-block"><pre># CORRECT - card renders
+outputs:
+    extractionResult: object
+        filter_from_agent: False  # LLM can see it and include it in the response
+        is_displayable: True</pre></div>
+        <div class="code-block"><pre># WRONG - tells the LLM to be silent, so it never includes the component either
+reasoning:
+    instructions: |
+        Never output text. Always call the action. The result card displays automatically.</pre></div>
+        <div class="code-block"><pre># CORRECT - explicitly tells the LLM to include the rendered component
+reasoning:
+    instructions: |
+        1. Call the action with the submitted data.
+        2. ALWAYS include the returned component in your response. Do not describe it in text.</pre></div>
       </section>
 
       <section class="block" id="deployment">
@@ -1640,6 +1690,19 @@
       <section class="block" id="failures">
         <div class="kicker">// root-cause map</div>
         <h2>Common reasons the component does not render</h2>
+
+        <div class="callout">
+          <div class="c-icon">🔍</div>
+          <div>
+            <h4>If Setup's Live Component Preview already shows the real component, stop touching the LWC</h4>
+            <p>The LWC, Lightning Type, and renderer are rarely the actual problem once Setup's preview already renders
+              the real component correctly. In one real debug that went through 15 versions of changes to the
+              component, schema, and meta XML, none of them were the fix - the cause was <code>filter_from_agent</code>
+              and missing render directives in the Agent Script (Critical Rules #6 and #7). The fastest way in: diff the
+              broken Agent Script against a known-working one, setting by setting.</p>
+          </div>
+        </div>
+
         <div class="table-wrap">
           <table>
             <thead>
@@ -1734,6 +1797,19 @@
                   and/or missing <code>@AuraEnabled</code> /
                   <code>@JsonAccess(serializable='always' deserializable='always')</code> - see the divergence callout
                   in Metadata &amp; configuration</td>
+              </tr>
+              <tr>
+                <td><span class="sev high"></span></td>
+                <td>Output never reaches the LLM, so it never appears in the response at all</td>
+                <td><code>filter_from_agent: True</code> on a displayable output - the LLM can't render what it never
+                  sees (Critical Rule #6)</td>
+              </tr>
+              <tr>
+                <td><span class="sev med"></span></td>
+                <td>LLM describes or summarizes the result in plain text instead of including the component</td>
+                <td>Action/output descriptions and reasoning instructions don't explicitly direct the LLM to render the
+                  component (missing <code>__show_tool_results__</code>, "do NOT convert to text," or "ALWAYS include
+                  the returned component") - Critical Rule #7</td>
               </tr>
               <tr>
                 <td><span class="sev med"></span></td>
@@ -1903,6 +1979,12 @@
             <div class="cl-text">Any output that should stay hidden from the conversation (like a raw ID) left unchecked
             </div>
           </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text"><code>filter_from_agent</code> is <code>false</code> on any output that should render
+              visually <span class="sub">true only for values the LLM should return without ever seeing or displaying,
+                like a raw ID - see Critical Rule #6</span></div>
+          </li>
         </ul>
 
         <div class="checklist-group">
@@ -1934,9 +2016,20 @@
           </li>
           <li>
             <div class="cb"></div>
+            <div class="cl-text">Action description includes an explicit render directive (e.g.
+              <code>__show_tool_results__</code>) instead of a generic one-line description</div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Output description explicitly says the result must not be converted to text, and
+              should always be shown as a card</div>
+          </li>
+          <li>
+            <div class="cb"></div>
             <div class="cl-text">For an output-only action: reasoning instructions explicitly say not to narrate and
-              never to print the raw JSON <span class="sub">otherwise a text summary or the raw payload shows up next to
-                the rendered card</span></div>
+              never to print the raw JSON, <strong>and</strong> explicitly say to always include the returned component
+              <span class="sub">suppressing text without also requiring the component can suppress the component too -
+                see Critical Rule #7</span></div>
           </li>
           <li>
             <div class="cb"></div>
@@ -2027,6 +2120,17 @@
                 <td>Edited an action's rendering config but the change doesn't seem to take</td>
                 <td>The agent page was open before the edit</td>
                 <td>Reload the agent page before re-testing - Salesforce's docs call this out explicitly</td>
+              </tr>
+              <tr>
+                <td>Result never shows up, and the LLM doesn't mention it either</td>
+                <td><code>filter_from_agent: True</code> on a displayable output</td>
+                <td>Set <code>filter_from_agent: False</code> so the LLM can see and include the output</td>
+              </tr>
+              <tr>
+                <td>LLM talks about the result instead of showing the card</td>
+                <td>Missing explicit render directives in the action/output description or reasoning</td>
+                <td>Add <code>__show_tool_results__</code> to the action description, "do NOT convert to text" to the
+                  output description, and "ALWAYS include the returned component" to reasoning</td>
               </tr>
               <tr>
                 <td>Component renders blank despite the action succeeding</td>
