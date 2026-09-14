@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nisar Khan — Notes on Agentforce &amp; Data Cloud</title>
+  <title>Nisar Khan - Notes on Agentforce &amp; Data Cloud</title>
   <meta name="description" content="Notes, builds, and tips across Agentforce and Data Cloud.">
   <link rel="icon" type="image/png" href="images/idea.png">
   <style>
@@ -21,14 +21,19 @@
       --secondary-light: #e4f5ec;
       --ink: #14201a;
       --ink-soft: #586960;
-      --sidebar-bg: #142820;
+      --sidebar-bg: #1f3d31;
       --shadow: 0 1px 2px rgba(20, 40, 32, 0.04), 0 8px 20px -12px rgba(20, 40, 32, 0.12);
       --radius-md: 0.375rem;
       --radius-lg: 0.5rem;
     }
 
-    * { box-sizing: border-box; }
-    html { -webkit-text-size-adjust: 100%; }
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
 
     body {
       margin: 0;
@@ -41,10 +46,15 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+      * {
+        animation-duration: .001ms !important;
+        transition-duration: .001ms !important;
+      }
     }
 
-    h1, h2, h3 {
+    h1,
+    h2,
+    h3 {
       font-family: "Space Grotesk", system-ui, sans-serif;
       color: var(--primary);
       line-height: 1.2;
@@ -52,8 +62,14 @@
       margin: 0;
     }
 
-    a { color: var(--secondary); }
-    code, .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+    a {
+      color: var(--secondary);
+    }
+
+    code,
+    .mono {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+    }
 
     :focus-visible {
       outline: 2px solid var(--secondary);
@@ -96,7 +112,10 @@
       flex: none;
     }
 
-    .brand-mark svg { width: 18px; height: 18px; }
+    .brand-mark svg {
+      width: 18px;
+      height: 18px;
+    }
 
     .brand-name {
       font-family: "Space Grotesk", system-ui, sans-serif;
@@ -112,8 +131,17 @@
       margin-top: 1px;
     }
 
-    nav.topics { display: flex; flex-direction: column; gap: 24px; }
-    .topic-group { display: flex; flex-direction: column; gap: 3px; }
+    nav.topics {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .topic-group {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
 
     .topic-label {
       font-family: "Geist", sans-serif;
@@ -139,7 +167,10 @@
       border: 1px solid transparent;
     }
 
-    .topic-link:hover { background: rgba(255, 255, 255, 0.07); color: #fff; }
+    .topic-link:hover {
+      background: rgba(255, 255, 255, 0.07);
+      color: #fff;
+    }
 
     .topic-link.active {
       background: var(--secondary);
@@ -155,7 +186,9 @@
       flex: none;
     }
 
-    .topic-link.active .dot { background: #fff; }
+    .topic-link.active .dot {
+      background: #fff;
+    }
 
     .topic-empty {
       padding: 7px 10px;
@@ -173,10 +206,22 @@
     }
 
     /* ---------- main ---------- */
-    main { margin-left: 232px; padding: 56px 60px 90px; min-height: 100vh; background: var(--surface); }
-    .content-col { max-width: 760px; }
+    main {
+      margin-left: 232px;
+      padding: 56px 60px 90px;
+      min-height: 100vh;
+      background: var(--surface);
+    }
 
-    header.page-head { margin-bottom: 30px; padding-bottom: 34px; border-bottom: 1px solid var(--surface-border); }
+    .content-col {
+      max-width: 760px;
+    }
+
+    header.page-head {
+      margin-bottom: 30px;
+      padding-bottom: 34px;
+      border-bottom: 1px solid var(--surface-border);
+    }
 
     .eyebrow {
       display: inline-block;
@@ -219,12 +264,27 @@
       color: var(--ink-soft);
     }
 
-    .filter-bar a { color: inherit; text-decoration: none; white-space: nowrap; padding-bottom: 2px; }
-    .filter-bar a:hover { color: var(--primary); }
-    .filter-bar a.active { color: var(--primary); font-weight: 600; border-bottom: 2px solid var(--secondary); }
+    .filter-bar a {
+      color: inherit;
+      text-decoration: none;
+      white-space: nowrap;
+      padding-bottom: 2px;
+    }
+
+    .filter-bar a:hover {
+      color: var(--primary);
+    }
+
+    .filter-bar a.active {
+      color: var(--primary);
+      font-weight: 600;
+      border-bottom: 2px solid var(--secondary);
+    }
 
     /* ---------- editorial list ---------- */
-    main section { margin-bottom: 8px; }
+    main section {
+      margin-bottom: 8px;
+    }
 
     h2.section-title {
       font-family: "Geist", sans-serif;
@@ -236,7 +296,10 @@
       margin: 34px 0 4px;
     }
 
-    .entry-list { display: flex; flex-direction: column; }
+    .entry-list {
+      display: flex;
+      flex-direction: column;
+    }
 
     .entry {
       display: flex;
@@ -248,7 +311,9 @@
       color: inherit;
     }
 
-    .entry:hover .entry-title { color: var(--secondary); }
+    .entry:hover .entry-title {
+      color: var(--secondary);
+    }
 
     .entry-meta {
       display: flex;
@@ -298,8 +363,13 @@
       color: var(--secondary);
     }
 
-    .entry:hover .entry-read svg { transform: translateX(2px); }
-    .entry-read svg { transition: transform .15s ease; }
+    .entry:hover .entry-read svg {
+      transform: translateX(2px);
+    }
+
+    .entry-read svg {
+      transition: transform .15s ease;
+    }
 
     .placeholder-note {
       padding: 14px 0 26px;
@@ -317,8 +387,16 @@
     }
 
     @media (max-width: 840px) {
-      .sidebar { position: static; width: auto; height: auto; }
-      main { margin-left: 0; padding: 36px 22px 60px; }
+      .sidebar {
+        position: static;
+        width: auto;
+        height: auto;
+      }
+
+      main {
+        margin-left: 0;
+        padding: 36px 22px 60px;
+      }
     }
   </style>
 </head>
@@ -327,7 +405,13 @@
   <aside class="sidebar">
     <a class="brand" href="index.html">
       <span class="brand-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 2.4 1.2 4 2.3 5.1.6.6 1 1.4 1.1 2.4h7.2c.1-1 .5-1.8 1.1-2.4C17.8 13 19 11.4 19 9a7 7 0 0 0-7-7Z"/><path d="M9.5 21h5"/><path d="M10 18h4"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path
+            d="M12 2a7 7 0 0 0-7 7c0 2.4 1.2 4 2.3 5.1.6.6 1 1.4 1.1 2.4h7.2c.1-1 .5-1.8 1.1-2.4C17.8 13 19 11.4 19 9a7 7 0 0 0-7-7Z" />
+          <path d="M9.5 21h5" />
+          <path d="M10 18h4" />
+        </svg>
       </span>
       <span>
         <span class="brand-name">Nisar Khan</span>
@@ -344,14 +428,17 @@
           Salesforce</a>
         <a class="topic-link" href="agentforce-sessions.html"><span class="dot"></span>Agentforce Session Tracing</a>
         <a class="topic-link" href="af-guide.html"><span class="dot"></span>Agentforce Service Agent Guide</a>
-        <a class="topic-link" href="document-ai-prompt-builder.html"><span class="dot"></span>Document AI vs Prompt Builder</a>
-        <a class="topic-link" href="semantic-search-guide.html"><span class="dot"></span>Semantic Search Guide with Apex</a>
+        <a class="topic-link" href="document-ai-prompt-builder.html"><span class="dot"></span>Document AI vs Prompt
+          Builder</a>
+        <a class="topic-link" href="semantic-search-guide.html"><span class="dot"></span>Semantic Search Guide with
+          Apex</a>
       </div>
       <div class="topic-group">
         <div class="topic-label">Data Cloud</div>
         <a class="topic-link" href="dc360object.html"><span class="dot"></span>Data 360 Objects (DSO, DLO, DMO)</a>
         <a class="topic-link" href="flex-credit.html"><span class="dot"></span>Flex Credit Consumption Report</a>
-        <a class="topic-link" href="data360-document-ai-complete-guide.html"><span class="dot"></span>One Org, Two Engines: Data 360 &amp; the Core Platform</a>
+        <a class="topic-link" href="data360-document-ai-complete-guide.html"><span class="dot"></span>One Org, Two
+          Engines: Data 360 &amp; the Core Platform</a>
       </div>
       <div class="topic-group">
         <div class="topic-label">Tips &amp; Tricks</div>
@@ -371,7 +458,8 @@
       <header class="page-head">
         <span class="eyebrow">Design test</span>
         <h1>Agentforce &amp; Data Cloud, written down</h1>
-        <p class="dek">This page collects notes on different topics related to Agentforce and Data Cloud — build guides, configuration references, and tips and tricks — added here as they come together.</p>
+        <p class="dek">This page collects notes on different topics related to Agentforce and Data Cloud - build guides,
+          configuration references, and tips and tricks - added here as they come together.</p>
       </header>
 
       <nav class="filter-bar" aria-label="Jump to a topic group">
@@ -389,50 +477,83 @@
           <a class="entry" href="clt.html">
             <div class="entry-meta"><span class="entry-tag">Agentforce</span><span>Updated Aug 29, 2026</span></div>
             <div class="entry-title">Custom Lightning Type</div>
-            <p class="entry-desc">Requirements and gotchas for getting a Custom Lightning Type + LWC to actually render inside an Agentforce conversation.</p>
-            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <p class="entry-desc">Requirements and gotchas for getting a Custom Lightning Type + LWC to actually render
+              inside an Agentforce conversation.</p>
+            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg></span>
           </a>
 
           <a class="entry" href="clt-guide.html">
             <div class="entry-meta"><span class="entry-tag">Agentforce</span><span>Updated Aug 29, 2026</span></div>
             <div class="entry-title">Building Interactive UI in Agent Conversations</div>
-            <p class="entry-desc">A hands-on walkthrough of Custom Lightning Types (CLT) — the pattern that lets an agent swap plain-text replies for a schema-driven Lightning form and styled result card, using a lead-creation agent as the running example.</p>
-            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <p class="entry-desc">A hands-on walkthrough of Custom Lightning Types (CLT) - the pattern that lets an
+              agent swap plain-text replies for a schema-driven Lightning form and styled result card, using a
+              lead-creation agent as the running example.</p>
+            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg></span>
           </a>
 
           <a class="entry" href="find_similar_cases.html">
             <div class="entry-meta"><span class="entry-tag">Agentforce</span><span>Updated Aug 29, 2026</span></div>
             <div class="entry-title">Find Similar Cases in Salesforce</div>
-            <p class="entry-desc">Using an Agentforce action to surface related or duplicate Cases from past data, so agents and reps can spot patterns instead of starting from scratch.</p>
-            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <p class="entry-desc">Using an Agentforce action to surface related or duplicate Cases from past data, so
+              agents and reps can spot patterns instead of starting from scratch.</p>
+            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg></span>
           </a>
 
           <a class="entry" href="agentforce-sessions.html">
             <div class="entry-meta"><span class="entry-tag">Agentforce</span><span>Updated Aug 29, 2026</span></div>
             <div class="entry-title">Turn On Sessions &amp; Intents</div>
-            <p class="entry-desc">Prerequisites and setup steps for enabling Agentforce Session Tracing, Agent Optimization, and the Sessions &amp; Intents view — it ships switched off and sits behind Data Cloud.</p>
-            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <p class="entry-desc">Prerequisites and setup steps for enabling Agentforce Session Tracing, Agent
+              Optimization, and the Sessions &amp; Intents view - it ships switched off and sits behind Data Cloud.</p>
+            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg></span>
           </a>
 
           <a class="entry" href="af-guide.html">
             <div class="entry-meta"><span class="entry-tag">Agentforce</span><span>Updated Sep 12, 2026</span></div>
             <div class="entry-title">Building an Agentforce Service Agent</div>
-            <p class="entry-desc">An end-to-end build guide: the backing Flow, the Agent Script, Omni-Channel routing, an embedded chat on an Experience Cloud site, human-agent escalation, and passing logged-in customer context in silently — with a case priority checker as the running example.</p>
-            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <p class="entry-desc">An end-to-end build guide: the backing Flow, the Agent Script, Omni-Channel routing,
+              an embedded chat on an Experience Cloud site, human-agent escalation, and passing logged-in customer
+              context in silently - with a case priority checker as the running example.</p>
+            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg></span>
           </a>
 
           <a class="entry" href="document-ai-prompt-builder.html">
             <div class="entry-meta"><span class="entry-tag">Agentforce</span><span>Updated Sep 12, 2026</span></div>
             <div class="entry-title">Document AI vs Prompt Builder file inputs</div>
-            <p class="entry-desc">Questions that come up whenever a design touches a PDF, answered in order — when to extract with Data Cloud Document AI versus read with an Agentforce Prompt Builder file input, whether the file has to be a ContentDocument, and where each one actually stores the file.</p>
-            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <p class="entry-desc">Questions that come up whenever a design touches a PDF, answered in order - when to
+              extract with Data Cloud Document AI versus read with an Agentforce Prompt Builder file input, whether the
+              file has to be a ContentDocument, and where each one actually stores the file.</p>
+            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg></span>
           </a>
 
           <a class="entry" href="semantic-search-guide.html">
             <div class="entry-meta"><span class="entry-tag">Agentforce</span><span>Updated Sep 12, 2026</span></div>
             <div class="entry-title">Semantic Search Implementation Guide</div>
-            <p class="entry-desc">The verified path from an empty Data Cloud to a working Agentforce agent that finds similar records by meaning, not keyword — two merged vector searches, the ConnectApi.CdpQuery row-iteration bug and its fix, a keyword fallback, and the filter_from_agent setting that decides whether the card actually renders.</p>
-            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <p class="entry-desc">The verified path from an empty Data Cloud to a working Agentforce agent that finds
+              similar records by meaning, not keyword - two merged vector searches, the ConnectApi.CdpQuery
+              row-iteration bug and its fix, a keyword fallback, and the filter_from_agent setting that decides whether
+              the card actually renders.</p>
+            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg></span>
           </a>
 
         </div>
@@ -445,22 +566,37 @@
           <a class="entry" href="dc360object.html">
             <div class="entry-meta"><span class="entry-tag">Data Cloud</span><span>Updated Sep 1, 2026</span></div>
             <div class="entry-title">Data 360 Objects: DSO, DLO &amp; DMO</div>
-            <p class="entry-desc">The three object types in Data 360 (Data Cloud) explained in plain terms — data as-is, then refined, then harmonized — with a cooking analogy and how DMOs group into subject areas like Party.</p>
-            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <p class="entry-desc">The three object types in Data 360 (Data Cloud) explained in plain terms - data as-is,
+              then refined, then harmonized - with a cooking analogy and how DMOs group into subject areas like Party.
+            </p>
+            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg></span>
           </a>
 
           <a class="entry" href="flex-credit.html">
             <div class="entry-meta"><span class="entry-tag">Data Cloud</span><span>Updated Sep 4, 2026</span></div>
             <div class="entry-title">Agentforce Flex Credit Consumption Report</div>
-            <p class="entry-desc">A reference for querying and reporting on Agentforce Flex Credit consumption from Data Cloud — DLO discovery, a developer-safe consumption report, and a restricted manager/finance entitlement dashboard, with the SQL for each.</p>
-            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <p class="entry-desc">A reference for querying and reporting on Agentforce Flex Credit consumption from Data
+              Cloud - DLO discovery, a developer-safe consumption report, and a restricted manager/finance entitlement
+              dashboard, with the SQL for each.</p>
+            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg></span>
           </a>
 
           <a class="entry" href="data360-document-ai-complete-guide.html">
             <div class="entry-meta"><span class="entry-tag">Data Cloud</span><span>Updated Sep 12, 2026</span></div>
             <div class="entry-title">Data 360, Document AI, and the External Client App</div>
-            <p class="entry-desc">How Data 360 relates to your org — the shared control plane vs. the separate data plane, why a Document AI build needs an External Client App and OAuth credentials to call that same org, and a full KYC extraction tutorial decoded step by step, with an Apex code review and FAQ.</p>
-            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <p class="entry-desc">How Data 360 relates to your org - the shared control plane vs. the separate data
+              plane, why a Document AI build needs an External Client App and OAuth credentials to call that same org,
+              and a full KYC extraction tutorial decoded step by step, with an Apex code review and FAQ.</p>
+            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg></span>
           </a>
 
         </div>
@@ -478,14 +614,19 @@
           <a class="entry" href="skills.html">
             <div class="entry-meta"><span class="entry-tag">Skills</span></div>
             <div class="entry-title">Adding a Skill to Claude Code</div>
-            <p class="entry-desc">Two ways to add a skill to a project, and how to install one from a repo or a plugin marketplace.</p>
-            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <p class="entry-desc">Two ways to add a skill to a project, and how to install one from a repo or a plugin
+              marketplace.</p>
+            <span class="entry-read">Read note <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg></span>
           </a>
 
         </div>
       </section>
 
-      <footer class="page-foot">More topics get added here over time — check back. This page is a design test — everything else on the site still uses the original theme.</footer>
+      <footer class="page-foot">More topics get added here over time - check back. This page is a design test -
+        everything else on the site still uses the original theme.</footer>
     </div>
   </main>
 </body>

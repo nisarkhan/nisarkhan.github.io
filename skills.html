@@ -1,133 +1,413 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Adding Claude Code Skills</title>
-<meta name="description" content="How to add a skill to a project, and why there's no terminal command for it.">
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adding Claude Code Skills</title>
+  <meta name="description" content="How to add a skill to a project, and why there's no terminal command for it.">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
-  :root{
-    --sidebar-bg:#142820;
-    --page-bg:#f8fbf9;
-    --text:#14201a;
-    --text-soft:#586960;
-    --primary:#286948;
-    --primary-strong:#1f4d38;
-    --light-blue:#a8cdb8;
-    --card-border:#e1ebe4;
-    --card-bg:#ffffff;
-    --green:#27ae60;
-    --amber:#d4ac0d;
-    --purple:#7d3c98;
-    --red:#c0392b;
-    --teal:#0e6655;
-    --navy:#142820;
-    --shadow: 0 1px 2px rgba(26,58,82,0.05), 0 8px 24px -12px rgba(26,58,82,0.18);
-    --radius-lg:14px;
-    --radius-md:10px;
-    --radius-sm:7px;
-  }
+    :root {
+      --sidebar-bg: #1f3d31;
+      --page-bg: #f8fbf9;
+      --text: #14201a;
+      --text-soft: #586960;
+      --primary: #286948;
+      --primary-strong: #1f4d38;
+      --light-blue: #a8cdb8;
+      --card-border: #e1ebe4;
+      --card-bg: #ffffff;
+      --green: #27ae60;
+      --amber: #d4ac0d;
+      --purple: #7d3c98;
+      --red: #c0392b;
+      --teal: #0e6655;
+      --navy: #142820;
+      --shadow: 0 1px 2px rgba(26, 58, 82, 0.05), 0 8px 24px -12px rgba(26, 58, 82, 0.18);
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --radius-sm: 7px;
+    }
 
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:var(--page-bg);
-    color:var(--text);
-    font-family:"Geist", system-ui, sans-serif;
-    font-size:15.5px;
-    line-height:1.6;
-    -webkit-font-smoothing:antialiased;
-  }
-  @media (prefers-reduced-motion: reduce){ *{animation-duration:.001ms !important; transition-duration:.001ms !important;} }
+    * {
+      box-sizing: border-box;
+    }
 
-  h1,h2{ font-family:"Space Grotesk", system-ui, sans-serif; color:var(--text); line-height:1.2; text-wrap:balance; margin:0; }
-  a{ color:var(--primary); }
-  code{ font-family:"JetBrains Mono", ui-monospace, monospace; background:#e4f5ec; padding:1px 6px; border-radius:5px; font-size:0.9em; }
-  :focus-visible{ outline:2px solid var(--primary); outline-offset:2px; border-radius:4px; }
+    body {
+      margin: 0;
+      background: var(--page-bg);
+      color: var(--text);
+      font-family: "Geist", system-ui, sans-serif;
+      font-size: 15.5px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
 
-  /* ---------- sidebar ---------- */
-  .sidebar{
-    position:fixed; top:0; left:0; width:220px; height:100vh; overflow-y:auto;
-    background:var(--sidebar-bg); z-index:100;
-    padding:28px 20px;
-    display:flex; flex-direction:column; gap:28px;
-  }
-  .brand{ display:flex; align-items:center; gap:10px; text-decoration:none; }
-  .brand-mark{
-    width:34px; height:34px; border-radius:9px; background:var(--primary); color:#fff;
-    display:flex; align-items:center; justify-content:center;
-    font-family:"Space Grotesk", system-ui, sans-serif; font-weight:800; font-size:15px; flex:none;
-  }
-  .brand-name{ font-family:"Space Grotesk", system-ui, sans-serif; font-weight:700; font-size:15px; color:#fff; letter-spacing:-0.01em; }
-  .brand-sub{ font-size:11px; color:var(--light-blue); margin-top:1px; }
-  nav.topics{ display:flex; flex-direction:column; gap:22px; }
-  .topic-group{ display:flex; flex-direction:column; gap:4px; }
-  .topic-label{
-    font-family:"JetBrains Mono", ui-monospace, monospace; font-size:10.5px; font-weight:600;
-    letter-spacing:0.08em; text-transform:uppercase; color:var(--light-blue);
-    padding:0 10px; margin-bottom:2px;
-  }
-  .topic-link{
-    display:flex; align-items:center; gap:9px;
-    padding:8px 10px; border-radius:var(--radius-sm);
-    color:#cfe6da; text-decoration:none; font-size:13.5px; font-weight:500;
-    border:1px solid transparent;
-  }
-  .topic-link:hover{ background:rgba(255,255,255,0.08); color:#fff; }
-  .topic-link.active{ background:var(--primary); color:#fff; font-weight:600; }
-  .topic-link .dot{ width:6px; height:6px; border-radius:50%; background:var(--light-blue); flex:none; }
-  .topic-link.active .dot{ background:#fff; }
-  .topic-empty{ padding:8px 10px; font-size:12.5px; color:rgba(168,205,184,0.65); font-style:italic; }
-  .sidebar-foot{ margin-top:auto; padding:0 10px; font-size:11px; color:rgba(168,205,184,0.75); line-height:1.6; }
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: .001ms !important;
+        transition-duration: .001ms !important;
+      }
+    }
 
-  /* ---------- main ---------- */
-  main{ margin-left:220px; padding:40px 52px 72px; min-height:100vh; background:var(--page-bg); }
-  .content-col{ max-width:680px; }
+    h1,
+    h2 {
+      font-family: "Space Grotesk", system-ui, sans-serif;
+      color: var(--text);
+      line-height: 1.2;
+      text-wrap: balance;
+      margin: 0;
+    }
 
-  .eyebrow{ display:inline-block; font-family:"JetBrains Mono", ui-monospace, monospace; font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--primary); margin-bottom:12px; }
-  h1{ font-size:27px; font-weight:800; letter-spacing:-0.01em; margin-bottom:8px; }
-  .dek{ color:var(--text-soft); font-size:14.5px; max-width:56ch; margin-bottom:36px; }
+    a {
+      color: var(--primary);
+    }
 
-  .step{ margin-bottom:32px; }
-  .step h2{ font-size:16px; font-weight:700; display:flex; align-items:center; gap:9px; margin-bottom:10px; }
-  .step-num{ width:22px; height:22px; border-radius:6px; background:#e4f5ec; color:var(--primary-strong); font-family:"JetBrains Mono", ui-monospace, monospace; font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; flex:none; }
-  .step p{ color:var(--text-soft); font-size:13.5px; margin:0 0 10px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      background: #e4f5ec;
+      padding: 1px 6px;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
 
-  .code-block{ background:var(--navy); color:#e8ecf8; border-radius:var(--radius-md); padding:14px 16px; overflow-x:auto; font-family:"JetBrains Mono", ui-monospace, monospace; font-size:12.8px; line-height:1.65; box-shadow:var(--shadow); }
-  .code-block .c-com{ color:#8fb3cf; }
-  .code-block .c-key{ color:#9fd0f5; }
-  .code-block .c-str{ color:#f0c069; }
-  .file-label{ font-family:"JetBrains Mono", ui-monospace, monospace; font-size:11px; color:var(--text-soft); margin-bottom:6px; }
+    :focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
 
-  .callout{ display:flex; gap:11px; background:#fdeaea; border:1px solid rgba(192,57,43,0.28); border-radius:var(--radius-md); padding:13px 15px; margin-top:6px; }
-  .callout p{ margin:0; font-size:13px; color:var(--text); }
-  .callout .c-icon{ flex:none; color:var(--red); }
+    /* ---------- sidebar ---------- */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 220px;
+      height: 100vh;
+      overflow-y: auto;
+      background: var(--sidebar-bg);
+      z-index: 100;
+      padding: 28px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
 
-  footer{ margin-top:44px; padding-top:16px; border-top:1px solid var(--card-border); font-size:11.5px; color:var(--text-soft); }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
 
-  /* ---------- page bar ---------- */
-  .pagebar{
-    position:sticky; top:0; z-index:45;
-    display:flex; align-items:center; gap:9px; flex-wrap:wrap;
-    margin:-40px -52px 34px; padding:12px 52px 13px;
-    background:var(--page-bg); border-bottom:1px solid var(--card-border);
-    font-size:13px;
-  }
-  .pagebar-home{ display:inline-flex; align-items:center; gap:7px; text-decoration:none; color:var(--primary); font-weight:600; white-space:nowrap; }
-  .pagebar-home:hover{ text-decoration:underline; }
-  .pagebar-mark{ width:20px; height:20px; border-radius:5px; background:var(--primary); color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; }
-  .pagebar-chevron{ color:var(--light-blue); }
-  .pagebar-here{ color:var(--text-soft); font-weight:500; }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Space Grotesk", system-ui, sans-serif;
+      font-weight: 800;
+      font-size: 15px;
+      flex: none;
+    }
 
-  @media (max-width:840px){
-    .sidebar{ position:static; width:auto; height:auto; }
-    main{ margin-left:0; padding:32px 20px 56px; }
-    .pagebar{ margin:-32px -20px 26px; padding:12px 20px 13px; }
-  }
-</style>
+    .brand-name {
+      font-family: "Space Grotesk", system-ui, sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: var(--light-blue);
+      margin-top: 1px;
+    }
+
+    nav.topics {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .topic-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .topic-label {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--light-blue);
+      padding: 0 10px;
+      margin-bottom: 2px;
+    }
+
+    .topic-link {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      color: #cfe6da;
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 500;
+      border: 1px solid transparent;
+    }
+
+    .topic-link:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .topic-link.active {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .topic-link .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--light-blue);
+      flex: none;
+    }
+
+    .topic-link.active .dot {
+      background: #fff;
+    }
+
+    .topic-empty {
+      padding: 8px 10px;
+      font-size: 12.5px;
+      color: rgba(168, 205, 184, 0.65);
+      font-style: italic;
+    }
+
+    .sidebar-foot {
+      margin-top: auto;
+      padding: 0 10px;
+      font-size: 11px;
+      color: rgba(168, 205, 184, 0.75);
+      line-height: 1.6;
+    }
+
+    /* ---------- main ---------- */
+    main {
+      margin-left: 220px;
+      padding: 40px 52px 72px;
+      min-height: 100vh;
+      background: var(--page-bg);
+    }
+
+    .content-col {
+      max-width: 680px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 27px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+
+    .dek {
+      color: var(--text-soft);
+      font-size: 14.5px;
+      max-width: 56ch;
+      margin-bottom: 36px;
+    }
+
+    .step {
+      margin-bottom: 32px;
+    }
+
+    .step h2 {
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 10px;
+    }
+
+    .step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: #e4f5ec;
+      color: var(--primary-strong);
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+    }
+
+    .step p {
+      color: var(--text-soft);
+      font-size: 13.5px;
+      margin: 0 0 10px;
+    }
+
+    .code-block {
+      background: var(--navy);
+      color: #e8ecf8;
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      overflow-x: auto;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 12.8px;
+      line-height: 1.65;
+      box-shadow: var(--shadow);
+    }
+
+    .code-block .c-com {
+      color: #8fb3cf;
+    }
+
+    .code-block .c-key {
+      color: #9fd0f5;
+    }
+
+    .code-block .c-str {
+      color: #f0c069;
+    }
+
+    .file-label {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 11px;
+      color: var(--text-soft);
+      margin-bottom: 6px;
+    }
+
+    .callout {
+      display: flex;
+      gap: 11px;
+      background: #fdeaea;
+      border: 1px solid rgba(192, 57, 43, 0.28);
+      border-radius: var(--radius-md);
+      padding: 13px 15px;
+      margin-top: 6px;
+    }
+
+    .callout p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .callout .c-icon {
+      flex: none;
+      color: var(--red);
+    }
+
+    footer {
+      margin-top: 44px;
+      padding-top: 16px;
+      border-top: 1px solid var(--card-border);
+      font-size: 11.5px;
+      color: var(--text-soft);
+    }
+
+    /* ---------- page bar ---------- */
+    .pagebar {
+      position: sticky;
+      top: 0;
+      z-index: 45;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin: -40px -52px 34px;
+      padding: 12px 52px 13px;
+      background: var(--page-bg);
+      border-bottom: 1px solid var(--card-border);
+      font-size: 13px;
+    }
+
+    .pagebar-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .pagebar-home:hover {
+      text-decoration: underline;
+    }
+
+    .pagebar-mark {
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      background: var(--primary);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 800;
+    }
+
+    .pagebar-chevron {
+      color: var(--light-blue);
+    }
+
+    .pagebar-here {
+      color: var(--text-soft);
+      font-weight: 500;
+    }
+
+    @media (max-width:840px) {
+      .sidebar {
+        position: static;
+        width: auto;
+        height: auto;
+      }
+
+      main {
+        margin-left: 0;
+        padding: 32px 20px 56px;
+      }
+
+      .pagebar {
+        margin: -32px -20px 26px;
+        padding: 12px 20px 13px;
+      }
+    }
+  </style>
 </head>
+
 <body>
   <aside class="sidebar">
     <a class="brand" href="index.html">
@@ -142,17 +422,21 @@
         <div class="topic-label">Agentforce</div>
         <a class="topic-link" href="clt.html"><span class="dot"></span>Custom Lightning Type</a>
         <a class="topic-link" href="clt-guide.html"><span class="dot"></span>Custom Lightning Types Guide</a>
-        <a class="topic-link" href="find_similar_cases.html"><span class="dot"></span>Find Similar Cases in Salesforce</a>
+        <a class="topic-link" href="find_similar_cases.html"><span class="dot"></span>Find Similar Cases in
+          Salesforce</a>
         <a class="topic-link" href="agentforce-sessions.html"><span class="dot"></span>Agentforce Session Tracing</a>
         <a class="topic-link" href="af-guide.html"><span class="dot"></span>Agentforce Service Agent Guide</a>
-        <a class="topic-link" href="document-ai-prompt-builder.html"><span class="dot"></span>Document AI vs Prompt Builder</a>
-        <a class="topic-link" href="semantic-search-guide.html"><span class="dot"></span>Semantic Search Guide with Apex</a>
+        <a class="topic-link" href="document-ai-prompt-builder.html"><span class="dot"></span>Document AI vs Prompt
+          Builder</a>
+        <a class="topic-link" href="semantic-search-guide.html"><span class="dot"></span>Semantic Search Guide with
+          Apex</a>
       </div>
       <div class="topic-group">
         <div class="topic-label">Data Cloud</div>
         <a class="topic-link" href="dc360object.html"><span class="dot"></span>Data 360 Objects (DSO, DLO, DMO)</a>
         <a class="topic-link" href="flex-credit.html"><span class="dot"></span>Flex Credit Consumption Report</a>
-        <a class="topic-link" href="data360-document-ai-complete-guide.html"><span class="dot"></span>One Org, Two Engines: Data 360 &amp; the Core Platform</a>
+        <a class="topic-link" href="data360-document-ai-complete-guide.html"><span class="dot"></span>One Org, Two
+          Engines: Data 360 &amp; the Core Platform</a>
       </div>
       <div class="topic-group">
         <div class="topic-label">Tips &amp; Tricks</div>
@@ -168,84 +452,121 @@
 
   <main>
     <div class="content-col">
-    <div class="pagebar">
-      <a class="pagebar-home" href="index.html" aria-label="Nisar Khan home"><span class="pagebar-mark" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span>Nisar Khan</span></a>
-      <span class="pagebar-chevron" aria-hidden="true">›</span>
-      <span class="pagebar-here">Adding Skills</span>
-    </div>
-    <span class="eyebrow">Skills</span>
-    <h1>Adding a Skill to Claude Code</h1>
-    <p class="dek">Two ways to add a skill to a project. No restart needed either way — Claude Code picks up file changes live.</p>
+      <div class="pagebar">
+        <a class="pagebar-home" href="index.html" aria-label="Nisar Khan home"><span class="pagebar-mark"
+            aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" />
+            </svg></span><span>Nisar Khan</span></a>
+        <span class="pagebar-chevron" aria-hidden="true">›</span>
+        <span class="pagebar-here">Adding Skills</span>
+      </div>
+      <span class="eyebrow">Skills</span>
+      <h1>Adding a Skill to Claude Code</h1>
+      <p class="dek">Two ways to add a skill to a project. No restart needed either way - Claude Code picks up file
+        changes live.</p>
 
-    <div class="step">
-      <h2><span class="step-num">1</span>In VS Code / the project folder</h2>
-      <p>Create <code>SKILL.md</code> inside a new folder at this path. For a skill available in every project, use <code>~/.claude/skills/&lt;skill-name&gt;/</code> instead.</p>
-      <div class="file-label">.claude/skills/&lt;skill-name&gt;/SKILL.md</div>
-      <div class="code-block"><pre><span class="c-key">---</span>
+      <div class="step">
+        <h2><span class="step-num">1</span>In VS Code / the project folder</h2>
+        <p>Create <code>SKILL.md</code> inside a new folder at this path. For a skill available in every project, use
+          <code>~/.claude/skills/&lt;skill-name&gt;/</code> instead.</p>
+        <div class="file-label">.claude/skills/&lt;skill-name&gt;/SKILL.md</div>
+        <div class="code-block">
+          <pre><span class="c-key">---</span>
 <span class="c-key">description</span>: <span class="c-str">What this skill does and when Claude should use it</span>
 <span class="c-key">---</span>
 
 <span class="c-com"># Instructions Claude follows when this skill is invoked</span>
-...</pre></div>
-    </div>
+...</pre>
+        </div>
+      </div>
 
-    <div class="step">
-      <h2><span class="step-num">2</span>From the terminal</h2>
-      <p>There's no dedicated command to create a skill — skills are files, so <code>mkdir</code> + writing <code>SKILL.md</code> <em>is</em> the terminal method:</p>
-      <div class="code-block"><pre><span class="c-com"># create the folder</span>
+      <div class="step">
+        <h2><span class="step-num">2</span>From the terminal</h2>
+        <p>There's no dedicated command to create a skill - skills are files, so <code>mkdir</code> + writing
+          <code>SKILL.md</code> <em>is</em> the terminal method:</p>
+        <div class="code-block">
+          <pre><span class="c-com"># create the folder</span>
 mkdir -p .claude/skills/&lt;skill-name&gt;
 
 <span class="c-com"># then write SKILL.md into it, e.g.</span>
-nano .claude/skills/&lt;skill-name&gt;/SKILL.md</pre></div>
-      <div class="callout">
-        <span class="c-icon">⚠</span>
-        <p>A skill bundled inside a <strong>plugin</strong> can be added with <code>/plugin install &lt;name&gt;@&lt;marketplace&gt;</code> — but that installs someone else's plugin, it doesn't create a new skill of your own.</p>
+nano .claude/skills/&lt;skill-name&gt;/SKILL.md</pre>
+        </div>
+        <div class="callout">
+          <span class="c-icon">⚠</span>
+          <p>A skill bundled inside a <strong>plugin</strong> can be added with
+            <code>/plugin install &lt;name&gt;@&lt;marketplace&gt;</code> - but that installs someone else's plugin, it
+            doesn't create a new skill of your own.</p>
+        </div>
       </div>
-    </div>
 
-    <div class="step">
-      <h2><span class="step-num">3</span>Installing an existing skill — sf-skills</h2>
-      <p>Same command either way — run it in VS Code's integrated terminal (<code>Terminal → New Terminal</code>) or any regular terminal, from your project root.</p>
-      <div class="file-label">one specific skill</div>
-      <div class="code-block"><pre>npx skills add forcedotcom/sf-skills \
+      <div class="step">
+        <h2><span class="step-num">3</span>Installing an existing skill - sf-skills</h2>
+        <p>Same command either way - run it in VS Code's integrated terminal (<code>Terminal → New Terminal</code>) or
+          any regular terminal, from your project root.</p>
+        <div class="file-label">one specific skill</div>
+        <div class="code-block">
+          <pre>npx skills add forcedotcom/sf-skills \
   --skill platform-custom-lightning-type-generate \
-  --agent claude-code</pre></div>
-      <div class="file-label" style="margin-top:14px;">every skill in the repo</div>
-      <div class="code-block"><pre>npx skills add forcedotcom/sf-skills \
-  --agent claude-code</pre></div>
-    </div>
+  --agent claude-code</pre>
+        </div>
+        <div class="file-label" style="margin-top:14px;">every skill in the repo</div>
+        <div class="code-block">
+          <pre>npx skills add forcedotcom/sf-skills \
+  --agent claude-code</pre>
+        </div>
+      </div>
 
-    <div class="step">
-      <h2><span class="step-num">4</span>Installing an existing skill — agentforce-adlc</h2>
-      <p><a href="https://github.com/SalesforceAIResearch/agentforce-adlc" target="_blank" rel="noopener">SalesforceAIResearch/agentforce-adlc</a> isn't an <code>npx skills add</code> package — it ships as a Claude Code <strong>plugin</strong> instead, so it installs differently:</p>
-      <div class="file-label">recommended — via plugin marketplace</div>
-      <div class="code-block"><pre>claude plugin marketplace add SalesforceAIResearch/agentforce-adlc
-claude plugin install agentforce-adlc@agentforce-adlc</pre></div>
-      <div class="file-label" style="margin-top:14px;">alternative — clone and point Claude Code at it</div>
-      <div class="code-block"><pre><span class="c-com"># 1. clone it anywhere — no need to cd into it after</span>
+      <div class="step">
+        <h2><span class="step-num">4</span>Installing an existing skill - agentforce-adlc</h2>
+        <p><a href="https://github.com/SalesforceAIResearch/agentforce-adlc" target="_blank"
+            rel="noopener">SalesforceAIResearch/agentforce-adlc</a> isn't an <code>npx skills add</code> package - it
+          ships as a Claude Code <strong>plugin</strong> instead, so it installs differently:</p>
+        <div class="file-label">recommended - via plugin marketplace</div>
+        <div class="code-block">
+          <pre>claude plugin marketplace add SalesforceAIResearch/agentforce-adlc
+claude plugin install agentforce-adlc@agentforce-adlc</pre>
+        </div>
+        <div class="file-label" style="margin-top:14px;">alternative - clone and point Claude Code at it</div>
+        <div class="code-block">
+          <pre><span class="c-com"># 1. clone it anywhere - no need to cd into it after</span>
 git clone https://github.com/SalesforceAIResearch/agentforce-adlc.git
 
 <span class="c-com"># 2. launch Claude Code pointed at that folder (path is relative to</span>
-<span class="c-com">#    wherever you run this from — one-time flag, per session)</span>
+<span class="c-com">#    wherever you run this from - one-time flag, per session)</span>
 claude --plugin-dir ./agentforce-adlc
 
-<span class="c-com"># 3. confirm it loaded — /help → "Custom commands" tab lists its</span>
+<span class="c-com"># 3. confirm it loaded - /help → "Custom commands" tab lists its</span>
 <span class="c-com">#    skills, or just invoke one directly, e.g.:</span>
-<span class="c-key">/</span>agentforce-adlc:agentforce-generate</pre></div>
-      <p style="margin-top:10px;">You'll need <code>--plugin-dir</code> every time you start a new session unless you scaffold it permanently instead: <code>claude plugin init</code> installs a plugin under <code>~/.claude/skills/</code> so it's available automatically on future launches.</p>
-    </div>
+<span class="c-key">/</span>agentforce-adlc:agentforce-generate</pre>
+        </div>
+        <p style="margin-top:10px;">You'll need <code>--plugin-dir</code> every time you start a new session unless you
+          scaffold it permanently instead: <code>claude plugin init</code> installs a plugin under
+          <code>~/.claude/skills/</code> so it's available automatically on future launches.</p>
+      </div>
 
-    <div class="step">
-      <h2><span class="step-num">5</span>Already inside VS Code?</h2>
-      <p>The Claude Code VS Code extension has a GUI for this, but it's a wrapper over the same CLI commands above — nothing is VS Code-exclusive.</p>
-      <div class="file-label">in the Claude Code chat panel</div>
-      <div class="code-block"><pre><span class="c-key">/</span>plugins</pre></div>
-      <p>Opens <strong>Manage plugins</strong> — click <strong>Install</strong>, pick a scope (you / this project / local), done. Anything installed this way also shows up if you switch to the terminal, and vice versa.</p>
-      <p>Prefer the terminal instead? VS Code's built-in one works identically — <code>Terminal → New Terminal</code> (or <code>Ctrl+`</code> / <code>Cmd+`</code>), then run any command from steps 3–4 above exactly as shown.</p>
-    </div>
+      <div class="step">
+        <h2><span class="step-num">5</span>Already inside VS Code?</h2>
+        <p>The Claude Code VS Code extension has a GUI for this, but it's a wrapper over the same CLI commands above -
+          nothing is VS Code-exclusive.</p>
+        <div class="file-label">in the Claude Code chat panel</div>
+        <div class="code-block">
+          <pre><span class="c-key">/</span>plugins</pre>
+        </div>
+        <p>Opens <strong>Manage plugins</strong> - click <strong>Install</strong>, pick a scope (you / this project /
+          local), done. Anything installed this way also shows up if you switch to the terminal, and vice versa.</p>
+        <p>Prefer the terminal instead? VS Code's built-in one works identically - <code>Terminal → New Terminal</code>
+          (or <code>Ctrl+`</code> / <code>Cmd+`</code>), then run any command from steps 3–4 above exactly as shown.</p>
+      </div>
 
-    <footer>Sources: <a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener" style="color:inherit;">code.claude.com/docs/en/skills</a> · <a href="https://github.com/forcedotcom/sf-skills" target="_blank" rel="noopener" style="color:inherit;">forcedotcom/sf-skills</a> · <a href="https://github.com/SalesforceAIResearch/agentforce-adlc" target="_blank" rel="noopener" style="color:inherit;">SalesforceAIResearch/agentforce-adlc</a></footer>
+      <footer>Sources: <a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener"
+          style="color:inherit;">code.claude.com/docs/en/skills</a> · <a href="https://github.com/forcedotcom/sf-skills"
+          target="_blank" rel="noopener" style="color:inherit;">forcedotcom/sf-skills</a> · <a
+          href="https://github.com/SalesforceAIResearch/agentforce-adlc" target="_blank" rel="noopener"
+          style="color:inherit;">SalesforceAIResearch/agentforce-adlc</a></footer>
     </div>
   </main>
 </body>
+
 </html>

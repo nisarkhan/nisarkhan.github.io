@@ -2,207 +2,742 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
-  :root{
-    --ground:#f8fbf9;
-    --surface:#ffffff;
-    --surface-2:#e4f5ec;
-    --ink:#14201a;
-    --ink-muted:#586960;
-    --ink-faint:#7f9188;
-    --line:#e1ebe4;
-    --accent:#286948;
-    --accent-strong:#1f4d38;
-    --accent-ink:#ffffff;
-    --accent-soft:#e4f5ec;
-    --accent-2:#d4ac0d;
-    --accent-2-soft:#fbf3d6;
-    --good:#27ae60;
-    --good-soft:#e3f5ec;
-    --bad:#c0392b;
-    --bad-soft:#fdeaea;
-    --purple:#7d3c98;
-    --teal:#0e6655;
-    --sidebar-bg:#142820;
-    --navy:#142820;
-    --shadow: 0 1px 2px rgba(26,58,82,0.05), 0 8px 24px -12px rgba(26,58,82,0.18);
-    --radius-lg:16px;
-    --radius-md:11px;
-    --radius-sm:7px;
+  :root {
+    --ground: #f8fbf9;
+    --surface: #ffffff;
+    --surface-2: #e4f5ec;
+    --ink: #14201a;
+    --ink-muted: #586960;
+    --ink-faint: #7f9188;
+    --line: #e1ebe4;
+    --accent: #286948;
+    --accent-strong: #1f4d38;
+    --accent-ink: #ffffff;
+    --accent-soft: #e4f5ec;
+    --accent-2: #d4ac0d;
+    --accent-2-soft: #fbf3d6;
+    --good: #27ae60;
+    --good-soft: #e3f5ec;
+    --bad: #c0392b;
+    --bad-soft: #fdeaea;
+    --purple: #7d3c98;
+    --teal: #0e6655;
+    --sidebar-bg: #1f3d31;
+    --navy: #142820;
+    --shadow: 0 1px 2px rgba(26, 58, 82, 0.05), 0 8px 24px -12px rgba(26, 58, 82, 0.18);
+    --radius-lg: 16px;
+    --radius-md: 11px;
+    --radius-sm: 7px;
   }
 
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:var(--ground);
-    color:var(--ink);
-    font-family:"Geist", system-ui, sans-serif;
-    font-size:15.5px;
-    line-height:1.6;
-    -webkit-font-smoothing:antialiased;
-  }
-  @media (prefers-reduced-motion: reduce){ *{animation-duration:.001ms !important; transition-duration:.001ms !important;} }
-
-  h1,h2,h3,h4{ font-family:"Space Grotesk", system-ui, sans-serif; color:var(--ink); line-height:1.2; text-wrap:balance; margin:0; }
-  a{ color:var(--accent); }
-  code, .mono{ font-family:"JetBrains Mono", ui-monospace, monospace; }
-  code{ background:var(--surface-2); padding:1px 6px; border-radius:5px; font-size:0.9em; color:var(--ink); }
-
-  .shell{ min-height:100vh; }
-
-  .sidebar{
-    position:fixed; top:0; left:0; width:220px; height:100vh; overflow-y:auto; z-index:100;
-    padding:26px 18px; background:var(--sidebar-bg);
-    display:flex; flex-direction:column; gap:22px;
-  }
-  .brand{ display:flex; align-items:center; gap:9px; }
-  .brand-mark{
-    width:32px;height:32px; border-radius:8px; background:var(--accent);
-    display:flex;align-items:center;justify-content:center; color:#fff; font-family:"Space Grotesk",sans-serif; font-weight:800;
-    font-size:15px; flex:none; box-shadow:var(--shadow);
-  }
-  .brand-text{ display:flex; flex-direction:column; line-height:1.25; }
-  .brand-text strong{ font-family:"Space Grotesk",sans-serif; font-size:13.5px; font-weight:700; color:#fff; }
-  .brand-text span{ font-size:11px; color:var(--accent-soft); }
-
-  .toc-label{ font-size:10.5px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#a8cdb8; margin-bottom:2px; }
-  .toc{ list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:0; border-left:1px solid rgba(168,205,184,0.25); }
-  .toc a{
-    display:block; padding:5.5px 0 5.5px 13px; margin-left:-1px; border-left:1px solid transparent;
-    text-decoration:none; color:#cfe6da; font-size:12.6px; transition:color .15s ease, border-color .15s ease;
-  }
-  .toc a:hover{ color:#fff; }
-  .toc li.active > a{ color:#fff; border-left-color:#fff; font-weight:600; }
-
-  .source-card{ margin-top:auto; padding:13px; border-radius:var(--radius-md); background:rgba(255,255,255,0.06); border:1px solid rgba(168,205,184,0.22); }
-  .source-card .sc-label{ font-size:10.5px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:#a8cdb8; margin-bottom:5px; }
-  .source-card p{ margin:0; font-size:11.8px; color:#bcd8c8; line-height:1.5; }
-
-  main{ margin-left:220px; padding:40px 52px 72px; min-width:0; background:var(--ground); min-height:100vh; }
-  .content-col{ max-width:880px; }
-
-  .pagebar{
-    position:sticky; top:0; z-index:45;
-    display:flex; align-items:center; gap:9px; flex-wrap:wrap;
-    margin:-40px -52px 34px; padding:12px 52px 13px;
-    background:var(--ground); border-bottom:1px solid var(--line);
-    font-size:13px;
-  }
-  .pagebar-home{ display:inline-flex; align-items:center; gap:7px; text-decoration:none; color:var(--accent); font-weight:600; white-space:nowrap; }
-  .pagebar-home:hover{ text-decoration:underline; }
-  .pagebar-mark{ width:20px; height:20px; border-radius:5px; background:var(--accent); color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; }
-  .pagebar-chevron{ color:var(--ink-faint); }
-  .pagebar-here{ color:var(--ink-muted); font-weight:500; }
-
-  @media (max-width:940px){
-    .sidebar{ position:static; width:auto; height:auto; }
-    main{ margin-left:0; padding:32px 20px 56px; }
-    .pagebar{ margin:-32px -20px 26px; padding:12px 20px 13px; }
+  * {
+    box-sizing: border-box;
   }
 
-  .eyebrow{
-    display:inline-flex; align-items:center; gap:7px; font-size:11.5px; font-weight:600; letter-spacing:0.08em;
-    text-transform:uppercase; color:var(--bad); background:var(--bad-soft); padding:5px 11px; border-radius:999px;
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "Geist", system-ui, sans-serif;
+    font-size: 15.5px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
   }
-  .hero{ padding-bottom:28px; margin-bottom:34px; border-bottom:1px solid var(--line); }
-  .hero h1{ font-size:clamp(28px,4vw,38px); font-weight:800; letter-spacing:-0.01em; margin:14px 0 12px; }
-  .hero .dek{ font-size:16.5px; color:var(--ink-muted); max-width:70ch; margin:0; }
 
-  section.block{ margin-bottom:52px; scroll-margin-top:22px; }
-  section.block .kicker{ font-family:"JetBrains Mono",monospace; font-size:11.5px; font-weight:500; color:var(--accent-2); letter-spacing:0.04em; margin-bottom:7px; }
-  section.block h2{ font-size:23px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
-  section.block h3{ font-size:16px; font-weight:700; margin:24px 0 10px; }
-  section.block > p{ color:var(--ink-muted); margin:0 0 14px; max-width:74ch; }
-  section.block > p strong{ color:var(--ink); font-weight:600; }
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: .001ms !important;
+      transition-duration: .001ms !important;
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: "Space Grotesk", system-ui, sans-serif;
+    color: var(--ink);
+    line-height: 1.2;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  a {
+    color: var(--accent);
+  }
+
+  code,
+  .mono {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+  }
+
+  code {
+    background: var(--surface-2);
+    padding: 1px 6px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    color: var(--ink);
+  }
+
+  .shell {
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 220px;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 100;
+    padding: 26px 18px;
+    background: var(--sidebar-bg);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .brand-mark {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    flex: none;
+    box-shadow: var(--shadow);
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+  }
+
+  .brand-text strong {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .brand-text span {
+    font-size: 11px;
+    color: var(--accent-soft);
+  }
+
+  .toc-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #a8cdb8;
+    margin-bottom: 2px;
+  }
+
+  .toc {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-left: 1px solid rgba(168, 205, 184, 0.25);
+  }
+
+  .toc a {
+    display: block;
+    padding: 5.5px 0 5.5px 13px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    text-decoration: none;
+    color: #cfe6da;
+    font-size: 12.6px;
+    transition: color .15s ease, border-color .15s ease;
+  }
+
+  .toc a:hover {
+    color: #fff;
+  }
+
+  .toc li.active>a {
+    color: #fff;
+    border-left-color: #fff;
+    font-weight: 600;
+  }
+
+  .source-card {
+    margin-top: auto;
+    padding: 13px;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(168, 205, 184, 0.22);
+  }
+
+  .source-card .sc-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #a8cdb8;
+    margin-bottom: 5px;
+  }
+
+  .source-card p {
+    margin: 0;
+    font-size: 11.8px;
+    color: #bcd8c8;
+    line-height: 1.5;
+  }
+
+  main {
+    margin-left: 220px;
+    padding: 40px 52px 72px;
+    min-width: 0;
+    background: var(--ground);
+    min-height: 100vh;
+  }
+
+  .content-col {
+    max-width: 880px;
+  }
+
+  .pagebar {
+    position: sticky;
+    top: 0;
+    z-index: 45;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-wrap: wrap;
+    margin: -40px -52px 34px;
+    padding: 12px 52px 13px;
+    background: var(--ground);
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+  }
+
+  .pagebar-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    text-decoration: none;
+    color: var(--accent);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .pagebar-home:hover {
+    text-decoration: underline;
+  }
+
+  .pagebar-mark {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    background: var(--accent);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 800;
+  }
+
+  .pagebar-chevron {
+    color: var(--ink-faint);
+  }
+
+  .pagebar-here {
+    color: var(--ink-muted);
+    font-weight: 500;
+  }
+
+  @media (max-width:940px) {
+    .sidebar {
+      position: static;
+      width: auto;
+      height: auto;
+    }
+
+    main {
+      margin-left: 0;
+      padding: 32px 20px 56px;
+    }
+
+    .pagebar {
+      margin: -32px -20px 26px;
+      padding: 12px 20px 13px;
+    }
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--bad);
+    background: var(--bad-soft);
+    padding: 5px 11px;
+    border-radius: 999px;
+  }
+
+  .hero {
+    padding-bottom: 28px;
+    margin-bottom: 34px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .hero h1 {
+    font-size: clamp(28px, 4vw, 38px);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 14px 0 12px;
+  }
+
+  .hero .dek {
+    font-size: 16.5px;
+    color: var(--ink-muted);
+    max-width: 70ch;
+    margin: 0;
+  }
+
+  section.block {
+    margin-bottom: 52px;
+    scroll-margin-top: 22px;
+  }
+
+  section.block .kicker {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--accent-2);
+    letter-spacing: 0.04em;
+    margin-bottom: 7px;
+  }
+
+  section.block h2 {
+    font-size: 23px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  section.block h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 24px 0 10px;
+  }
+
+  section.block>p {
+    color: var(--ink-muted);
+    margin: 0 0 14px;
+    max-width: 74ch;
+  }
+
+  section.block>p strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
 
   /* badges */
-  .badge{ display:inline-flex; align-items:center; gap:4px; font-size:10.3px; font-weight:700; letter-spacing:0.03em; padding:2.5px 8px; border-radius:999px; text-transform:uppercase; white-space:nowrap; }
-  .badge.must{ background:var(--bad-soft); color:var(--bad); }
-  .badge.rec{ background:var(--accent-soft); color:var(--accent); }
-  .badge.opt{ background:var(--surface-2); color:var(--ink-faint); border:1px solid var(--line); }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10.3px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 2.5px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .badge.must {
+    background: var(--bad-soft);
+    color: var(--bad);
+  }
+
+  .badge.rec {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .badge.opt {
+    background: var(--surface-2);
+    color: var(--ink-faint);
+    border: 1px solid var(--line);
+  }
 
   /* critical rules band */
-  .critical-band{
-    display:flex; flex-direction:column; gap:10px; background:var(--bad-soft);
-    border:1px solid color-mix(in srgb, var(--bad) 35%, transparent); border-radius:var(--radius-lg);
-    padding:20px 22px; margin-bottom:14px;
+  .critical-band {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--bad-soft);
+    border: 1px solid color-mix(in srgb, var(--bad) 35%, transparent);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+    margin-bottom: 14px;
   }
-  .critical-item{ display:grid; grid-template-columns:26px 1fr; gap:12px; }
-  .critical-item + .critical-item{ padding-top:10px; border-top:1px solid color-mix(in srgb, var(--bad) 22%, transparent); }
-  .critical-num{
-    width:24px;height:24px; border-radius:7px; background:var(--bad); color:#fff; font-family:"Space Grotesk",sans-serif;
-    font-weight:800; font-size:12px; display:flex; align-items:center; justify-content:center; flex:none;
+
+  .critical-item {
+    display: grid;
+    grid-template-columns: 26px 1fr;
+    gap: 12px;
   }
-  .critical-item h4{ font-size:14.5px; font-weight:700; margin-bottom:3px; color:var(--ink); }
-  .critical-item p{ margin:0; font-size:13px; color:var(--ink-muted); line-height:1.55; }
-  .critical-item code{ background:var(--surface); }
+
+  .critical-item+.critical-item {
+    padding-top: 10px;
+    border-top: 1px solid color-mix(in srgb, var(--bad) 22%, transparent);
+  }
+
+  .critical-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+    background: var(--bad);
+    color: #fff;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 800;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+  }
+
+  .critical-item h4 {
+    font-size: 14.5px;
+    font-weight: 700;
+    margin-bottom: 3px;
+    color: var(--ink);
+  }
+
+  .critical-item p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ink-muted);
+    line-height: 1.55;
+  }
+
+  .critical-item code {
+    background: var(--surface);
+  }
 
   /* generic callout */
-  .callout{ display:flex; gap:13px; background:var(--accent-soft); border:1px solid color-mix(in srgb, var(--accent) 30%, transparent); border-radius:var(--radius-lg); padding:16px 18px; margin:18px 0; }
-  .callout.warn{ background:var(--accent-2-soft); border-color:color-mix(in srgb, var(--accent-2) 32%, transparent); }
-  .callout .c-icon{ font-size:18px; line-height:1; flex:none; }
-  .callout h4{ font-size:13.5px; font-weight:700; margin-bottom:4px; }
-  .callout p{ margin:0; font-size:13px; color:var(--ink-muted); line-height:1.55; }
+  .callout {
+    display: flex;
+    gap: 13px;
+    background: var(--accent-soft);
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    margin: 18px 0;
+  }
+
+  .callout.warn {
+    background: var(--accent-2-soft);
+    border-color: color-mix(in srgb, var(--accent-2) 32%, transparent);
+  }
+
+  .callout .c-icon {
+    font-size: 18px;
+    line-height: 1;
+    flex: none;
+  }
+
+  .callout h4 {
+    font-size: 13.5px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .callout p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ink-muted);
+    line-height: 1.55;
+  }
 
   /* requirement cards */
-  .req-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0; }
-  @media (max-width:640px){ .req-grid{grid-template-columns:1fr;} }
-  .req-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md); padding:14px 15px; box-shadow:var(--shadow); }
-  .req-card .rc-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; gap:8px; }
-  .req-card .rc-name{ font-family:"JetBrains Mono",monospace; font-size:12.8px; font-weight:600; color:var(--ink); }
-  .req-card p{ margin:0; font-size:12.4px; color:var(--ink-muted); line-height:1.5; }
+  .req-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 18px 0;
+  }
+
+  @media (max-width:640px) {
+    .req-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .req-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 14px 15px;
+    box-shadow: var(--shadow);
+  }
+
+  .req-card .rc-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 7px;
+    gap: 8px;
+  }
+
+  .req-card .rc-name {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12.8px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .req-card p {
+    margin: 0;
+    font-size: 12.4px;
+    color: var(--ink-muted);
+    line-height: 1.5;
+  }
 
   /* tables */
-  .table-wrap{ overflow-x:auto; margin:16px 0; border:1px solid var(--line); border-radius:var(--radius-md); }
-  table{ width:100%; border-collapse:collapse; font-size:12.8px; min-width:560px; }
-  thead th{
-    text-align:left; background:var(--surface-2); color:var(--ink-faint); font-size:10.8px; font-weight:600;
-    letter-spacing:0.05em; text-transform:uppercase; padding:9px 12px; border-bottom:1px solid var(--line); white-space:nowrap;
+  .table-wrap {
+    overflow-x: auto;
+    margin: 16px 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
   }
-  tbody td{ padding:9px 12px; border-bottom:1px solid var(--line); color:var(--ink-muted); vertical-align:top; }
-  tbody tr:last-child td{ border-bottom:none; }
-  tbody td:first-child{ color:var(--ink); font-weight:500; }
-  tbody td code{ white-space:nowrap; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.8px;
+    min-width: 560px;
+  }
+
+  thead th {
+    text-align: left;
+    background: var(--surface-2);
+    color: var(--ink-faint);
+    font-size: 10.8px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-muted);
+    vertical-align: top;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody td:first-child {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  tbody td code {
+    white-space: nowrap;
+  }
 
   /* file tree */
-  .file-tree{
-    background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-md); padding:15px 17px; margin:16px 0;
-    font-family:"JetBrains Mono",monospace; font-size:12.3px; line-height:1.85; color:var(--ink-muted); overflow-x:auto;
+  .file-tree {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 15px 17px;
+    margin: 16px 0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12.3px;
+    line-height: 1.85;
+    color: var(--ink-muted);
+    overflow-x: auto;
   }
-  .file-tree .dir{ color:var(--ink); font-weight:600; }
-  .file-tree .leaf{ color:var(--accent-2); }
-  .file-tree .req-tag{ color:var(--bad); font-size:10.5px; font-weight:700; margin-left:6px; }
-  .file-tree .indent1{ padding-left:20px; }
-  .file-tree .indent2{ padding-left:40px; }
-  .file-tree .note{ color:var(--ink-faint); }
+
+  .file-tree .dir {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .file-tree .leaf {
+    color: var(--accent-2);
+  }
+
+  .file-tree .req-tag {
+    color: var(--bad);
+    font-size: 10.5px;
+    font-weight: 700;
+    margin-left: 6px;
+  }
+
+  .file-tree .indent1 {
+    padding-left: 20px;
+  }
+
+  .file-tree .indent2 {
+    padding-left: 40px;
+  }
+
+  .file-tree .note {
+    color: var(--ink-faint);
+  }
 
   /* checklist */
-  .checklist{ list-style:none; margin:16px 0; padding:0; display:flex; flex-direction:column; gap:0; }
-  .checklist li{ display:grid; grid-template-columns:20px 1fr; gap:10px; padding:9px 2px; border-bottom:1px solid var(--line); align-items:start; }
-  .checklist li:last-child{ border-bottom:none; }
-  .checklist .cb{ width:16px; height:16px; border:1.6px solid var(--ink-faint); border-radius:5px; margin-top:2px; flex:none; }
-  .checklist .cl-text{ font-size:13px; color:var(--ink); }
-  .checklist .cl-text span.sub{ display:block; font-size:12px; color:var(--ink-muted); margin-top:2px; }
-  .checklist-group{ margin:22px 0 8px; }
-  .checklist-group .cg-label{
-    font-family:"JetBrains Mono",monospace; font-size:11px; font-weight:600; color:var(--accent);
-    text-transform:uppercase; letter-spacing:0.05em; margin-bottom:2px;
+  .checklist {
+    list-style: none;
+    margin: 16px 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .checklist li {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    gap: 10px;
+    padding: 9px 2px;
+    border-bottom: 1px solid var(--line);
+    align-items: start;
+  }
+
+  .checklist li:last-child {
+    border-bottom: none;
+  }
+
+  .checklist .cb {
+    width: 16px;
+    height: 16px;
+    border: 1.6px solid var(--ink-faint);
+    border-radius: 5px;
+    margin-top: 2px;
+    flex: none;
+  }
+
+  .checklist .cl-text {
+    font-size: 13px;
+    color: var(--ink);
+  }
+
+  .checklist .cl-text span.sub {
+    display: block;
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-top: 2px;
+  }
+
+  .checklist-group {
+    margin: 22px 0 8px;
+  }
+
+  .checklist-group .cg-label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
   }
 
   /* code block */
-  .code-block{ background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-md); padding:14px 16px; overflow-x:auto; margin:14px 0; }
-  .code-block pre{ margin:0; font-family:"JetBrains Mono",monospace; font-size:12.2px; line-height:1.6; color:var(--ink); white-space:pre; }
-  .code-block .c-key{ color:var(--accent); }
-  .code-block .c-str{ color:var(--good); }
+  .code-block {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin: 14px 0;
+  }
+
+  .code-block pre {
+    margin: 0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12.2px;
+    line-height: 1.6;
+    color: var(--ink);
+    white-space: pre;
+  }
+
+  .code-block .c-key {
+    color: var(--accent);
+  }
+
+  .code-block .c-str {
+    color: var(--good);
+  }
 
   /* symptom table severity dots */
-  .sev{ display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; }
-  .sev.high{ background:var(--bad); }
-  .sev.med{ background:var(--accent-2); }
+  .sev {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
 
-  footer{ max-width:880px; margin-top:36px; padding-top:20px; border-top:1px solid var(--line); font-size:11.5px; color:var(--ink-faint); }
-  footer .src-list{ margin-top:8px; line-height:1.7; }
-  footer .src-list a{ color:var(--ink-faint); text-decoration:underline; text-decoration-color:var(--line); }
-  footer .src-list a:hover{ color:var(--accent); text-decoration-color:var(--accent); }
+  .sev.high {
+    background: var(--bad);
+  }
+
+  .sev.med {
+    background: var(--accent-2);
+  }
+
+  footer {
+    max-width: 880px;
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    font-size: 11.5px;
+    color: var(--ink-faint);
+  }
+
+  footer .src-list {
+    margin-top: 8px;
+    line-height: 1.7;
+  }
+
+  footer .src-list a {
+    color: var(--ink-faint);
+    text-decoration: underline;
+    text-decoration-color: var(--line);
+  }
+
+  footer .src-list a:hover {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
 </style>
 
 <div class="shell">
@@ -221,6 +756,7 @@
         <li><a href="#critical">Critical / must-have</a></li>
         <li><a href="#clt-reqs">Lightning Type requirements</a></li>
         <li><a href="#lwc-reqs">LWC requirements</a></li>
+        <li><a href="#output-only">Output-only pattern</a></li>
         <li><a href="#files">Files &amp; folder structure</a></li>
         <li><a href="#metadata">Metadata &amp; configuration</a></li>
         <li><a href="#registration">Registration / discovery</a></li>
@@ -234,7 +770,8 @@
 
     <div class="source-card">
       <div class="sc-label">Source</div>
-      <p>Distilled from the full <em>Custom Lightning Types</em> build guide (Apex → Lightning Type → LWC → Agent Action → agent script), lead-creation example.</p>
+      <p>Distilled from the full <em>Custom Lightning Types</em> build guide (Apex → Lightning Type → LWC → Agent Action
+        → agent script), lead-creation example.</p>
     </div>
   </nav>
 
@@ -242,7 +779,12 @@
     <div class="content-col">
 
       <div class="pagebar">
-        <a class="pagebar-home" href="index.html" aria-label="Nisar Khan home"><span class="pagebar-mark" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span>Nisar Khan</span></a>
+        <a class="pagebar-home" href="index.html" aria-label="Nisar Khan home"><span class="pagebar-mark"
+            aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" />
+            </svg></span><span>Nisar Khan</span></a>
         <span class="pagebar-chevron" aria-hidden="true">›</span>
         <span class="pagebar-here">CLT Rendering Checklist</span>
       </div>
@@ -250,49 +792,75 @@
       <div class="hero">
         <span class="eyebrow">⚠ Reference · CLT + LWC rendering</span>
         <h1>Custom Lightning Type &amp; LWC Rendering Checklist</h1>
-        <p class="dek">Every requirement that determines whether a Custom Lightning Type actually renders in Agentforce — or silently falls back to plain text. Mandatory items are marked <span class="badge must">must</span>; everything else is a recommendation or convention. When in doubt, treat a missing mandatory item as the reason nothing is showing up.</p>
-        <p class="dek" style="margin-top:10px; font-size:13px; color:var(--ink-faint);">Cross-checked against Salesforce's official Agentforce &amp; Lightning Types developer documentation. Anywhere this build's actual (working) code diverges from Salesforce's documented recommendation, it's called out explicitly rather than silently corrected — see the callout in <a href="#metadata">Metadata &amp; configuration</a> and the sources listed in the footer.</p>
+        <p class="dek">Every requirement that determines whether a Custom Lightning Type actually renders in Agentforce
+          - or silently falls back to plain text. Mandatory items are marked <span class="badge must">must</span>;
+          everything else is a recommendation or convention. When in doubt, treat a missing mandatory item as the reason
+          nothing is showing up.</p>
+        <p class="dek" style="margin-top:10px; font-size:13px; color:var(--ink-faint);">Cross-checked against
+          Salesforce's official Agentforce &amp; Lightning Types developer documentation. Anywhere this build's actual
+          (working) code diverges from Salesforce's documented recommendation, it's called out explicitly rather than
+          silently corrected - see the callout in <a href="#metadata">Metadata &amp; configuration</a> and the sources
+          listed in the footer.</p>
       </div>
 
       <section class="block" id="critical">
         <div class="kicker">// read this first</div>
-        <h2>🔴 Critical — the 5 rules that cause silent failures</h2>
-        <p>These five are singled out because getting them wrong produces <strong>no error message</strong>. The org deploys cleanly, the action runs, and the platform just quietly falls back to plain-text conversation or a broken form. If a CLT "isn't working," check these before anything else.</p>
+        <h2>🔴 Critical - the 5 rules that cause silent failures</h2>
+        <p>These five are singled out because getting them wrong produces <strong>no error message</strong>. The org
+          deploys cleanly, the action runs, and the platform just quietly falls back to plain-text conversation or a
+          broken form. If a CLT "isn't working," check these before anything else.</p>
 
         <div class="critical-band">
           <div class="critical-item">
             <div class="critical-num">1</div>
             <div>
               <h4>The agent script must contain the literal phrase "user_input tool"</h4>
-              <p>Write <code>Call {!@actions.create_lead} action's <strong>user_input tool</strong> to collect the lead details from the user.</code> The platform parses the instruction text for that exact phrase — it's the signal that activates the CLT editor lookup pipeline (finds the Lightning Type → <code>editor.json</code> → the LWC). Paraphrasing it ("collect the lead details", "ask the user for their info") leaves every other piece perfectly wired and simply unused — the agent falls back to asking for fields one at a time in plain text.</p>
+              <p>Write
+                <code>Call {!@actions.create_lead} action's <strong>user_input tool</strong> to collect the lead details from the user.</code>
+                The platform parses the instruction text for that exact phrase - it's the signal that activates the CLT
+                editor lookup pipeline (finds the Lightning Type → <code>editor.json</code> → the LWC). Paraphrasing it
+                ("collect the lead details", "ask the user for their info") leaves every other piece perfectly wired and
+                simply unused - the agent falls back to asking for fields one at a time in plain text.</p>
             </div>
           </div>
           <div class="critical-item">
             <div class="critical-num">2</div>
             <div>
               <h4>Apex wrapper field names must exactly match the action's parameter names</h4>
-              <p>The request/response wrapper class field names (e.g. <code>lead_data</code>, <code>lead_result</code>, <code>lead_id</code>, <code>lead_name</code>) are matched by <strong>name</strong> against the agent action's input/output parameters. A mismatch throws no error — the field just comes back <code>null</code>, or the whole action silently falls back to the plain-text UI.</p>
+              <p>The request/response wrapper class field names (e.g. <code>lead_data</code>, <code>lead_result</code>,
+                <code>lead_id</code>, <code>lead_name</code>) are matched by <strong>name</strong> against the agent
+                action's input/output parameters. A mismatch throws no error - the field just comes back
+                <code>null</code>, or the whole action silently falls back to the plain-text UI.</p>
             </div>
           </div>
           <div class="critical-item">
             <div class="critical-num">3</div>
             <div>
-              <h4>The editor must dispatch the <em>entire</em> value object on every change — never a single field</h4>
-              <p>Sending <code>{ detail: { lastName: 'Smith' } }</code> instead of <code>{ detail: this.value }</code> makes the platform treat every other field as unset — it doesn't merge, it replaces. This is the single most common way a CLT form "loses" data the user already typed.</p>
+              <h4>The editor must dispatch the <em>entire</em> value object on every change - never a single field</h4>
+              <p>Sending <code>{ detail: { lastName: 'Smith' } }</code> instead of <code>{ detail: this.value }</code>
+                makes the platform treat every other field as unset - it doesn't merge, it replaces. This is the single
+                most common way a CLT form "loses" data the user already typed.</p>
             </div>
           </div>
           <div class="critical-item">
             <div class="critical-num">4</div>
             <div>
               <h4><code>targetType</code> and <code>sourceType</code> are not interchangeable</h4>
-              <p>The editor's (input) <code>js-meta.xml</code> uses <code>&lt;targetType name="c__X"/&gt;</code>. The renderer's (output) <code>js-meta.xml</code> uses <code>&lt;sourceType name="c__X"/&gt;</code>. Use the wrong one and Setup won't correctly bind that component to that role, even though the XML is otherwise valid.</p>
+              <p>The editor's (input) <code>js-meta.xml</code> uses <code>&lt;targetType name="c__X"/&gt;</code>. The
+                renderer's (output) <code>js-meta.xml</code> uses <code>&lt;sourceType name="c__X"/&gt;</code>. Use the
+                wrong one and Setup won't correctly bind that component to that role, even though the XML is otherwise
+                valid.</p>
             </div>
           </div>
           <div class="critical-item">
             <div class="critical-num">5</div>
             <div>
               <h4>Four flags must all be <code>true</code>, or that direction never activates</h4>
-              <p><code>isExposed</code> (meta XML, both components) · <code>is_user_input</code> (action input) · <code>is_displayable</code> (action output) · and in the Agent Action asset UI, <strong>Collect data from user</strong> / <strong>Show in conversation</strong> respectively. Any one left <code>false</code> silently disables CLT rendering for that side, even with a correctly built component sitting right there.</p>
+              <p><code>isExposed</code> (meta XML, both components) · <code>is_user_input</code> (action input) ·
+                <code>is_displayable</code> (action output) · and in the Agent Action asset UI, <strong>Collect data
+                  from user</strong> / <strong>Show in conversation</strong> respectively. Any one left
+                <code>false</code> silently disables CLT rendering for that side, even with a correctly built component
+                sitting right there.</p>
             </div>
           </div>
         </div>
@@ -301,31 +869,94 @@
       <section class="block" id="clt-reqs">
         <div class="kicker">// layer 2</div>
         <h2>Custom Lightning Type requirements</h2>
-        <p>A Lightning Type is a JSON-based schema definition that binds an Apex data shape to an LWC. Two are needed per action — one for what the form collects, one for what the card displays — and each is built and configured separately.</p>
+        <p>A Lightning Type is a JSON-based schema definition that binds an Apex data shape to an LWC. Two are needed
+          per action - one for what the form collects, one for what the card displays - and each is built and configured
+          separately.</p>
 
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Requirement</th><th>Detail</th><th></th></tr></thead>
+            <thead>
+              <tr>
+                <th>Requirement</th>
+                <th>Detail</th>
+                <th></th>
+              </tr>
+            </thead>
             <tbody>
-              <tr><td>Separate type per direction</td><td>One Lightning Type for the <strong>input</strong> shape, one for the <strong>output</strong> shape. They are not interchangeable and not combinable into one type.</td><td><span class="badge must">must</span></td></tr>
-              <tr><td>Apex-based schema</td><td>Setup → Lightning Types → New → source <strong>Apex</strong> → search and select the Apex inner class. The Apex class must already be deployed or it won't appear in the picker.</td><td><span class="badge must">must</span></td></tr>
-              <tr><td>Class addressed as <code>Outer$Inner</code></td><td>e.g. <code>LeadCreationService$LeadInput</code> — Salesforce's nested-class reference syntax. Get the outer/inner names wrong and the schema can't resolve.</td><td><span class="badge must">must</span></td></tr>
-              <tr><td><code>c__</code> namespace prefix</td><td>Every reference to the type elsewhere (meta XML, agent script, Agent Action asset) uses the type's API name prefixed with <code>c__</code>, e.g. <code>c__LeadInput</code>. Missing or wrong prefix = type not found.</td><td><span class="badge must">must</span></td></tr>
-              <tr><td>UI Configuration → Editor override</td><td>On the <strong>input</strong> type: UI Configuration → Editor tab → override the standard component with your editor LWC. Left unset, Setup silently renders its own generic editor.</td><td><span class="badge must">must</span></td></tr>
-              <tr><td>UI Configuration → Renderer override</td><td>On the <strong>output</strong> type: UI Configuration → Renderer tab → override with your renderer LWC. Left unset, output renders as the generic/standard card.</td><td><span class="badge must">must</span></td></tr>
-              <tr><td>Live Component Preview</td><td>Both override screens show a live preview once saved — use it to confirm the real component (not the standard one) is what's wired before moving on.</td><td><span class="badge rec">recommended</span></td></tr>
+              <tr>
+                <td>Separate type per direction</td>
+                <td>One Lightning Type for the <strong>input</strong> shape, one for the <strong>output</strong> shape.
+                  They are not interchangeable and not combinable into one type.</td>
+                <td><span class="badge must">must</span></td>
+              </tr>
+              <tr>
+                <td>Apex-based schema</td>
+                <td>Setup → Lightning Types → New → source <strong>Apex</strong> → search and select the Apex inner
+                  class. The Apex class must already be deployed or it won't appear in the picker.</td>
+                <td><span class="badge must">must</span></td>
+              </tr>
+              <tr>
+                <td>Class addressed as <code>Outer$Inner</code></td>
+                <td>e.g. <code>LeadCreationService$LeadInput</code> - Salesforce's nested-class reference syntax. Get
+                  the outer/inner names wrong and the schema can't resolve.</td>
+                <td><span class="badge must">must</span></td>
+              </tr>
+              <tr>
+                <td><code>c__</code> namespace prefix</td>
+                <td>Every reference to the type elsewhere (meta XML, agent script, Agent Action asset) uses the type's
+                  API name prefixed with <code>c__</code>, e.g. <code>c__LeadInput</code>. Missing or wrong prefix =
+                  type not found.</td>
+                <td><span class="badge must">must</span></td>
+              </tr>
+              <tr>
+                <td>UI Configuration → Editor override</td>
+                <td>On the <strong>input</strong> type: UI Configuration → Editor tab → override the standard component
+                  with your editor LWC. Left unset, Setup silently renders its own generic editor.</td>
+                <td><span class="badge must">must</span></td>
+              </tr>
+              <tr>
+                <td>UI Configuration → Renderer override</td>
+                <td>On the <strong>output</strong> type: UI Configuration → Renderer tab → override with your renderer
+                  LWC. Left unset, output renders as the generic/standard card.</td>
+                <td><span class="badge must">must</span></td>
+              </tr>
+              <tr>
+                <td>Live Component Preview</td>
+                <td>Both override screens show a live preview once saved - use it to confirm the real component (not the
+                  standard one) is what's wired before moving on.</td>
+                <td><span class="badge rec">recommended</span></td>
+              </tr>
             </tbody>
           </table>
         </div>
 
         <h3>Which Apex class does which Lightning Type point to?</h3>
-        <p>This mapping is easy to get backwards. In the reference build: the wrapper classes (<code>CreateLeadRequest</code> / <code>CreateLeadResponse</code>) exist only for the Apex ↔ agent-script boundary — the Lightning Types bind to the plain data-shape classes nested one level in.</p>
+        <p>This mapping is easy to get backwards. In the reference build: the wrapper classes
+          (<code>CreateLeadRequest</code> / <code>CreateLeadResponse</code>) exist only for the Apex ↔ agent-script
+          boundary - the Lightning Types bind to the plain data-shape classes nested one level in.</p>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Lightning Type</th><th>Apex schema class</th><th>Bound LWC target</th><th>LWC role</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Lightning Type</th>
+                <th>Apex schema class</th>
+                <th>Bound LWC target</th>
+                <th>LWC role</th>
+              </tr>
+            </thead>
             <tbody>
-              <tr><td><code>c__LeadInput</code></td><td><code>LeadCreationService$LeadInput</code></td><td><code>lightning__AgentforceInput</code></td><td>Editor (collects form data)</td></tr>
-              <tr><td><code>c__LeadOutput</code></td><td><code>LeadCreationService$LeadResult</code></td><td><code>lightning__AgentforceOutput</code></td><td>Renderer (displays result card)</td></tr>
+              <tr>
+                <td><code>c__LeadInput</code></td>
+                <td><code>LeadCreationService$LeadInput</code></td>
+                <td><code>lightning__AgentforceInput</code></td>
+                <td>Editor (collects form data)</td>
+              </tr>
+              <tr>
+                <td><code>c__LeadOutput</code></td>
+                <td><code>LeadCreationService$LeadResult</code></td>
+                <td><code>lightning__AgentforceOutput</code></td>
+                <td>Renderer (displays result card)</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -334,17 +965,40 @@
       <section class="block" id="lwc-reqs">
         <div class="kicker">// layer 3</div>
         <h2>LWC requirements</h2>
-        <p>Every rendering-relevant rule an Editor or Renderer component must follow. Miss one and the platform doesn't throw — it just doesn't wire the component in.</p>
+        <p>Every rendering-relevant rule an Editor or Renderer component must follow. Miss one and the platform doesn't
+          throw - it just doesn't wire the component in.</p>
 
         <h3>Shared by both components</h3>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Property / setting</th><th>Required value</th><th>What happens if missing</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Property / setting</th>
+                <th>Required value</th>
+                <th>What happens if missing</th>
+              </tr>
+            </thead>
             <tbody>
-              <tr><td><code>isExposed</code></td><td><code>true</code></td><td>Component is completely invisible to Setup — can't be selected in any override picker.</td></tr>
-              <tr><td><code>apiVersion</code></td><td>current/valid org API version</td><td>Bundle may fail to deploy or fail to resolve Agentforce-specific targets.</td></tr>
-              <tr><td><code>masterLabel</code></td><td>any descriptive string</td><td>Component is harder to identify in the override picker; not a hard blocker.</td></tr>
-              <tr><td>Bundle root element</td><td><code>&lt;LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata"&gt;</code></td><td>Invalid metadata — deployment fails outright.</td></tr>
+              <tr>
+                <td><code>isExposed</code></td>
+                <td><code>true</code></td>
+                <td>Component is completely invisible to Setup - can't be selected in any override picker.</td>
+              </tr>
+              <tr>
+                <td><code>apiVersion</code></td>
+                <td>current/valid org API version</td>
+                <td>Bundle may fail to deploy or fail to resolve Agentforce-specific targets.</td>
+              </tr>
+              <tr>
+                <td><code>masterLabel</code></td>
+                <td>any descriptive string</td>
+                <td>Component is harder to identify in the override picker; not a hard blocker.</td>
+              </tr>
+              <tr>
+                <td>Bundle root element</td>
+                <td><code>&lt;LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata"&gt;</code></td>
+                <td>Invalid metadata - deployment fails outright.</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -352,20 +1006,26 @@
         <div class="req-grid">
           <div class="req-card">
             <div class="rc-top"><span class="rc-name">Editor (Input)</span><span class="badge must">must</span></div>
-            <p><code>target</code>: <code>lightning__AgentforceInput</code><br/>
-            <code>targetConfig</code> uses <code>targetType</code> (not <code>sourceType</code>) with <code>name="c__LeadInput"</code><br/>
-            <code>@api readOnly</code> boolean property<br/>
-            <code>@api value</code> exposed via getter/setter (not a bare property)<br/>
-            Dispatches <code>valuechange</code> CustomEvent with the <strong>full</strong> data object as <code>detail</code>, on every field change<br/>
-            <code>event.stopPropagation()</code> in the change handler</p>
+            <p><code>target</code>: <code>lightning__AgentforceInput</code><br />
+              <code>targetConfig</code> uses <code>targetType</code> (not <code>sourceType</code>) with
+              <code>name="c__LeadInput"</code><br />
+              <code>@api readOnly</code> boolean property<br />
+              <code>@api value</code> exposed via getter/setter (not a bare property)<br />
+              Dispatches <code>valuechange</code> CustomEvent with the <strong>full</strong> data object as
+              <code>detail</code>, on every field change<br />
+              <code>event.stopPropagation()</code> in the change handler
+            </p>
           </div>
           <div class="req-card">
             <div class="rc-top"><span class="rc-name">Renderer (Output)</span><span class="badge must">must</span></div>
-            <p><code>target</code>: <code>lightning__AgentforceOutput</code><br/>
-            <code>targetConfig</code> uses <code>sourceType</code> (not <code>targetType</code>) with <code>name="c__LeadOutput"</code><br/>
-            <code>@api value</code> — a single property, no getter/setter pair required<br/>
-            No <code>readOnly</code> prop, no events dispatched — strictly read-only<br/>
-            Null-safe getters (<code>this.value?.field || ''</code>) recommended so missing data renders blank, not "undefined"</p>
+            <p><code>target</code>: <code>lightning__AgentforceOutput</code><br />
+              <code>targetConfig</code> uses <code>sourceType</code> (not <code>targetType</code>) with
+              <code>name="c__LeadOutput"</code><br />
+              <code>@api value</code> - a single property, no getter/setter pair required<br />
+              No <code>readOnly</code> prop, no events dispatched - strictly read-only<br />
+              Null-safe getters (<code>this.value?.field || ''</code>) recommended so missing data renders blank, not
+              "undefined"
+            </p>
           </div>
         </div>
 
@@ -373,73 +1033,231 @@
           <div class="c-icon">⚠️</div>
           <div>
             <h4>The one-field dispatch trap</h4>
-            <p>The editor's <code>valuechange</code> handler must merge the changed field into local state and dispatch the <strong>whole object</strong> — <code>detail: this.value</code>, not <code>detail: { fieldName: newValue }</code>. Dispatching a partial object doesn't error; it makes the platform treat every field you didn't include as cleared.</p>
+            <p>The editor's <code>valuechange</code> handler must merge the changed field into local state and dispatch
+              the <strong>whole object</strong> - <code>detail: this.value</code>, not
+              <code>detail: { fieldName: newValue }</code>. Dispatching a partial object doesn't error; it makes the
+              platform treat every field you didn't include as cleared.</p>
           </div>
         </div>
 
-        <h3>Reference meta XML — Editor</h3>
-        <div class="code-block"><pre><span class="c-key">&lt;targetConfig</span> targets=<span class="c-str">"lightning__AgentforceInput"</span><span class="c-key">&gt;</span>
+        <h3>Reference meta XML - Editor</h3>
+        <div class="code-block">
+          <pre><span class="c-key">&lt;targetConfig</span> targets=<span class="c-str">"lightning__AgentforceInput"</span><span class="c-key">&gt;</span>
     <span class="c-key">&lt;targetType</span> name=<span class="c-str">"c__LeadInput"</span> <span class="c-key">/&gt;</span>
-<span class="c-key">&lt;/targetConfig&gt;</span></pre></div>
+<span class="c-key">&lt;/targetConfig&gt;</span></pre>
+        </div>
 
-        <h3>Reference meta XML — Renderer</h3>
-        <div class="code-block"><pre><span class="c-key">&lt;targetConfig</span> targets=<span class="c-str">"lightning__AgentforceOutput"</span><span class="c-key">&gt;</span>
+        <h3>Reference meta XML - Renderer</h3>
+        <div class="code-block">
+          <pre><span class="c-key">&lt;targetConfig</span> targets=<span class="c-str">"lightning__AgentforceOutput"</span><span class="c-key">&gt;</span>
     <span class="c-key">&lt;sourceType</span> name=<span class="c-str">"c__LeadOutput"</span> <span class="c-key">/&gt;</span>
-<span class="c-key">&lt;/targetConfig&gt;</span></pre></div>
+<span class="c-key">&lt;/targetConfig&gt;</span></pre>
+        </div>
+      </section>
+
+      <section class="block" id="output-only">
+        <div class="kicker">// a lighter path</div>
+        <h2>Output-only pattern - rendering an LWC you already built</h2>
+        <p>Not every CLT build needs both directions. If you already have a working LWC and just want Agentforce to
+          render it with real data - no input form, no editor - the whole thing collapses to one naming contract. Apex
+          never calls the component; it returns a typed object, and a Lightning Type tells Agentforce "render this type
+          with that component." The link is a naming contract, not a method call.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>What</th>
+                <th>Where it has to agree</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Output property</td>
+                <td>The <code>@InvocableVariable</code> name on the Apex response <strong>and</strong> the
+                  <code>@api</code> property your LWC exposes - same name, both places.</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Apex data class</td>
+                <td>The typed shape, referenced in <code>schema.json</code> as
+                  <code>@apexClassType/c__YourDataClass</code>.</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Lightning Type API name</td>
+                <td>The <code>c__</code>-prefixed type name - used as <code>lightning:type</code> in the schema and as
+                  <code>&lt;sourceType&gt;</code> in the LWC's meta XML.</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>Your LWC bundle</td>
+                <td>Hardcoded into <code>renderer.json</code> as <code>c/yourComponent</code> - the component must
+                  already be deployed with this exact reference before the type deploys cleanly.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>What actually changes on an existing component</h3>
+        <p>Two additions, no rewrite - your markup and getters keep reading from local state exactly as before.</p>
+        <div class="req-grid">
+          <div class="req-card">
+            <div class="rc-top"><span class="rc-name">.js-meta.xml</span><span class="badge must">must</span></div>
+            <p>Add <code>isExposed:true</code>, target <code>lightning__AgentforceOutput</code>, and a
+              <code>&lt;sourceType name="c__YourType"/&gt;</code> targetConfig.</p>
+          </div>
+          <div class="req-card">
+            <div class="rc-top"><span class="rc-name">.js</span><span class="badge must">must</span></div>
+            <p>One <code>@api</code> getter/setter pair named exactly like the invocable's output variable. The setter
+              normalizes defensively - see the callout below.</p>
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <div class="c-icon">⚠️</div>
+          <div>
+            <h4>The setter must defend against three shapes, not one</h4>
+            <p>Agentforce may hand the <code>@api</code> setter a plain object, a JSON <em>string</em>, or the object
+              nested one level under its own property name. A setter that only handles the plain-object case renders
+              blank the moment the runtime picks a different shape. Parse defensively: try <code>JSON.parse</code> when
+              it's a string, then unwrap <code>parsed.yourPropertyName</code> if the payload came back nested, and fall
+              back to an error-shaped object (<code>{ hasError: true, errorMessage: '…' }</code>) rather than letting
+              the setter throw.</p>
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <div class="c-icon">🔇</div>
+          <div>
+            <h4>Tell the agent not to narrate - explicitly</h4>
+            <p>Left to its own judgment, the agent adds a text summary alongside the card, or prints the raw JSON it
+              just received. Reasoning instructions need an explicit, capitalized instruction: <strong>do not generate
+                any text, summary, or conversational response - let the rendered component be the entire response, and
+                never print the raw JSON in chat.</strong> This isn't a wiring failure the platform can detect; the
+              component renders correctly either way, so nothing else on this page will catch it.</p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <div class="c-icon">🧯</div>
+          <div>
+            <h4>Never let the invocable throw</h4>
+            <p>Wrap the whole method body in try/catch and return an error-shaped response (<code>hasError</code> /
+              <code>errorMessage</code> fields your component can render) instead of letting an exception propagate. An
+              uncaught exception means the user sees nothing at all, with no indication why.</p>
+          </div>
+        </div>
+
+        <p style="margin-top:4px; font-size:13px; color:var(--ink-faint);">Everything else - <code>@AuraEnabled</code>
+          on every field the LWC reads, <code>@JsonAccess(serializable='always' deserializable='always')</code> on the
+          data class, deploying the LWC before the Lightning Type that hardcodes a reference to it - follows the same
+          rules as the two-direction build in the rest of this page.</p>
       </section>
 
       <section class="block" id="files">
         <div class="kicker">// what has to exist</div>
         <h2>Required files &amp; folder structure</h2>
-        <p>Seven artifacts, minimum, for one working CLT-powered action. Missing any one leaves the pipeline incomplete even if everything else is correct.</p>
+        <p>Seven artifacts, minimum, for one working CLT-powered action. Missing any one leaves the pipeline incomplete
+          even if everything else is correct.</p>
 
         <div class="callout warn">
           <div class="c-icon">📁</div>
           <div>
             <h4>editor.json / renderer.json live one level deeper than you'd expect</h4>
-            <p>Per Salesforce's Lightning Types bundle spec, <code>editor.json</code> and <code>renderer.json</code> are not siblings of <code>schema.json</code> — they sit inside a <strong>channel-specific subfolder</strong> (<code>lightningDesktopGenAi</code> for an Agentforce Employee/Lightning Experience agent, <code>enhancedWebChat</code> for a Service agent on Enhanced Chat v2, <code>lightningMobileGenAi</code> for mobile, <code>experienceBuilder</code> for Experience Builder — note <code>renderer.json</code> isn't supported there). Only <code>schema.json</code> is mandatory in every bundle; the override files are channel-scoped. Building via the Setup UI (as this guide does) creates this structure for you — hand-authoring the metadata without the channel folder is the mistake to avoid.</p>
+            <p>Per Salesforce's Lightning Types bundle spec, <code>editor.json</code> and <code>renderer.json</code> are
+              not siblings of <code>schema.json</code> - they sit inside a <strong>channel-specific subfolder</strong>
+              (<code>lightningDesktopGenAi</code> for an Agentforce Employee/Lightning Experience agent,
+              <code>enhancedWebChat</code> for a Service agent on Enhanced Chat v2, <code>lightningMobileGenAi</code>
+              for mobile, <code>experienceBuilder</code> for Experience Builder - note <code>renderer.json</code> isn't
+              supported there). Only <code>schema.json</code> is mandatory in every bundle; the override files are
+              channel-scoped. Building via the Setup UI (as this guide does) creates this structure for you -
+              hand-authoring the metadata without the channel folder is the mistake to avoid.</p>
           </div>
         </div>
 
         <div class="file-tree">
-<span class="dir">force-app/main/default/</span>
-<span class="indent1 dir">classes/</span>
-<span class="indent2 leaf">LeadCreationService.cls</span><span class="req-tag">MUST</span> <span class="note">— input shape, output shape, request wrapper, response wrapper, 1 @InvocableMethod</span>
-<span class="indent1 dir">lightningTypes/</span> <span class="note">(or built via Setup UI — functionally identical)</span>
-<span class="indent2 dir">LeadInput/</span>
-<span class="indent2 leaf" style="padding-left:60px; display:block;">schema.json</span><span class="req-tag">MUST</span>
-<span class="indent2 dir" style="padding-left:60px; display:block;">lightningDesktopGenAi/</span><span class="note">— channel folder</span>
-<span class="indent2 leaf" style="padding-left:80px; display:block;">editor.json</span><span class="req-tag">MUST</span>
-<span class="indent2 dir">LeadOutput/</span>
-<span class="indent2 leaf" style="padding-left:60px; display:block;">schema.json</span><span class="req-tag">MUST</span>
-<span class="indent2 dir" style="padding-left:60px; display:block;">lightningDesktopGenAi/</span><span class="note">— channel folder</span>
-<span class="indent2 leaf" style="padding-left:80px; display:block;">renderer.json</span><span class="req-tag">MUST</span>
-<span class="indent1 dir">lwc/</span>
-<span class="indent2 dir">leadInputEditor/</span>
-<span class="indent2 leaf" style="padding-left:60px; display:block;">leadInputEditor.js</span><span class="req-tag">MUST</span>
-<span class="indent2 leaf" style="padding-left:60px; display:block;">leadInputEditor.html</span><span class="req-tag">MUST</span>
-<span class="indent2 leaf" style="padding-left:60px; display:block;">leadInputEditor.js-meta.xml</span><span class="req-tag">MUST</span>
-<span class="indent2 dir">leadResultRenderer/</span>
-<span class="indent2 leaf" style="padding-left:60px; display:block;">leadResultRenderer.js</span><span class="req-tag">MUST</span>
-<span class="indent2 leaf" style="padding-left:60px; display:block;">leadResultRenderer.html</span><span class="req-tag">MUST</span>
-<span class="indent2 leaf" style="padding-left:60px; display:block;">leadResultRenderer.js-meta.xml</span><span class="req-tag">MUST</span>
-</div>
+          <span class="dir">force-app/main/default/</span>
+          <span class="indent1 dir">classes/</span>
+          <span class="indent2 leaf">LeadCreationService.cls</span><span class="req-tag">MUST</span> <span
+            class="note">- input shape, output shape, request wrapper, response wrapper, 1 @InvocableMethod</span>
+          <span class="indent1 dir">lightningTypes/</span> <span class="note">(or built via Setup UI - functionally
+            identical)</span>
+          <span class="indent2 dir">LeadInput/</span>
+          <span class="indent2 leaf" style="padding-left:60px; display:block;">schema.json</span><span
+            class="req-tag">MUST</span>
+          <span class="indent2 dir" style="padding-left:60px; display:block;">lightningDesktopGenAi/</span><span
+            class="note">- channel folder</span>
+          <span class="indent2 leaf" style="padding-left:80px; display:block;">editor.json</span><span
+            class="req-tag">MUST</span>
+          <span class="indent2 dir">LeadOutput/</span>
+          <span class="indent2 leaf" style="padding-left:60px; display:block;">schema.json</span><span
+            class="req-tag">MUST</span>
+          <span class="indent2 dir" style="padding-left:60px; display:block;">lightningDesktopGenAi/</span><span
+            class="note">- channel folder</span>
+          <span class="indent2 leaf" style="padding-left:80px; display:block;">renderer.json</span><span
+            class="req-tag">MUST</span>
+          <span class="indent1 dir">lwc/</span>
+          <span class="indent2 dir">leadInputEditor/</span>
+          <span class="indent2 leaf" style="padding-left:60px; display:block;">leadInputEditor.js</span><span
+            class="req-tag">MUST</span>
+          <span class="indent2 leaf" style="padding-left:60px; display:block;">leadInputEditor.html</span><span
+            class="req-tag">MUST</span>
+          <span class="indent2 leaf" style="padding-left:60px; display:block;">leadInputEditor.js-meta.xml</span><span
+            class="req-tag">MUST</span>
+          <span class="indent2 dir">leadResultRenderer/</span>
+          <span class="indent2 leaf" style="padding-left:60px; display:block;">leadResultRenderer.js</span><span
+            class="req-tag">MUST</span>
+          <span class="indent2 leaf" style="padding-left:60px; display:block;">leadResultRenderer.html</span><span
+            class="req-tag">MUST</span>
+          <span class="indent2 leaf"
+            style="padding-left:60px; display:block;">leadResultRenderer.js-meta.xml</span><span
+            class="req-tag">MUST</span>
+        </div>
 
-        <h3>schema.json — the actual Apex binding</h3>
-        <p>This is the file that makes a Lightning Type <em>be</em> something — it's what the Setup UI writes for you when you pick an Apex class in the "New Lightning Type" modal. The binding is a JSON Schema document whose <code>lightning:type</code> keyword points at the Apex class via the <code>@apexClassType/</code> prefix:</p>
-        <div class="code-block"><pre><span class="c-key">{</span>
+        <h3>schema.json - the actual Apex binding</h3>
+        <p>This is the file that makes a Lightning Type <em>be</em> something - it's what the Setup UI writes for you
+          when you pick an Apex class in the "New Lightning Type" modal. The binding is a JSON Schema document whose
+          <code>lightning:type</code> keyword points at the Apex class via the <code>@apexClassType/</code> prefix:</p>
+        <div class="code-block">
+          <pre><span class="c-key">{</span>
   <span class="c-str">"title"</span>: <span class="c-str">"Lead Input"</span>,
   <span class="c-str">"description"</span>: <span class="c-str">"Lead Input"</span>,
   <span class="c-str">"lightning:type"</span>: <span class="c-str">"@apexClassType/c__LeadCreationService$LeadInput"</span>
-<span class="c-key">}</span></pre></div>
-        <p>The <code>c__</code> segment is the namespace prefix — always <code>c</code> for classes local to your org, regardless of the org's own namespace; a managed package uses its registered namespace instead. The <code>$</code> is the outer/inner class separator Setup itself generates when you point a Lightning Type at a nested Apex class (this is the schema-binding syntax observed from the org, not something Salesforce's official docs document — see the divergence callout below, since those docs recommend avoiding nested classes entirely). The full <code>@apexClassType/…</code> string is what lands in <code>schema.json</code>; the bare <code>c__LeadInput</code> form — the Lightning Type's own API name — is what's referenced by <code>complex_data_type_name</code> and by <code>targetType</code>/<code>sourceType</code> in the LWC's meta XML.</p>
+<span class="c-key">}</span></pre>
+        </div>
+        <p>The <code>c__</code> segment is the namespace prefix - always <code>c</code> for classes local to your org,
+          regardless of the org's own namespace; a managed package uses its registered namespace instead. The
+          <code>$</code> is the outer/inner class separator Setup itself generates when you point a Lightning Type at a
+          nested Apex class (this is the schema-binding syntax observed from the org, not something Salesforce's
+          official docs document - see the divergence callout below, since those docs recommend avoiding nested classes
+          entirely). The full <code>@apexClassType/…</code> string is what lands in <code>schema.json</code>; the bare
+          <code>c__LeadInput</code> form - the Lightning Type's own API name - is what's referenced by
+          <code>complex_data_type_name</code> and by <code>targetType</code>/<code>sourceType</code> in the LWC's meta
+          XML.</p>
 
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Artifact</th><th>Where it's built</th><th></th></tr></thead>
+            <thead>
+              <tr>
+                <th>Artifact</th>
+                <th>Where it's built</th>
+                <th></th>
+              </tr>
+            </thead>
             <tbody>
-              <tr><td>Agent Action asset (GenAiFunction)</td><td>Setup → Agentforce Studio → Agentforce Assets → Actions</td><td><span class="badge must">must</span></td></tr>
-              <tr><td>Agent script / agent definition</td><td>Agent Builder or a <code>.agent</code> script file</td><td><span class="badge must">must</span></td></tr>
+              <tr>
+                <td>Agent Action asset (GenAiFunction)</td>
+                <td>Setup → Agentforce Studio → Agentforce Assets → Actions</td>
+                <td><span class="badge must">must</span></td>
+              </tr>
+              <tr>
+                <td>Agent script / agent definition</td>
+                <td>Agent Builder or a <code>.agent</code> script file</td>
+                <td><span class="badge must">must</span></td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -448,7 +1266,10 @@
           <div class="c-icon">🔗</div>
           <div>
             <h4>The Agent Action asset is not optional</h4>
-            <p>Even when the CLT experience is authored entirely through an agent script, Agentforce still requires a first-class Agent Action asset referencing the Apex invocable method. Skipping it because "the script already calls the Apex method" is a common oversight — the script calls the <em>asset</em>, not the Apex method directly.</p>
+            <p>Even when the CLT experience is authored entirely through an agent script, Agentforce still requires a
+              first-class Agent Action asset referencing the Apex invocable method. Skipping it because "the script
+              already calls the Apex method" is a common oversight - the script calls the <em>asset</em>, not the Apex
+              method directly.</p>
           </div>
         </div>
       </section>
@@ -460,14 +1281,53 @@
         <h3>Apex annotations</h3>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Annotation</th><th>Where it's required</th><th>Why</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Annotation</th>
+                <th>Where it's required</th>
+                <th>Why</th>
+              </tr>
+            </thead>
             <tbody>
-              <tr><td><code>@InvocableVariable</code></td><td>Every field of the <strong>input</strong> data-shape class, and the request wrapper's single field</td><td>Marks the property visible to invocable actions / the CLT schema builder. Without it, the field doesn't appear as a collectible input.</td></tr>
-              <tr><td><code>@InvocableVariable(required=true)</code></td><td>Any input field that should be mandatory on the rendered form</td><td>Drives the "required" state Setup shows when building/using the Lightning Type.</td></tr>
-              <tr><td><em>(none needed to deploy)</em></td><td>Fields on the <strong>output</strong> data-shape class and the response wrapper</td><td>Public fields on a class returned by an <code>@InvocableMethod</code> are automatically exposed as outputs — this build deployed and rendered correctly without annotating them. Salesforce's official docs recommend annotating anyway (see callout below) for portability.</td></tr>
-              <tr><td><code>@InvocableMethod(label=… description=…)</code></td><td>Exactly one per Apex service class</td><td>Static method, signature <code>List&lt;Request&gt; → List&lt;Response&gt;</code> — this is what the Agent Action asset references.</td></tr>
-              <tr><td><code>@AuraEnabled</code></td><td>Every field of every class the schema touches, per Salesforce's official Apex-Based Lightning Types guide — <em>not used in this build</em></td><td>Docs state: apply it "to every field required in the response, including fields inside objects used as <code>@InvocableVariable</code>." This build's fields are plain <code>public</code> with no <code>@AuraEnabled</code> and still rendered.</td></tr>
-              <tr><td><code>@JsonAccess(serializable='always' deserializable='always')</code></td><td>Every class in the bundle, per the same official guide — <em>not used in this build</em></td><td>Docs state this "ensures the internal invocation layer can process the data." Add it if you see serialization errors, especially in a namespaced org or managed package.</td></tr>
+              <tr>
+                <td><code>@InvocableVariable</code></td>
+                <td>Every field of the <strong>input</strong> data-shape class, and the request wrapper's single field
+                </td>
+                <td>Marks the property visible to invocable actions / the CLT schema builder. Without it, the field
+                  doesn't appear as a collectible input.</td>
+              </tr>
+              <tr>
+                <td><code>@InvocableVariable(required=true)</code></td>
+                <td>Any input field that should be mandatory on the rendered form</td>
+                <td>Drives the "required" state Setup shows when building/using the Lightning Type.</td>
+              </tr>
+              <tr>
+                <td><em>(none needed to deploy)</em></td>
+                <td>Fields on the <strong>output</strong> data-shape class and the response wrapper</td>
+                <td>Public fields on a class returned by an <code>@InvocableMethod</code> are automatically exposed as
+                  outputs - this build deployed and rendered correctly without annotating them. Salesforce's official
+                  docs recommend annotating anyway (see callout below) for portability.</td>
+              </tr>
+              <tr>
+                <td><code>@InvocableMethod(label=… description=…)</code></td>
+                <td>Exactly one per Apex service class</td>
+                <td>Static method, signature <code>List&lt;Request&gt; → List&lt;Response&gt;</code> - this is what the
+                  Agent Action asset references.</td>
+              </tr>
+              <tr>
+                <td><code>@AuraEnabled</code></td>
+                <td>Every field of every class the schema touches, per Salesforce's official Apex-Based Lightning Types
+                  guide - <em>not used in this build</em></td>
+                <td>Docs state: apply it "to every field required in the response, including fields inside objects used
+                  as <code>@InvocableVariable</code>." This build's fields are plain <code>public</code> with no
+                  <code>@AuraEnabled</code> and still rendered.</td>
+              </tr>
+              <tr>
+                <td><code>@JsonAccess(serializable='always' deserializable='always')</code></td>
+                <td>Every class in the bundle, per the same official guide - <em>not used in this build</em></td>
+                <td>Docs state this "ensures the internal invocation layer can process the data." Add it if you see
+                  serialization errors, especially in a namespaced org or managed package.</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -476,22 +1336,75 @@
           <div class="c-icon">⚠️</div>
           <div>
             <h4>Where this guide's build diverges from Salesforce's official Apex-Based Lightning Types docs</h4>
-            <p>This guide's Apex service class nests four inner classes (<code>LeadInput</code>, <code>LeadResult</code>, <code>CreateLeadRequest</code>, <code>CreateLeadResponse</code>) as <code>public</code> members of one outer class, addressed in Setup as <code>LeadCreationService$LeadInput</code>. It deployed and rendered correctly. Salesforce's official <a href="https://developer.salesforce.com/docs/platform/lightning-types/guide/lightning-types-apex.html" target="_blank" rel="noopener">Apex-Based Custom Lightning Types</a> guide instead directs developers to: define every class as a <strong>top-level class in its own file</strong> ("don't use nested/inner classes"), mark every class <strong><code>global</code></strong> rather than <code>public</code> ("using public or private can cause failures in namespaced orgs or managed packages"), and add <code>@AuraEnabled</code> + <code>@JsonAccess</code> as above. Treat the nested/<code>public</code> pattern as what worked in a non-namespaced dev org for this build — not as Salesforce's recommended pattern. If you see a Lightning Type silently fail to bind, or it works in a scratch/dev org but not in a namespaced org or managed package, switching to top-level <code>global</code> classes with these annotations is the official fix to try.</p>
+            <p>This guide's Apex service class nests four inner classes (<code>LeadInput</code>,
+              <code>LeadResult</code>, <code>CreateLeadRequest</code>, <code>CreateLeadResponse</code>) as
+              <code>public</code> members of one outer class, addressed in Setup as
+              <code>LeadCreationService$LeadInput</code>. It deployed and rendered correctly. Salesforce's official <a
+                href="https://developer.salesforce.com/docs/platform/lightning-types/guide/lightning-types-apex.html"
+                target="_blank" rel="noopener">Apex-Based Custom Lightning Types</a> guide instead directs developers
+              to: define every class as a <strong>top-level class in its own file</strong> ("don't use nested/inner
+              classes"), mark every class <strong><code>global</code></strong> rather than <code>public</code> ("using
+              public or private can cause failures in namespaced orgs or managed packages"), and add
+              <code>@AuraEnabled</code> + <code>@JsonAccess</code> as above. Treat the nested/<code>public</code>
+              pattern as what worked in a non-namespaced dev org for this build - not as Salesforce's recommended
+              pattern. If you see a Lightning Type silently fail to bind, or it works in a scratch/dev org but not in a
+              namespaced org or managed package, switching to top-level <code>global</code> classes with these
+              annotations is the official fix to try.</p>
           </div>
         </div>
 
         <h3>Action input / output configuration</h3>
-        <p>These fields exist twice — once if you hand-write the agent script YAML, once in the Agent Action asset wizard UI. They must agree; the wizard is what actually generates the script's <code>actions</code> block when the action is pulled in.</p>
+        <p>These fields exist twice - once if you hand-write the agent script YAML, once in the Agent Action asset
+          wizard UI. They must agree; the wizard is what actually generates the script's <code>actions</code> block when
+          the action is pulled in.</p>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Field (script / UI)</th><th>Applies to</th><th>Required value</th><th>Effect if wrong/missing</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Field (script / UI)</th>
+                <th>Applies to</th>
+                <th>Required value</th>
+                <th>Effect if wrong/missing</th>
+              </tr>
+            </thead>
             <tbody>
-              <tr><td><code>is_user_input</code> / <strong>Collect data from user</strong></td><td>Input</td><td><code>true</code></td><td>Input is never collected via the CLT form.</td></tr>
-              <tr><td><code>is_required</code> / <strong>Require input</strong></td><td>Input</td><td><code>true</code> if mandatory</td><td>Field can be submitted empty.</td></tr>
-              <tr><td><code>complex_data_type_name</code> / <strong>Input Rendering</strong></td><td>Input</td><td><code>c__LeadInput</code> / <code>LeadInput</code></td><td>No Lightning Type attached — input falls back to plain-text prompting.</td></tr>
-              <tr><td><code>is_displayable</code> / <strong>Show in conversation</strong></td><td>Output</td><td><code>true</code></td><td>Result never appears as a card — stays invisible or plain text.</td></tr>
-              <tr><td><code>complex_data_type_name</code> / <strong>Output Rendering</strong></td><td>Output</td><td><code>c__LeadOutput</code> / <code>LeadOutput</code></td><td>No renderer attached — output shows as raw text/JSON instead of a styled card.</td></tr>
-              <tr><td><code>filter_from_agent</code></td><td>Output</td><td><code>false</code> to keep it in LLM context, <code>true</code> to hide it</td><td>Use to keep IDs (e.g. <code>lead_id</code>) out of the model's context while still returning them programmatically.</td></tr>
+              <tr>
+                <td><code>is_user_input</code> / <strong>Collect data from user</strong></td>
+                <td>Input</td>
+                <td><code>true</code></td>
+                <td>Input is never collected via the CLT form.</td>
+              </tr>
+              <tr>
+                <td><code>is_required</code> / <strong>Require input</strong></td>
+                <td>Input</td>
+                <td><code>true</code> if mandatory</td>
+                <td>Field can be submitted empty.</td>
+              </tr>
+              <tr>
+                <td><code>complex_data_type_name</code> / <strong>Input Rendering</strong></td>
+                <td>Input</td>
+                <td><code>c__LeadInput</code> / <code>LeadInput</code></td>
+                <td>No Lightning Type attached - input falls back to plain-text prompting.</td>
+              </tr>
+              <tr>
+                <td><code>is_displayable</code> / <strong>Show in conversation</strong></td>
+                <td>Output</td>
+                <td><code>true</code></td>
+                <td>Result never appears as a card - stays invisible or plain text.</td>
+              </tr>
+              <tr>
+                <td><code>complex_data_type_name</code> / <strong>Output Rendering</strong></td>
+                <td>Output</td>
+                <td><code>c__LeadOutput</code> / <code>LeadOutput</code></td>
+                <td>No renderer attached - output shows as raw text/JSON instead of a styled card.</td>
+              </tr>
+              <tr>
+                <td><code>filter_from_agent</code></td>
+                <td>Output</td>
+                <td><code>false</code> to keep it in LLM context, <code>true</code> to hide it</td>
+                <td>Use to keep IDs (e.g. <code>lead_id</code>) out of the model's context while still returning them
+                  programmatically.</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -499,24 +1412,58 @@
         <h3>Wrapper naming rule (repeated because it matters most)</h3>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Apex wrapper field</th><th>Must equal agent action parameter</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Apex wrapper field</th>
+                <th>Must equal agent action parameter</th>
+              </tr>
+            </thead>
             <tbody>
-              <tr><td><code>CreateLeadRequest.lead_data</code></td><td><code>actions.create_lead.inputs.lead_data</code></td></tr>
-              <tr><td><code>CreateLeadResponse.lead_result</code></td><td><code>actions.create_lead.outputs.lead_result</code></td></tr>
-              <tr><td><code>CreateLeadResponse.lead_id</code></td><td><code>actions.create_lead.outputs.lead_id</code></td></tr>
-              <tr><td><code>CreateLeadResponse.lead_name</code></td><td>(read by the agent script via <code>@outputs.lead_result.name</code>, not a separate wrapper field in this build)</td></tr>
+              <tr>
+                <td><code>CreateLeadRequest.lead_data</code></td>
+                <td><code>actions.create_lead.inputs.lead_data</code></td>
+              </tr>
+              <tr>
+                <td><code>CreateLeadResponse.lead_result</code></td>
+                <td><code>actions.create_lead.outputs.lead_result</code></td>
+              </tr>
+              <tr>
+                <td><code>CreateLeadResponse.lead_id</code></td>
+                <td><code>actions.create_lead.outputs.lead_id</code></td>
+              </tr>
+              <tr>
+                <td><code>CreateLeadResponse.lead_name</code></td>
+                <td>(read by the agent script via <code>@outputs.lead_result.name</code>, not a separate wrapper field
+                  in this build)</td>
+              </tr>
             </tbody>
           </table>
         </div>
 
         <h3>Other naming pairs that must match exactly</h3>
-        <p>Salesforce's own guidance on Custom Lightning Types in Agent Script calls out two more silent-fallback traps beyond the wrapper-field rule above:</p>
+        <p>Salesforce's own guidance on Custom Lightning Types in Agent Script calls out two more silent-fallback traps
+          beyond the wrapper-field rule above:</p>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>This value…</th><th>…must exactly equal</th><th>If it doesn't</th></tr></thead>
+            <thead>
+              <tr>
+                <th>This value…</th>
+                <th>…must exactly equal</th>
+                <th>If it doesn't</th>
+              </tr>
+            </thead>
             <tbody>
-              <tr><td>Agent script action's <code>source</code> (e.g. <code>"Create_Lead"</code>)</td><td>The Agent Action asset's GenAiFunction <strong>developer name</strong></td><td>The script can't resolve the action at all.</td></tr>
-              <tr><td>The subagent's <code>actions:</code> block entry name (e.g. <code>create_lead</code>)</td><td>The same action name referenced under <code>reasoning.actions</code></td><td>The action defined in the subagent is never actually invokable from the reasoning step — same silent-fallback failure mode as the other naming mismatches.</td></tr>
+              <tr>
+                <td>Agent script action's <code>source</code> (e.g. <code>"Create_Lead"</code>)</td>
+                <td>The Agent Action asset's GenAiFunction <strong>developer name</strong></td>
+                <td>The script can't resolve the action at all.</td>
+              </tr>
+              <tr>
+                <td>The subagent's <code>actions:</code> block entry name (e.g. <code>create_lead</code>)</td>
+                <td>The same action name referenced under <code>reasoning.actions</code></td>
+                <td>The action defined in the subagent is never actually invokable from the reasoning step - same
+                  silent-fallback failure mode as the other naming mismatches.</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -524,39 +1471,115 @@
 
       <section class="block" id="registration">
         <div class="kicker">// where it gets wired up</div>
-        <h2>Registration / discovery — the Setup path, in order</h2>
+        <h2>Registration / discovery - the Setup path, in order</h2>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>#</th><th>Step</th><th>Setup path</th></tr></thead>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Step</th>
+                <th>Setup path</th>
+              </tr>
+            </thead>
             <tbody>
-              <tr><td>1</td><td>Deploy the Apex service class</td><td><em>VS Code / SFDX deploy</em></td></tr>
-              <tr><td>2</td><td>Create the input Lightning Type</td><td>Setup → Lightning Types → New Lightning Type → Apex → search &amp; select the input inner class</td></tr>
-              <tr><td>3</td><td>Create the output Lightning Type</td><td>Same path, selecting the output inner class</td></tr>
-              <tr><td>4</td><td>Deploy both LWCs (editor + renderer)</td><td><em>VS Code / SFDX deploy</em> — must already have the correct <code>target</code> to be found next</td></tr>
-              <tr><td>5</td><td>Override the editor</td><td>Setup → Lightning Types → [Input Type] → UI Configuration → Editor tab → Override → select the LWC</td></tr>
-              <tr><td>6</td><td>Override the renderer</td><td>Setup → Lightning Types → [Output Type] → UI Configuration → Renderer tab → Override → select the LWC</td></tr>
-              <tr><td>7</td><td>Create the Agent Action asset</td><td>Setup → quick find "asset" → Agentforce Studio → Agentforce Assets → Actions → New Agent Action → Apex → Invocable Method → select the method</td></tr>
-              <tr><td>8</td><td>Map inputs/outputs on the asset</td><td>Set Data Type, Input/Output Rendering, and the Collect-from-user / Show-in-conversation checkboxes</td></tr>
-              <tr><td>9</td><td>Reference the action in the agent script</td><td>Pull it into a <code>subagent</code>'s <code>actions</code> block; reference it identically in <code>reasoning.actions</code></td></tr>
-              <tr><td>10</td><td>Use the exact phrase <strong>"user_input tool"</strong> in the reasoning instructions</td><td>The literal signal that switches the form on</td></tr>
+              <tr>
+                <td>1</td>
+                <td>Deploy the Apex service class</td>
+                <td><em>VS Code / SFDX deploy</em></td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Create the input Lightning Type</td>
+                <td>Setup → Lightning Types → New Lightning Type → Apex → search &amp; select the input inner class</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Create the output Lightning Type</td>
+                <td>Same path, selecting the output inner class</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>Deploy both LWCs (editor + renderer)</td>
+                <td><em>VS Code / SFDX deploy</em> - must already have the correct <code>target</code> to be found next
+                </td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>Override the editor</td>
+                <td>Setup → Lightning Types → [Input Type] → UI Configuration → Editor tab → Override → select the LWC
+                </td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>Override the renderer</td>
+                <td>Setup → Lightning Types → [Output Type] → UI Configuration → Renderer tab → Override → select the
+                  LWC</td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td>Create the Agent Action asset</td>
+                <td>Setup → quick find "asset" → Agentforce Studio → Agentforce Assets → Actions → New Agent Action →
+                  Apex → Invocable Method → select the method</td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td>Map inputs/outputs on the asset</td>
+                <td>Set Data Type, Input/Output Rendering, and the Collect-from-user / Show-in-conversation checkboxes
+                </td>
+              </tr>
+              <tr>
+                <td>9</td>
+                <td>Reference the action in the agent script</td>
+                <td>Pull it into a <code>subagent</code>'s <code>actions</code> block; reference it identically in
+                  <code>reasoning.actions</code></td>
+              </tr>
+              <tr>
+                <td>10</td>
+                <td>Use the exact phrase <strong>"user_input tool"</strong> in the reasoning instructions</td>
+                <td>The literal signal that switches the form on</td>
+              </tr>
             </tbody>
           </table>
         </div>
-        <p style="margin-top:10px;">A component only shows up in step 5/6's override picker if it was already deployed with <code>isExposed: true</code> and the correct <code>target</code> — deploy-then-configure, never the other way around.</p>
+        <p style="margin-top:10px;">A component only shows up in step 5/6's override picker if it was already deployed
+          with <code>isExposed: true</code> and the correct <code>target</code> - deploy-then-configure, never the other
+          way around.</p>
       </section>
 
       <section class="block" id="rendering">
         <div class="kicker">// the moment of truth</div>
-        <h2>Rendering requirements — what actually flips the switch</h2>
-        <p>Every prior section is plumbing. These are the specific conditions that determine what the user sees at runtime.</p>
+        <h2>Rendering requirements - what actually flips the switch</h2>
+        <p>Every prior section is plumbing. These are the specific conditions that determine what the user sees at
+          runtime.</p>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>For this to happen…</th><th>…all of these must be true</th></tr></thead>
+            <thead>
+              <tr>
+                <th>For this to happen…</th>
+                <th>…all of these must be true</th>
+              </tr>
+            </thead>
             <tbody>
-              <tr><td>The editor form renders instead of a text prompt</td><td><code>is_user_input: true</code> · Lightning Type attached via Input Rendering · Editor override set in Setup · reasoning instructions use the literal phrase <strong>"user_input tool"</strong></td></tr>
-              <tr><td>Submitted data is complete, not partially null</td><td>Editor dispatches <code>valuechange</code> with the <strong>entire</strong> <code>value</code> object on every change, not a per-field delta</td></tr>
-              <tr><td>The result renders as a styled card instead of raw text</td><td><code>is_displayable: true</code> · <strong>Show in conversation</strong> checked · Lightning Type attached via Output Rendering · Renderer override set in Setup</td></tr>
-              <tr><td>The card shows real data instead of blanks</td><td>Renderer's <code>@api value</code> getters read the exact field names the Apex output class actually populates</td></tr>
+              <tr>
+                <td>The editor form renders instead of a text prompt</td>
+                <td><code>is_user_input: true</code> · Lightning Type attached via Input Rendering · Editor override set
+                  in Setup · reasoning instructions use the literal phrase <strong>"user_input tool"</strong></td>
+              </tr>
+              <tr>
+                <td>Submitted data is complete, not partially null</td>
+                <td>Editor dispatches <code>valuechange</code> with the <strong>entire</strong> <code>value</code>
+                  object on every change, not a per-field delta</td>
+              </tr>
+              <tr>
+                <td>The result renders as a styled card instead of raw text</td>
+                <td><code>is_displayable: true</code> · <strong>Show in conversation</strong> checked · Lightning Type
+                  attached via Output Rendering · Renderer override set in Setup</td>
+              </tr>
+              <tr>
+                <td>The card shows real data instead of blanks</td>
+                <td>Renderer's <code>@api value</code> getters read the exact field names the Apex output class actually
+                  populates</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -565,16 +1588,41 @@
       <section class="block" id="deployment">
         <div class="kicker">// order of operations</div>
         <h2>Deployment requirements</h2>
-        <p>CLT pieces have real dependencies on each other — deploying out of order causes "can't find that class/component" errors that have nothing to do with the code itself.</p>
+        <p>CLT pieces have real dependencies on each other - deploying out of order causes "can't find that
+          class/component" errors that have nothing to do with the code itself.</p>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Dependency</th><th>Why the order matters</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Dependency</th>
+                <th>Why the order matters</th>
+              </tr>
+            </thead>
             <tbody>
-              <tr><td>Apex before Lightning Types</td><td>The New Lightning Type picker searches already-deployed Apex classes by name — an undeployed class simply won't appear.</td></tr>
-              <tr><td>LWCs before override configuration</td><td>The Editor/Renderer override picker only lists components that are deployed, <code>isExposed</code>, and carry the matching <code>target</code>.</td></tr>
-              <tr><td>Lightning Types + LWCs before the Agent Action asset</td><td>Input/Output Rendering dropdowns on the asset are populated from existing Lightning Types.</td></tr>
-              <tr><td>Agent Action asset before the agent script references it</td><td>The script pulls the action in from the asset library — there's nothing to pull in otherwise.</td></tr>
-              <tr><td>Any Apex field rename</td><td>Re-sync it everywhere: the wrapper field name, the agent script parameter name, and (if it's a schema field) the Lightning Type stays correct automatically since it points at the class, but any hardcoded references do not.</td></tr>
+              <tr>
+                <td>Apex before Lightning Types</td>
+                <td>The New Lightning Type picker searches already-deployed Apex classes by name - an undeployed class
+                  simply won't appear.</td>
+              </tr>
+              <tr>
+                <td>LWCs before override configuration</td>
+                <td>The Editor/Renderer override picker only lists components that are deployed, <code>isExposed</code>,
+                  and carry the matching <code>target</code>.</td>
+              </tr>
+              <tr>
+                <td>Lightning Types + LWCs before the Agent Action asset</td>
+                <td>Input/Output Rendering dropdowns on the asset are populated from existing Lightning Types.</td>
+              </tr>
+              <tr>
+                <td>Agent Action asset before the agent script references it</td>
+                <td>The script pulls the action in from the asset library - there's nothing to pull in otherwise.</td>
+              </tr>
+              <tr>
+                <td>Any Apex field rename</td>
+                <td>Re-sync it everywhere: the wrapper field name, the agent script parameter name, and (if it's a
+                  schema field) the Lightning Type stays correct automatically since it points at the class, but any
+                  hardcoded references do not.</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -582,7 +1630,9 @@
           <div class="c-icon">🔡</div>
           <div>
             <h4>Lowercase convention</h4>
-            <p>Keep every script-level identifier — action names, variable names, labels — lowercase. It's the convention the tooling was built and tested against; inconsistent casing is a common, hard-to-spot source of reference mismatches (see Critical Rule #2).</p>
+            <p>Keep every script-level identifier - action names, variable names, labels - lowercase. It's the
+              convention the tooling was built and tested against; inconsistent casing is a common, hard-to-spot source
+              of reference mismatches (see Critical Rule #2).</p>
           </div>
         </div>
       </section>
@@ -592,23 +1642,116 @@
         <h2>Common reasons the component does not render</h2>
         <div class="table-wrap">
           <table>
-            <thead><tr><th></th><th>Symptom</th><th>Root cause</th></tr></thead>
+            <thead>
+              <tr>
+                <th></th>
+                <th>Symptom</th>
+                <th>Root cause</th>
+              </tr>
+            </thead>
             <tbody>
-              <tr><td><span class="sev high"></span></td><td>Agent still asks for fields one at a time in plain text</td><td>Reasoning instructions don't contain the literal phrase <strong>"user_input tool"</strong></td></tr>
-              <tr><td><span class="sev high"></span></td><td>Form submits but some fields come back <code>null</code></td><td>Apex wrapper field name doesn't exactly match the agent action's parameter name</td></tr>
-              <tr><td><span class="sev high"></span></td><td>Fields the user already filled in disappear after another field changes</td><td>Editor dispatches only the changed field instead of the full <code>value</code> object</td></tr>
-              <tr><td><span class="sev high"></span></td><td>Editor LWC never gets picked up as the input form</td><td>Meta XML uses <code>sourceType</code> instead of <code>targetType</code> (or vice-versa for the renderer)</td></tr>
-              <tr><td><span class="sev high"></span></td><td>Component doesn't appear anywhere in the override picker</td><td><code>isExposed</code> missing/false, or the component was never deployed</td></tr>
-              <tr><td><span class="sev med"></span></td><td>Component doesn't appear in the Input/Output override picker specifically</td><td>Wrong <code>target</code> value — typo in <code>lightning__AgentforceInput</code> / <code>lightning__AgentforceOutput</code></td></tr>
-              <tr><td><span class="sev high"></span></td><td>Input is never collected via a form at all</td><td><code>is_user_input</code> (or "Collect data from user") left <code>false</code></td></tr>
-              <tr><td><span class="sev high"></span></td><td>Output never shows as a card, or doesn't show at all</td><td><code>is_displayable</code> (or "Show in conversation") left <code>false</code></td></tr>
-              <tr><td><span class="sev med"></span></td><td>"Lightning Type not found" style failure</td><td><code>complex_data_type_name</code> missing the <code>c__</code> namespace prefix, or misspelled</td></tr>
-              <tr><td><span class="sev med"></span></td><td>Standard/generic component shows instead of the custom one</td><td>Editor or Renderer override left unset in the Lightning Type's UI Configuration</td></tr>
-              <tr><td><span class="sev med"></span></td><td>Apex class doesn't appear when creating the Lightning Type</td><td>Class not deployed yet</td></tr>
-              <tr><td><span class="sev med"></span></td><td>Action runs successfully but ignores the CLT entirely</td><td>The agent script calls the Apex method directly, or a different action, instead of the Agent Action asset that has Input/Output Rendering configured</td></tr>
-              <tr><td><span class="sev med"></span></td><td>Reference to an action silently does nothing</td><td>Action name in <code>reasoning.actions.X</code> doesn't exactly match the name under <code>actions.X</code></td></tr>
-              <tr><td><span class="sev med"></span></td><td>Agent script can't resolve the action at all</td><td>The action's <code>source</code> value doesn't exactly match the Agent Action asset's GenAiFunction developer name</td></tr>
-              <tr><td><span class="sev med"></span></td><td>Works in a scratch/dev org, fails to bind or serialize once packaged or moved to a namespaced org</td><td>Apex classes are nested/inner and <code>public</code> instead of top-level and <code>global</code>, and/or missing <code>@AuraEnabled</code> / <code>@JsonAccess(serializable='always' deserializable='always')</code> — see the divergence callout in Metadata &amp; configuration</td></tr>
+              <tr>
+                <td><span class="sev high"></span></td>
+                <td>Agent still asks for fields one at a time in plain text</td>
+                <td>Reasoning instructions don't contain the literal phrase <strong>"user_input tool"</strong></td>
+              </tr>
+              <tr>
+                <td><span class="sev high"></span></td>
+                <td>Form submits but some fields come back <code>null</code></td>
+                <td>Apex wrapper field name doesn't exactly match the agent action's parameter name</td>
+              </tr>
+              <tr>
+                <td><span class="sev high"></span></td>
+                <td>Fields the user already filled in disappear after another field changes</td>
+                <td>Editor dispatches only the changed field instead of the full <code>value</code> object</td>
+              </tr>
+              <tr>
+                <td><span class="sev high"></span></td>
+                <td>Editor LWC never gets picked up as the input form</td>
+                <td>Meta XML uses <code>sourceType</code> instead of <code>targetType</code> (or vice-versa for the
+                  renderer)</td>
+              </tr>
+              <tr>
+                <td><span class="sev high"></span></td>
+                <td>Component doesn't appear anywhere in the override picker</td>
+                <td><code>isExposed</code> missing/false, or the component was never deployed</td>
+              </tr>
+              <tr>
+                <td><span class="sev med"></span></td>
+                <td>Component doesn't appear in the Input/Output override picker specifically</td>
+                <td>Wrong <code>target</code> value - typo in <code>lightning__AgentforceInput</code> /
+                  <code>lightning__AgentforceOutput</code></td>
+              </tr>
+              <tr>
+                <td><span class="sev high"></span></td>
+                <td>Input is never collected via a form at all</td>
+                <td><code>is_user_input</code> (or "Collect data from user") left <code>false</code></td>
+              </tr>
+              <tr>
+                <td><span class="sev high"></span></td>
+                <td>Output never shows as a card, or doesn't show at all</td>
+                <td><code>is_displayable</code> (or "Show in conversation") left <code>false</code></td>
+              </tr>
+              <tr>
+                <td><span class="sev med"></span></td>
+                <td>"Lightning Type not found" style failure</td>
+                <td><code>complex_data_type_name</code> missing the <code>c__</code> namespace prefix, or misspelled
+                </td>
+              </tr>
+              <tr>
+                <td><span class="sev med"></span></td>
+                <td>Standard/generic component shows instead of the custom one</td>
+                <td>Editor or Renderer override left unset in the Lightning Type's UI Configuration</td>
+              </tr>
+              <tr>
+                <td><span class="sev med"></span></td>
+                <td>Apex class doesn't appear when creating the Lightning Type</td>
+                <td>Class not deployed yet</td>
+              </tr>
+              <tr>
+                <td><span class="sev med"></span></td>
+                <td>Action runs successfully but ignores the CLT entirely</td>
+                <td>The agent script calls the Apex method directly, or a different action, instead of the Agent Action
+                  asset that has Input/Output Rendering configured</td>
+              </tr>
+              <tr>
+                <td><span class="sev med"></span></td>
+                <td>Reference to an action silently does nothing</td>
+                <td>Action name in <code>reasoning.actions.X</code> doesn't exactly match the name under
+                  <code>actions.X</code></td>
+              </tr>
+              <tr>
+                <td><span class="sev med"></span></td>
+                <td>Agent script can't resolve the action at all</td>
+                <td>The action's <code>source</code> value doesn't exactly match the Agent Action asset's GenAiFunction
+                  developer name</td>
+              </tr>
+              <tr>
+                <td><span class="sev med"></span></td>
+                <td>Works in a scratch/dev org, fails to bind or serialize once packaged or moved to a namespaced org
+                </td>
+                <td>Apex classes are nested/inner and <code>public</code> instead of top-level and <code>global</code>,
+                  and/or missing <code>@AuraEnabled</code> /
+                  <code>@JsonAccess(serializable='always' deserializable='always')</code> - see the divergence callout
+                  in Metadata &amp; configuration</td>
+              </tr>
+              <tr>
+                <td><span class="sev med"></span></td>
+                <td>Component renders blank even though the action ran successfully</td>
+                <td><code>@api</code> setter only handles a plain object - didn't account for a JSON string or a nested
+                  payload (see <a href="#output-only">Output-only pattern</a>)</td>
+              </tr>
+              <tr>
+                <td><span class="sev med"></span></td>
+                <td>Card renders, but the agent also prints a text summary or the raw JSON next to it</td>
+                <td>Reasoning instructions don't explicitly tell the agent not to narrate</td>
+              </tr>
+              <tr>
+                <td><span class="sev high"></span></td>
+                <td>Nothing renders at all, and no error is shown to the user</td>
+                <td>The invocable method threw instead of catching the exception and returning an error-shaped response
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -618,52 +1761,188 @@
         <div class="kicker">// before you deploy</div>
         <h2>Pre-deployment checklist</h2>
 
-        <div class="checklist-group"><div class="cg-label">Apex</div></div>
+        <div class="checklist-group">
+          <div class="cg-label">Apex</div>
+        </div>
         <ul class="checklist">
-          <li><div class="cb"></div><div class="cl-text">Input data-shape class fields all carry <code>@InvocableVariable</code> <span class="sub">required=true set on any field that should be mandatory on the form</span></div></li>
-          <li><div class="cb"></div><div class="cl-text">Request wrapper's single field is annotated <code>@InvocableVariable(required=true)</code> and named to match the agent action's input parameter</div></li>
-          <li><div class="cb"></div><div class="cl-text">Response wrapper field names match the agent action's output parameter names exactly</div></li>
-          <li><div class="cb"></div><div class="cl-text">Exactly one <code>@InvocableMethod</code>, static, <code>List&lt;Request&gt; → List&lt;Response&gt;</code></div></li>
-          <li><div class="cb"></div><div class="cl-text">Class deployed successfully <span class="sub">before attempting to create a Lightning Type from it</span></div></li>
-          <li><div class="cb"></div><div class="cl-text">If deploying beyond a scratch/dev org — top-level (non-nested) <code>global</code> classes with <code>@AuraEnabled</code> and <code>@JsonAccess</code> <span class="sub">Salesforce's official pattern; this build's nested/public classes worked in a dev org but aren't the documented recommendation</span></div></li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Input data-shape class fields all carry <code>@InvocableVariable</code> <span
+                class="sub">required=true set on any field that should be mandatory on the form</span></div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Request wrapper's single field is annotated
+              <code>@InvocableVariable(required=true)</code> and named to match the agent action's input parameter</div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Response wrapper field names match the agent action's output parameter names exactly
+            </div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Exactly one <code>@InvocableMethod</code>, static,
+              <code>List&lt;Request&gt; → List&lt;Response&gt;</code></div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Class deployed successfully <span class="sub">before attempting to create a Lightning
+                Type from it</span></div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">If deploying beyond a scratch/dev org - top-level (non-nested) <code>global</code>
+              classes with <code>@AuraEnabled</code> and <code>@JsonAccess</code> <span class="sub">Salesforce's
+                official pattern; this build's nested/public classes worked in a dev org but aren't the documented
+                recommendation</span></div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Invocable method body wrapped in try/catch, returning an error-shaped response
+              (<code>hasError</code> / <code>errorMessage</code>) instead of throwing <span class="sub">an uncaught
+                exception means the user sees nothing, with no indication why</span></div>
+          </li>
         </ul>
 
-        <div class="checklist-group"><div class="cg-label">Lightning Types</div></div>
+        <div class="checklist-group">
+          <div class="cg-label">Lightning Types</div>
+        </div>
         <ul class="checklist">
-          <li><div class="cb"></div><div class="cl-text">Input Lightning Type created, schema = <code>Outer$InputInnerClass</code></div></li>
-          <li><div class="cb"></div><div class="cl-text">Output Lightning Type created, schema = <code>Outer$OutputInnerClass</code></div></li>
-          <li><div class="cb"></div><div class="cl-text">Both API names noted with their <code>c__</code> prefix for use everywhere else</div></li>
-          <li><div class="cb"></div><div class="cl-text">If hand-authoring metadata (not using the Setup UI): <code>editor.json</code>/<code>renderer.json</code> placed inside the correct channel subfolder (<code>lightningDesktopGenAi</code>, <code>enhancedWebChat</code>, etc.), not as a sibling of <code>schema.json</code></div></li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Input Lightning Type created, schema = <code>Outer$InputInnerClass</code></div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Output Lightning Type created, schema = <code>Outer$OutputInnerClass</code></div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Both API names noted with their <code>c__</code> prefix for use everywhere else</div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">If hand-authoring metadata (not using the Setup UI):
+              <code>editor.json</code>/<code>renderer.json</code> placed inside the correct channel subfolder
+              (<code>lightningDesktopGenAi</code>, <code>enhancedWebChat</code>, etc.), not as a sibling of
+              <code>schema.json</code></div>
+          </li>
         </ul>
 
-        <div class="checklist-group"><div class="cg-label">LWCs</div></div>
+        <div class="checklist-group">
+          <div class="cg-label">LWCs</div>
+        </div>
         <ul class="checklist">
-          <li><div class="cb"></div><div class="cl-text">Editor: <code>isExposed=true</code>, <code>target=lightning__AgentforceInput</code>, <code>targetType name="c__…"</code></div></li>
-          <li><div class="cb"></div><div class="cl-text">Editor: <code>@api readOnly</code> and <code>@api value</code> (getter/setter) both present</div></li>
-          <li><div class="cb"></div><div class="cl-text">Editor: change handler dispatches <code>valuechange</code> with the full merged object every time</div></li>
-          <li><div class="cb"></div><div class="cl-text">Renderer: <code>isExposed=true</code>, <code>target=lightning__AgentforceOutput</code>, <code>sourceType name="c__…"</code></div></li>
-          <li><div class="cb"></div><div class="cl-text">Renderer: <code>@api value</code> present, getters use null-safe fallbacks</div></li>
-          <li><div class="cb"></div><div class="cl-text">Both components deployed successfully</div></li>
-          <li><div class="cb"></div><div class="cl-text">Editor override set on the input Lightning Type's UI Configuration; live preview confirms it</div></li>
-          <li><div class="cb"></div><div class="cl-text">Renderer override set on the output Lightning Type's UI Configuration; live preview confirms it</div></li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Editor: <code>isExposed=true</code>, <code>target=lightning__AgentforceInput</code>,
+              <code>targetType name="c__…"</code></div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Editor: <code>@api readOnly</code> and <code>@api value</code> (getter/setter) both
+              present</div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Editor: change handler dispatches <code>valuechange</code> with the full merged object
+              every time</div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Renderer: <code>isExposed=true</code>, <code>target=lightning__AgentforceOutput</code>,
+              <code>sourceType name="c__…"</code></div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Renderer: <code>@api value</code> present, getters use null-safe fallbacks</div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Both components deployed successfully</div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Editor override set on the input Lightning Type's UI Configuration; live preview
+              confirms it</div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Renderer override set on the output Lightning Type's UI Configuration; live preview
+              confirms it</div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Retrofitting an existing LWC (<a href="#output-only">output-only pattern</a>): its
+              <code>@api</code> setter defensively normalizes a plain object, a JSON string, and a payload nested under
+              its own property name</div>
+          </li>
         </ul>
 
-        <div class="checklist-group"><div class="cg-label">Agent Action asset</div></div>
+        <div class="checklist-group">
+          <div class="cg-label">Agent Action asset</div>
+        </div>
         <ul class="checklist">
-          <li><div class="cb"></div><div class="cl-text">Created via Apex → Invocable Method → the correct method selected</div></li>
-          <li><div class="cb"></div><div class="cl-text">Input: <strong>Require input</strong> and <strong>Collect data from user</strong> checked; <strong>Input Rendering</strong> set to the input Lightning Type</div></li>
-          <li><div class="cb"></div><div class="cl-text">Output: <strong>Show in conversation</strong> checked on the displayable output; <strong>Output Rendering</strong> set to the output Lightning Type</div></li>
-          <li><div class="cb"></div><div class="cl-text">Any output that should stay hidden from the conversation (like a raw ID) left unchecked</div></li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Created via Apex → Invocable Method → the correct method selected</div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Input: <strong>Require input</strong> and <strong>Collect data from user</strong>
+              checked; <strong>Input Rendering</strong> set to the input Lightning Type</div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Output: <strong>Show in conversation</strong> checked on the displayable output;
+              <strong>Output Rendering</strong> set to the output Lightning Type</div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Any output that should stay hidden from the conversation (like a raw ID) left unchecked
+            </div>
+          </li>
         </ul>
 
-        <div class="checklist-group"><div class="cg-label">Agent script</div></div>
+        <div class="checklist-group">
+          <div class="cg-label">Agent script</div>
+        </div>
         <ul class="checklist">
-          <li><div class="cb"></div><div class="cl-text">Action pulled in from the asset library, not hand-typed</div></li>
-          <li><div class="cb"></div><div class="cl-text">Action name identical in <code>reasoning.actions.X</code> and the <code>actions.X</code> definition</div></li>
-          <li><div class="cb"></div><div class="cl-text">Action's <code>source</code> value matches the Agent Action asset's GenAiFunction developer name exactly</div></li>
-          <li><div class="cb"></div><div class="cl-text">Reasoning instructions contain the literal phrase <strong>"user_input tool"</strong>, referencing the action</div></li>
-          <li><div class="cb"></div><div class="cl-text">All identifiers lowercase</div></li>
-          <li><div class="cb"></div><div class="cl-text">Tested via Preview: form appears on the first relevant message, submitting returns the styled card</div></li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Action pulled in from the asset library, not hand-typed</div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Action name identical in <code>reasoning.actions.X</code> and the
+              <code>actions.X</code> definition</div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Action's <code>source</code> value matches the Agent Action asset's GenAiFunction
+              developer name exactly</div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Reasoning instructions contain the literal phrase <strong>"user_input tool"</strong>,
+              referencing the action</div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">All identifiers lowercase</div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">For an output-only action: reasoning instructions explicitly say not to narrate and
+              never to print the raw JSON <span class="sub">otherwise a text summary or the raw payload shows up next to
+                the rendered card</span></div>
+          </li>
+          <li>
+            <div class="cb"></div>
+            <div class="cl-text">Tested via Preview: form appears on the first relevant message, submitting returns the
+              styled card</div>
+          </li>
         </ul>
       </section>
 
@@ -672,34 +1951,119 @@
         <h2>Quick troubleshooting reference</h2>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Symptom</th>
+                <th>Likely cause</th>
+                <th>Fix</th>
+              </tr>
+            </thead>
             <tbody>
-              <tr><td>Agent asks for each field individually in chat</td><td>Missing "user_input tool" phrase</td><td>Rewrite the reasoning instruction to reference the action's <strong>user_input tool</strong> verbatim</td></tr>
-              <tr><td>Some submitted fields are blank on the confirmation card</td><td>Wrapper field name mismatch, or partial <code>valuechange</code> dispatch</td><td>Diff wrapper field names against action parameter names; check the editor dispatches the full object</td></tr>
-              <tr><td>Component missing from Editor/Renderer override list</td><td>Not deployed, <code>isExposed</code> false, or wrong <code>target</code></td><td>Redeploy with <code>isExposed: true</code> and the correct <code>lightning__AgentforceInput</code>/<code>Output</code> target</td></tr>
-              <tr><td>"Class not found" when creating a Lightning Type</td><td>Apex not deployed yet</td><td>Deploy the Apex class first, then retry</td></tr>
-              <tr><td>Standard/default UI shows instead of your component</td><td>Override left unset in UI Configuration</td><td>Go to the Lightning Type's Editor/Renderer tab and select your LWC explicitly</td></tr>
-              <tr><td>Output never appears in the conversation</td><td><code>is_displayable</code> / Show in conversation is false</td><td>Enable it on the action's output configuration</td></tr>
-              <tr><td>Input is never rendered as a form</td><td><code>is_user_input</code> / Collect data from user is false</td><td>Enable it on the action's input configuration</td></tr>
-              <tr><td>"Lightning Type not recognized" errors</td><td>Missing/incorrect <code>c__</code> prefix on the type name</td><td>Confirm the exact API name and prefix everywhere it's referenced</td></tr>
-              <tr><td>Action reference does nothing / seems ignored</td><td>Name mismatch between <code>reasoning.actions.X</code> and <code>actions.X</code></td><td>Make the two names identical, character for character</td></tr>
-              <tr><td>Renderer shows "undefined" instead of blank</td><td>Getter reads a field without a null-safe fallback</td><td>Use <code>this.value?.field || ''</code> pattern in every getter</td></tr>
-              <tr><td>Agent script can't find the action referenced by <code>source</code></td><td><code>source</code> doesn't match the GenAiFunction developer name</td><td>Copy the exact developer name from the Agent Action asset into <code>source</code></td></tr>
-              <tr><td>"Unsupported Data Type" message on the Map to Variable parameter</td><td>Cosmetic — Salesforce's own docs note this specific message "doesn't affect your saved work and can be safely ignored"</td><td>Ignore it; verify behavior via Preview instead of trusting this message</td></tr>
-              <tr><td>Edited an action's rendering config but the change doesn't seem to take</td><td>The agent page was open before the edit</td><td>Reload the agent page before re-testing — Salesforce's docs call this out explicitly</td></tr>
+              <tr>
+                <td>Agent asks for each field individually in chat</td>
+                <td>Missing "user_input tool" phrase</td>
+                <td>Rewrite the reasoning instruction to reference the action's <strong>user_input tool</strong>
+                  verbatim</td>
+              </tr>
+              <tr>
+                <td>Some submitted fields are blank on the confirmation card</td>
+                <td>Wrapper field name mismatch, or partial <code>valuechange</code> dispatch</td>
+                <td>Diff wrapper field names against action parameter names; check the editor dispatches the full object
+                </td>
+              </tr>
+              <tr>
+                <td>Component missing from Editor/Renderer override list</td>
+                <td>Not deployed, <code>isExposed</code> false, or wrong <code>target</code></td>
+                <td>Redeploy with <code>isExposed: true</code> and the correct
+                  <code>lightning__AgentforceInput</code>/<code>Output</code> target</td>
+              </tr>
+              <tr>
+                <td>"Class not found" when creating a Lightning Type</td>
+                <td>Apex not deployed yet</td>
+                <td>Deploy the Apex class first, then retry</td>
+              </tr>
+              <tr>
+                <td>Standard/default UI shows instead of your component</td>
+                <td>Override left unset in UI Configuration</td>
+                <td>Go to the Lightning Type's Editor/Renderer tab and select your LWC explicitly</td>
+              </tr>
+              <tr>
+                <td>Output never appears in the conversation</td>
+                <td><code>is_displayable</code> / Show in conversation is false</td>
+                <td>Enable it on the action's output configuration</td>
+              </tr>
+              <tr>
+                <td>Input is never rendered as a form</td>
+                <td><code>is_user_input</code> / Collect data from user is false</td>
+                <td>Enable it on the action's input configuration</td>
+              </tr>
+              <tr>
+                <td>"Lightning Type not recognized" errors</td>
+                <td>Missing/incorrect <code>c__</code> prefix on the type name</td>
+                <td>Confirm the exact API name and prefix everywhere it's referenced</td>
+              </tr>
+              <tr>
+                <td>Action reference does nothing / seems ignored</td>
+                <td>Name mismatch between <code>reasoning.actions.X</code> and <code>actions.X</code></td>
+                <td>Make the two names identical, character for character</td>
+              </tr>
+              <tr>
+                <td>Renderer shows "undefined" instead of blank</td>
+                <td>Getter reads a field without a null-safe fallback</td>
+                <td>Use <code>this.value?.field || ''</code> pattern in every getter</td>
+              </tr>
+              <tr>
+                <td>Agent script can't find the action referenced by <code>source</code></td>
+                <td><code>source</code> doesn't match the GenAiFunction developer name</td>
+                <td>Copy the exact developer name from the Agent Action asset into <code>source</code></td>
+              </tr>
+              <tr>
+                <td>"Unsupported Data Type" message on the Map to Variable parameter</td>
+                <td>Cosmetic - Salesforce's own docs note this specific message "doesn't affect your saved work and can
+                  be safely ignored"</td>
+                <td>Ignore it; verify behavior via Preview instead of trusting this message</td>
+              </tr>
+              <tr>
+                <td>Edited an action's rendering config but the change doesn't seem to take</td>
+                <td>The agent page was open before the edit</td>
+                <td>Reload the agent page before re-testing - Salesforce's docs call this out explicitly</td>
+              </tr>
+              <tr>
+                <td>Component renders blank despite the action succeeding</td>
+                <td><code>@api</code> setter assumes one payload shape</td>
+                <td>Normalize defensively - handle a plain object, a JSON string, and a payload nested under its own
+                  property name</td>
+              </tr>
+              <tr>
+                <td>A text summary or the raw JSON appears next to the rendered card</td>
+                <td>Agent wasn't told to suppress narration</td>
+                <td>Add an explicit "do not narrate / never print raw JSON" instruction to the reasoning step</td>
+              </tr>
+              <tr>
+                <td>Nothing appears at all, and no error surfaces</td>
+                <td>Invocable method threw an uncaught exception</td>
+                <td>Wrap the method body in try/catch and return a <code>hasError</code>-shaped response instead</td>
+              </tr>
             </tbody>
           </table>
         </div>
       </section>
 
       <footer>
-        CLT Rendering Checklist · distilled from the Custom Lightning Types build guide · for quick reference during build and debug
+        CLT Rendering Checklist · distilled from the Custom Lightning Types build guide · for quick reference during
+        build and debug
         <div class="src-list">
-          Verified against: <a href="https://developer.salesforce.com/docs/ai/agentforce/guide/lightning-types-example-full-editor-renderer.html" target="_blank" rel="noopener">Full Editor &amp; Renderer Overrides</a> ·
-          <a href="https://developer.salesforce.com/docs/platform/lightning-types/guide/lightning-types-apex.html" target="_blank" rel="noopener">Apex-Based Custom Lightning Types</a> ·
-          <a href="https://developer.salesforce.com/docs/platform/lightning-types/guide/lightning-types-core.html" target="_blank" rel="noopener">Core Concepts of Custom Lightning Types</a> ·
-          <a href="https://developer.salesforce.com/docs/ai/agentforce/guide/lightning-types-custom.html" target="_blank" rel="noopener">Custom Lightning Types (Agentforce Actions)</a> ·
-          <a href="https://developer.salesforce.com/blogs/2026/05/use-custom-lightning-types-in-agent-script-for-rich-agent-ui" target="_blank" rel="noopener">Custom Lightning Types in Agent Script</a>
+          Verified against: <a
+            href="https://developer.salesforce.com/docs/ai/agentforce/guide/lightning-types-example-full-editor-renderer.html"
+            target="_blank" rel="noopener">Full Editor &amp; Renderer Overrides</a> ·
+          <a href="https://developer.salesforce.com/docs/platform/lightning-types/guide/lightning-types-apex.html"
+            target="_blank" rel="noopener">Apex-Based Custom Lightning Types</a> ·
+          <a href="https://developer.salesforce.com/docs/platform/lightning-types/guide/lightning-types-core.html"
+            target="_blank" rel="noopener">Core Concepts of Custom Lightning Types</a> ·
+          <a href="https://developer.salesforce.com/docs/ai/agentforce/guide/lightning-types-custom.html"
+            target="_blank" rel="noopener">Custom Lightning Types (Agentforce Actions)</a> ·
+          <a href="https://developer.salesforce.com/blogs/2026/05/use-custom-lightning-types-in-agent-script-for-rich-agent-ui"
+            target="_blank" rel="noopener">Custom Lightning Types in Agent Script</a>
         </div>
       </footer>
     </div>
@@ -707,18 +2071,18 @@
 </div>
 
 <script>
-  (function(){
-    try{
+  (function () {
+    try {
       var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
-      var sections = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
-      function onScroll(){
+      var sections = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+      function onScroll() {
         var pos = window.scrollY + 120;
         var activeIdx = 0;
-        sections.forEach(function(sec, i){ if(sec && sec.offsetTop <= pos) activeIdx = i; });
-        links.forEach(function(a, i){ a.parentElement.classList.toggle('active', i === activeIdx); });
+        sections.forEach(function (sec, i) { if (sec && sec.offsetTop <= pos) activeIdx = i; });
+        links.forEach(function (a, i) { a.parentElement.classList.toggle('active', i === activeIdx); });
       }
-      window.addEventListener('scroll', onScroll, {passive:true});
+      window.addEventListener('scroll', onScroll, { passive: true });
       onScroll();
-    }catch(e){}
+    } catch (e) { }
   })();
 </script>
